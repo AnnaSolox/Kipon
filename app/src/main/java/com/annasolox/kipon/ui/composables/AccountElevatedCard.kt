@@ -1,11 +1,8 @@
 package com.annasolox.kipon.ui.composables
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -20,13 +17,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.zIndex
 import com.annasolox.kipon.R
 
@@ -40,23 +34,23 @@ fun AccountElevatedCard(users: Int = 3) {
         Row(
             Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(190.dp)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.account_photo),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxHeight()
-                    .weight(.3f),
+                    .weight(.25f),
                 contentScale = ContentScale.Crop,
             )
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .weight(.7f)
+                    .weight(.75f)
                     .padding(start = 16.dp, end = 16.dp),
             ) {
-                Spacer(Modifier.size(20.dp))
+                Spacer(Modifier.size(16.dp))
                 Row(
                     Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -75,13 +69,13 @@ fun AccountElevatedCard(users: Int = 3) {
                 Row {
                     for (i in 0 until users) {
                         UserThumbnail(modifier = Modifier
-                            .size(65.dp)
+                            .size(60.dp)
                             .zIndex(i.toFloat())
                             .offset(x = (-i * 25).dp))
                     }
                 }
 
-                Spacer(Modifier.size(20.dp))
+                Spacer(Modifier.size(24.dp))
 
                 AccountProgressBar(6000, 12000)
             }

@@ -1,6 +1,5 @@
 package com.annasolox.kipon.ui.composables
 
-import android.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ElevatedCard
@@ -26,10 +26,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
+import androidx.compose.ui.zIndex
+import com.annasolox.kipon.R
 
-@Preview
 @Composable
-fun AccountElevatedCard() {
+fun AccountElevatedCard(users: Int = 3) {
     ElevatedCard(
         Modifier
             .fillMaxWidth()
@@ -38,23 +40,23 @@ fun AccountElevatedCard() {
         Row(
             Modifier
                 .fillMaxWidth()
-                .height(IntrinsicSize.Min)
+                .height(200.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_lock_idle_low_battery),
+                painter = painterResource(id = R.drawable.account_photo),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxHeight()
-                    .weight(.2f),
+                    .weight(.3f),
                 contentScale = ContentScale.Crop,
             )
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .weight(.8f)
-                    .padding(16.dp)
+                    .weight(.7f)
+                    .padding(start = 16.dp, end = 16.dp),
             ) {
-                Spacer(Modifier.size(10.dp))
+                Spacer(Modifier.size(20.dp))
                 Row(
                     Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -68,16 +70,18 @@ fun AccountElevatedCard() {
                     Text(style = MaterialTheme.typography.bodyMedium, text = "20/05/2025")
                 }
 
-                Spacer(Modifier.size(18.dp))
+                Spacer(Modifier.size(16.dp))
 
-                Box(Modifier
-                    .fillMaxWidth()
-                    .height(52.dp)
-                    .background(Color.Red)) {
-                    Text("Aquí van las imágenes de los usuarios")
+                Row {
+                    for (i in 0 until users) {
+                        UserThumbnail(modifier = Modifier
+                            .size(65.dp)
+                            .zIndex(i.toFloat())
+                            .offset(x = (-i * 25).dp))
+                    }
                 }
 
-                Spacer(Modifier.size(18.dp))
+                Spacer(Modifier.size(20.dp))
 
                 AccountProgressBar(6000, 12000)
             }

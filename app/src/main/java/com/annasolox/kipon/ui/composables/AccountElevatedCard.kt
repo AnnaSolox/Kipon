@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ElevatedCard
@@ -20,10 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.annasolox.kipon.R
 
+@Preview
 @Composable
 fun AccountElevatedCard(users: Int = 3) {
     ElevatedCard(
@@ -66,14 +66,7 @@ fun AccountElevatedCard(users: Int = 3) {
 
                 Spacer(Modifier.size(16.dp))
 
-                Row {
-                    for (i in 0 until users) {
-                        UserThumbnail(modifier = Modifier
-                            .size(60.dp)
-                            .zIndex(i.toFloat())
-                            .offset(x = (-i * 25).dp))
-                    }
-                }
+                AccountMembers(users)
 
                 Spacer(Modifier.size(24.dp))
 

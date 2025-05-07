@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.annasolox.kipon.ui.composables.AccountElevatedCard
+import com.annasolox.kipon.ui.composables.Contribution
 import com.annasolox.kipon.ui.composables.UserThumbnail
 import com.annasolox.kipon.ui.theme.KiponTheme
 
@@ -28,7 +29,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center){
                         Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly) {
-                            AccountElevatedCard()
+                            Contribution()
                         }
                     }
                 }

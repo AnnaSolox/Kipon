@@ -5,5 +5,6 @@ data class AccountOverview(
     var name: String,
     var currentMoney: Double,
     var moneyGoal: Double,
+    val userMembers: ArrayList<User>,
     var admin: User
 )

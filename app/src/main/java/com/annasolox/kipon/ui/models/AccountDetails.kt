@@ -8,6 +8,7 @@ data class AccountDetails(
     var currentAmount: Double,
     var moneyGoal: Double,
     var dateGoal: LocalDate?,
+    val userMembers: ArrayList<User>,
     var admin: User,
     var savings: List<Saving>
 )

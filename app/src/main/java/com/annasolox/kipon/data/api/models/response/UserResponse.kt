@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
-data class User(
+data class UserResponse(
     val id: Long,
     @SerialName("nombre")
     val name: String,
@@ -14,7 +14,7 @@ data class User(
     @Serializable(with = LocalDateSerializer::class)
     val registerDate: LocalDate,
     @SerialName("perfil")
-    val profile: UserProfile,
+    val profile: UserProfileResponse,
     @SerialName("huchas")
-    val accountRole: List<AccountRole>
+    val accountRole: List<AccountRoleResponse>
 )

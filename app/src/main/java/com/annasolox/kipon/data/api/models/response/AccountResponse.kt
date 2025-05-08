@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class Account(
+data class AccountResponse(
     val id: Long,
     @SerialName("nombre")
     var name: String,
@@ -24,5 +24,5 @@ data class Account(
     @SerialName("administrador")
     val admin: String,
     @SerialName("ahorros")
-    val savings: List<Saving>
+    val savings: List<SavingResponse>
 )

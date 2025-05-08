@@ -2,7 +2,7 @@ package com.annasolox.kipon.data.api.models.response
 
 import kotlinx.serialization.SerialName
 
-data class SimplifiedAccount(
+data class SimplifiedAccountResponse(
     val id: Long,
     @SerialName("nombre")
     val name: String,

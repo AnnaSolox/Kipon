@@ -9,16 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,21 +24,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.annasolox.kipon.R
+import com.annasolox.kipon.ui.composables.textFields.RegisterPasswordTextField
 import com.annasolox.kipon.ui.composables.textFields.RegisterTextField
 
 @Preview
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(modifier: Modifier = Modifier) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordHidden by remember { mutableStateOf(true) }
+    var email by remember { mutableStateOf("") }
+    var completeName by remember { mutableStateOf("") }
+    var telefono by remember { mutableStateOf("") }
+    var direccion by remember { mutableStateOf("") }
+    var passwordConfirmation by remember { mutableStateOf("") }
 
     val diagonalGradient = Brush.linearGradient(
         colors = listOf(
@@ -78,31 +74,31 @@ fun RegisterScreen() {
             {
                 RegisterTextField(username, "Username") { username = it }
 
-                Spacer(Modifier.size(12.dp))
+                Spacer(Modifier.size(6.dp))
 
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text(text = "Password") },
-                    singleLine = true,
-                    shape = RoundedCornerShape(100f),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    visualTransformation = if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
-                    trailingIcon = {
-                        IconButton({ passwordHidden = !passwordHidden }) {
-                            Icon(
-                                painter = painterResource(if (passwordHidden) R.drawable.visibility_on else R.drawable.visibility_off),
-                                contentDescription = "Visibility icon"
-                            )
-                        }
-                    }
-                )
+                RegisterPasswordTextField (password, "Password") { password = it }
 
-                Spacer(Modifier.size(12.dp))
+                Spacer(Modifier.size(6.dp))
 
-                Text(text = "¿Has olvidado la contraseña?")
+                RegisterPasswordTextField (passwordConfirmation, "Password confirmation") { passwordConfirmation = it }
 
-                Spacer(Modifier.size(60.dp))
+                Spacer(Modifier.size(6.dp))
+
+                RegisterTextField(email, "Email") { email = it }
+
+                Spacer(Modifier.size(6.dp))
+
+                RegisterTextField(completeName, "Complete name") { completeName = it }
+
+                Spacer(Modifier.size(6.dp))
+
+                RegisterTextField(telefono, "Phone number") { telefono = it }
+
+                Spacer(Modifier.size(6.dp))
+
+                RegisterTextField(direccion, "Address") { direccion = it }
+
+                Spacer(Modifier.size(40.dp))
 
                 Button(
                     {},
@@ -110,15 +106,15 @@ fun RegisterScreen() {
                         containerColor = MaterialTheme.colorScheme.tertiary
                     )
                 ) {
-                    Text("Iniciar sesión")
+                    Text("Register")
                 }
 
                 Spacer(Modifier.size(12.dp))
 
                 Row {
-                    Text(text = "¿No tienes cuenta?")
+                    Text(text = "¿Ya estás registrado?")
                     Spacer(Modifier.size(6.dp))
-                    Text(text = "Regístrate", color = MaterialTheme.colorScheme.primary)
+                    Text(text = "Inicia sesión", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Black)
                 }
             }
         }

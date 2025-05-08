@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Color
 fun RegisterTextField(text: String, label: String, onValueChanged: (String) -> Unit ){
     TextField(
         value = text,
-        onValueChange = { onValueChanged(text) },
+        onValueChange = { onValueChanged(it) },
         singleLine = true,
         label = { Text(text = label) },
         colors = TextFieldDefaults.colors(

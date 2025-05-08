@@ -29,6 +29,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -121,7 +122,7 @@ fun LoginScreen() {
                 Row {
                     Text(text = "¿No tienes cuenta?")
                     Spacer(Modifier.size(6.dp))
-                    Text(text = "Regístrate", color = MaterialTheme.colorScheme.primary)
+                    Text(text = "Regístrate", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Black)
                 }
             }
         }

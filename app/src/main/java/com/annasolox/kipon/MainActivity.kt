@@ -25,9 +25,7 @@ class MainActivity : ComponentActivity() {
             KiponTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center){
-                        Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly) {
                             RegisterScreen()
-                        }
                     }
                 }
             }

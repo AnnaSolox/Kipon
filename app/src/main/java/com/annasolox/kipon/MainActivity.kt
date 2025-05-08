@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.annasolox.kipon.core.navigation.NavigationWrapper
 import com.annasolox.kipon.ui.screens.AccountDetailScreen
 import com.annasolox.kipon.ui.screens.LoginScreen
 import com.annasolox.kipon.ui.screens.RegisterScreen
@@ -25,7 +26,7 @@ class MainActivity : ComponentActivity() {
             KiponTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center){
-                            RegisterScreen()
+                        NavigationWrapper()
                     }
                 }
             }

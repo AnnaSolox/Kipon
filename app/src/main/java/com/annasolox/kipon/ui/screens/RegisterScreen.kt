@@ -1,6 +1,7 @@
 package com.annasolox.kipon.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,17 +27,16 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.annasolox.kipon.core.navigation.LoginScreen
 import com.annasolox.kipon.ui.composables.textFields.RegisterPasswordTextField
 import com.annasolox.kipon.ui.composables.textFields.RegisterTextField
 
-@Preview
 @Composable
-fun RegisterScreen(modifier: Modifier = Modifier) {
+fun RegisterScreen(navController: NavController) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var passwordHidden by remember { mutableStateOf(true) }
     var email by remember { mutableStateOf("") }
     var completeName by remember { mutableStateOf("") }
     var telefono by remember { mutableStateOf("") }
@@ -52,7 +53,11 @@ fun RegisterScreen(modifier: Modifier = Modifier) {
         end = Offset(2000f, 2000f)
     )
 
-    Box(Modifier.fillMaxSize().background(diagonalGradient)){
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(diagonalGradient)
+    ) {
 
         Box(
             modifier = Modifier
@@ -63,12 +68,14 @@ fun RegisterScreen(modifier: Modifier = Modifier) {
                         bottomStart = 0.dp,
                         bottomEnd = 0.dp
                     )
-                ).align(Alignment.BottomCenter)
+                )
+                .align(Alignment.BottomCenter)
         ) {
             Column(
                 modifier = Modifier
                     .background(Color.White)
-                    .padding(start = 42.dp, end = 42.dp, top = 42.dp, bottom = 75.dp),
+                    .width(380.dp)
+                    .padding(start = 16.dp, end = 16.dp, top = 42.dp, bottom = 75.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             )
             {
@@ -76,11 +83,14 @@ fun RegisterScreen(modifier: Modifier = Modifier) {
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterPasswordTextField (password, "Password") { password = it }
+                RegisterPasswordTextField(password, "Password") { password = it }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterPasswordTextField (passwordConfirmation, "Password confirmation") { passwordConfirmation = it }
+                RegisterPasswordTextField(
+                    passwordConfirmation,
+                    "Password confirmation"
+                ) { passwordConfirmation = it }
 
                 Spacer(Modifier.size(6.dp))
 
@@ -114,7 +124,12 @@ fun RegisterScreen(modifier: Modifier = Modifier) {
                 Row {
                     Text(text = "¿Ya estás registrado?")
                     Spacer(Modifier.size(6.dp))
-                    Text(text = "Inicia sesión", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Black)
+                    Text(
+                        text = "Inicia sesión",
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Black,
+                        modifier = Modifier.clickable{ navController.navigate(LoginScreen) }
+                    )
                 }
             }
         }

@@ -1,6 +1,7 @@
 package com.annasolox.kipon.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -33,13 +35,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.annasolox.kipon.R
+import com.annasolox.kipon.core.navigation.RegisterScreen
 
-@Preview
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavController) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordHidden by remember { mutableStateOf(true) }
@@ -54,7 +56,11 @@ fun LoginScreen() {
         end = Offset(2000f, 2000f)
     )
 
-    Box(Modifier.fillMaxSize().background(diagonalGradient)){
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(diagonalGradient)
+    ) {
 
         Box(
             modifier = Modifier
@@ -65,12 +71,14 @@ fun LoginScreen() {
                         bottomStart = 0.dp,
                         bottomEnd = 0.dp
                     )
-                ).align(Alignment.BottomCenter)
+                )
+                .align(Alignment.BottomCenter)
         ) {
             Column(
                 modifier = Modifier
                     .background(Color.White)
-                    .padding(start = 42.dp, end = 42.dp, top = 42.dp, bottom = 75.dp),
+                    .width(380.dp)
+                    .padding(start = 16.dp, end = 16.dp, top = 42.dp, bottom = 75.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             )
             {
@@ -114,7 +122,7 @@ fun LoginScreen() {
                         containerColor = MaterialTheme.colorScheme.tertiary
                     )
                 ) {
-                    Text("Iniciar sesión")
+                    Text(text = "Iniciar sesión")
                 }
 
                 Spacer(Modifier.size(12.dp))
@@ -122,7 +130,16 @@ fun LoginScreen() {
                 Row {
                     Text(text = "¿No tienes cuenta?")
                     Spacer(Modifier.size(6.dp))
-                    Text(text = "Regístrate", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Black)
+                    Text(
+                        text = "Regístrate",
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Black,
+                        modifier = Modifier.clickable {
+                            navController.navigate(
+                                RegisterScreen
+                            )
+                        }
+                    )
                 }
             }
         }

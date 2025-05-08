@@ -1,4 +1,4 @@
-package com.annasolox.kipon.ui.composables
+package com.annasolox.kipon.ui.composables.images
 
 
 import androidx.compose.foundation.Image
@@ -11,12 +11,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.annasolox.kipon.R
 
 @Composable
-fun UserThumbnail(modifier: Modifier) {
+fun ImageThumbnail(modifier: Modifier, imageResource: Int) {
     Image(
-        painter = painterResource(R.drawable.girl_photo),
+        painter = painterResource(imageResource),
         contentDescription = "User image thumbnail",
         contentScale = ContentScale.Crop,
         modifier = modifier

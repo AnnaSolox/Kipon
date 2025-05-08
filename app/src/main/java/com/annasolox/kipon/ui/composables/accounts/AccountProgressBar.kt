@@ -1,4 +1,4 @@
-package com.annasolox.kipon.ui.composables
+package com.annasolox.kipon.ui.composables.accounts
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

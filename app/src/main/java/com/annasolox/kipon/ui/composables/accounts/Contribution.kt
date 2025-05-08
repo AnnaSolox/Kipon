@@ -1,4 +1,4 @@
-package com.annasolox.kipon.ui.composables
+package com.annasolox.kipon.ui.composables.accounts
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,13 +14,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.annasolox.kipon.ui.composables.images.ImageThumbnail
 
-@Preview(showBackground = true)
 @Composable
-fun Contribution() {
-    Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+fun Contribution(imageResource: Int) {
+    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically) {
-        UserThumbnail(Modifier.size(60.dp))
+        ImageThumbnail(Modifier.size(55.dp), imageResource)
 
         Spacer(Modifier.size(20.dp))
 

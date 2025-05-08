@@ -1,4 +1,4 @@
-package com.annasolox.kipon.ui.composables
+package com.annasolox.kipon.ui.composables.accounts
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -66,7 +66,7 @@ fun AccountElevatedCard(users: Int = 3) {
 
                 Spacer(Modifier.size(16.dp))
 
-                AccountMembers(users)
+                AccountMembers(Modifier.size(60.dp), users)
 
                 Spacer(Modifier.size(24.dp))
 

@@ -1,85 +1,118 @@
 package com.annasolox.kipon.ui.screens
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.annasolox.kipon.R
-import com.annasolox.kipon.ui.composables.AccountMembers
-import com.annasolox.kipon.ui.composables.AccountProgressBar
-import com.annasolox.kipon.ui.composables.Contribution
+import com.annasolox.kipon.ui.composables.accounts.Contribution
+import com.annasolox.kipon.ui.composables.accounts.LazyAccountContributions
+import com.annasolox.kipon.ui.composables.buttons.OptionsButton
+import com.annasolox.kipon.ui.composables.headers.ColumnAccountDetailInfo
+import com.annasolox.kipon.ui.composables.headers.ImageHeader
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
-fun AccountDetailScreen() {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    val scrollState = rememberLazyListState()
+fun AccountDetailScreen(
+    modifier: Modifier = Modifier,
+    maxSize: Dp = 300.dp,
+    minSize: Dp = 100.dp
+) {
+    var currentBoxSize by remember { mutableStateOf(maxSize) }
+    var infoImageElementsAlpha by remember { mutableFloatStateOf(1f) }
 
-    Scaffold (
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            LargeTopAppBar(
-                title = {
-                    Column {
-                        Text("Viaje a Bali")
-                        Text("20/05/2026", style = MaterialTheme.typography.bodySmall)
-                    }
-                },
-                actions = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        AccountMembers(4)
-                    }
-                },
-                scrollBehavior = scrollBehavior
-            )
+    val nestedScrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                //Calcular el cambio de tamaño de la caja basado en el delta scroll
+                val delta = available.y
+                val newBoxSize = currentBoxSize + delta.dp
+                val previusBoxSize = currentBoxSize
+
+                //Constraints para el tamaño de la imagen según los límites
+                currentBoxSize = newBoxSize.coerceIn(minSize, maxSize)
+                val consumed = currentBoxSize - previusBoxSize
+
+                //Cálculo del alpha para hacer desaparecer la info de la imagen expandida
+                val range = maxSize - minSize
+                val progress = (currentBoxSize - minSize) / range
+
+                infoImageElementsAlpha = progress.coerceIn(0f, 1f)
+
+                return Offset(0f, consumed.value)
+            }
         }
-    ) { paddingValues ->
-        LazyColumn(
-            state = scrollState,
-            contentPadding = paddingValues
+    }
+
+    Box(Modifier.nestedScroll(nestedScrollConnection)) {
+
+        LazyAccountContributions(currentBoxSize, R.drawable.girl_photo)
+
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(currentBoxSize)
+                .graphicsLayer {
+                    clip = true
+                    shape = RoundedCornerShape(
+                        topStart = 0.dp,
+                        topEnd = 0.dp,
+                        bottomStart = 16.dp,
+                        bottomEnd = 16.dp
+                    )
+                },
         ) {
-            item {
-                // Imagen de cabecera
-                Image(
-                    painter = painterResource(R.drawable.girl_photo),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp)
-                )
-            }
+            ImageHeader(
+                height = currentBoxSize,
+                imageResource = R.drawable.account_photo,
+                contentImageDescription = "Account image"
+            )
 
-            item {
-                Spacer(Modifier.height(24.dp))
-                AccountProgressBar(6000, 12000)
-                Spacer(Modifier.height(24.dp))
-            }
+            Row(
+                Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
+                    .graphicsLayer(
+                        alpha = infoImageElementsAlpha
+                    ),
+                verticalAlignment = Alignment.Bottom
+            ) {
 
-            items(20) {
-                Contribution()
-                Spacer(Modifier.height(24.dp))
+                Column(
+                    Modifier
+                        .weight(1f)
+                ) {
+
+                    ColumnAccountDetailInfo(3, "Viaje a Bali", "20/06/26")
+
+                }
+
+                OptionsButton()
             }
         }
     }

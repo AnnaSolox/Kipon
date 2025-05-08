@@ -10,15 +10,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.annasolox.kipon.ui.composables.AccountElevatedCard
-import com.annasolox.kipon.ui.composables.Contribution
-import com.annasolox.kipon.ui.composables.UserThumbnail
 import com.annasolox.kipon.ui.screens.AccountDetailScreen
+import com.annasolox.kipon.ui.screens.LoginScreen
+import com.annasolox.kipon.ui.screens.RegisterScreen
 import com.annasolox.kipon.ui.theme.KiponTheme
 
 class MainActivity : ComponentActivity() {
@@ -30,7 +26,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center){
                         Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly) {
-                            AccountDetailScreen()
+                            RegisterScreen()
                         }
                     }
                 }

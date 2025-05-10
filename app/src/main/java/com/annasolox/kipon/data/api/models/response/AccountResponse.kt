@@ -2,11 +2,13 @@ package com.annasolox.kipon.data.api.models.response
 
 import com.annasolox.kipon.data.api.utils.serializers.LocalDateSerializer
 import com.annasolox.kipon.data.api.utils.serializers.LocalDateTimeSerializer
+import com.annasolox.kipon.ui.models.AccountDetails
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+@Serializable
 data class AccountResponse(
     val id: Long,
     @SerialName("nombre")

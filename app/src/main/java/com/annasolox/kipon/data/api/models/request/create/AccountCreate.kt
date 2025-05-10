@@ -12,7 +12,5 @@ data class AccountCreate(
     val moneyGoal: Double,
     @SerialName("fechaObjetivo")
     @Serializable(with = LocalDateSerializer::class)
-    val dateGoal: LocalDate?,
-    @SerialName("idAdministrador")
-    val idAdmin: Long
+    val dateGoal: LocalDate?
 )

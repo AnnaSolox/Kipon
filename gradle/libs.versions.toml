@@ -9,11 +9,16 @@ kotlinxSerializationJson = "1.8.0"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
 composeBom = "2024.09.00"
+lifecycleViewmodelCompose = "2.9.0"
 navigationCompose = "2.9.0"
 uiTextGoogleFonts = "1.8.0"
+ktor = "2.3.11"
+koin = "4.0.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+#viewmodel-compose
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-ui-text-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -29,7 +34,26 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+
+#serialization
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+
+#ktor
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-client-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+kotlin-ktor-serialization = {module = "io.ktor:ktor-serialization-kotlinx-json", version.ref="ktor"}
+
+#koin (ID)
+koin-bom = { group = "io-insert-koin", name = "koin-bom", version.ref = "koin"}
+koin-core = { group = "io-insert-koin", name = "koin-core"}
+koin-android = { group = "io-insert-koin", name = "koin-android"}
+koin-coroutines = { group = "io.insert-koin", name = "koin-core-coroutines"}
+koin-compose = { group = "io.insert-koin", name = "koin-compose"}
+koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmodel"}
+koin-ktor = { group = "io.insert-koin", name = "koin-ktor" }
+koin-ktor-logger = { group = "io.insert-koin", name = "koin-logger-slf4j"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

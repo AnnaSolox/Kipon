@@ -11,7 +11,7 @@ import com.annasolox.kipon.ui.screens.RegisterScreen
 fun NavigationWrapper() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = RegisterScreen){
+    NavHost(navController = navController, startDestination = LoginScreen){
         composable<LoginScreen> {
             LoginScreen(navController)
         }

@@ -11,8 +11,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.annasolox.kipon.core.navigation.NavigationWrapper
-import com.annasolox.kipon.ui.screens.LoginScreen
-import com.annasolox.kipon.ui.screens.RegisterScreen
 import com.annasolox.kipon.ui.theme.KiponTheme
 
 class MainActivity : ComponentActivity() {

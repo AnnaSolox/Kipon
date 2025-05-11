@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.annasolox.kipon.core.navigation.LoginScreen
+import com.annasolox.kipon.core.navigation.RegisterScreen
 import com.annasolox.kipon.ui.composables.backgrounds.AuthBackground
 import com.annasolox.kipon.ui.composables.textFields.RegisterPasswordTextField
 import com.annasolox.kipon.ui.composables.textFields.RegisterTextField
@@ -116,14 +117,17 @@ fun RegisterScreen(
                 Spacer(Modifier.size(12.dp))
 
                 Row {
-                    Text(text = "¿Ya estás registrado?")
+                    Text(text = "Are you already registered?")
                     Spacer(Modifier.size(6.dp))
                     Text(
-                        text = "Inicia sesión",
+                        text = "Login",
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Black,
                         modifier = Modifier.clickable {
-                            navController.navigate(LoginScreen)
+                            navController.navigate(LoginScreen){
+                                popUpTo<RegisterScreen>{inclusive = true}
+                                launchSingleTop = true
+                            }
                         })
                 }
             }

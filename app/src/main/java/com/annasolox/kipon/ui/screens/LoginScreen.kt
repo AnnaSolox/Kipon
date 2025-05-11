@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.annasolox.kipon.R
+import com.annasolox.kipon.core.navigation.LoginScreen
 import com.annasolox.kipon.core.navigation.RegisterScreen
 import com.annasolox.kipon.ui.composables.backgrounds.AuthBackground
 import com.annasolox.kipon.ui.composables.textFields.LoginPasswordTextField
@@ -117,14 +118,17 @@ fun LoginScreen(
                     Spacer(Modifier.size(12.dp))
 
                     Row {
-                        Text(text = "¿No tienes cuenta?")
+                        Text(text = "Don't have an account?")
                         Spacer(Modifier.size(6.dp))
                         Text(
-                            text = "Regístrate",
+                            text = "Register",
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Black,
                             modifier = Modifier.clickable {
-                                navController.navigate(RegisterScreen)
+                                navController.navigate(RegisterScreen) {
+                                    popUpTo<LoginScreen>{inclusive = true}
+                                    launchSingleTop = true
+                                }
                             }
                         )
                     }

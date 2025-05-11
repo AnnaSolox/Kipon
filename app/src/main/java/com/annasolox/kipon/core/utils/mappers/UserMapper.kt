@@ -1,4 +1,4 @@
-package com.annasolox.kipon.data.api.utils.mappers
+package com.annasolox.kipon.core.utils.mappers
 
 import com.annasolox.kipon.data.api.models.request.create.ProfileCreate
 import com.annasolox.kipon.data.api.models.request.create.UserCreate
@@ -32,14 +32,14 @@ object UserMapper {
         )
     }
 
-    /*fun toUserHomeScreen(
+    fun toUserHomeScreen(
         userResponse: UserResponse
     ): UserHomeScreen {
         return UserHomeScreen(
             userName = userResponse.name,
             accounts = userResponse.accountRole.map { account ->
-                AccountMapper.toAccountOverview(account)
+                AccountMapper.toAccountOverviewFromRole(account)
             }
         )
-    }*/
+    }
 }

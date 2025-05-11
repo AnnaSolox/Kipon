@@ -1,9 +1,7 @@
 package com.annasolox.kipon.data.api.models.response
 
-import com.annasolox.kipon.data.api.utils.serializers.LocalDateSerializer
-import com.annasolox.kipon.data.api.utils.serializers.LocalDateTimeSerializer
-import com.annasolox.kipon.ui.models.AccountDetails
-import com.annasolox.kipon.ui.models.AccountOverview
+import com.annasolox.kipon.core.utils.serializers.LocalDateSerializer
+import com.annasolox.kipon.core.utils.serializers.LocalDateTimeSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
@@ -26,7 +24,7 @@ data class AccountResponse(
     val goalDate: LocalDate,
     @SerialName("administrador")
     val admin: String,
-    @SerialName("usuaerios")
+    @SerialName("usuarios")
     val userMembers: List<UserRolResponse>,
     @SerialName("ahorros")
     val savings: List<SavingResponse>

@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.annasolox.kipon.core.navigation.LoginNavigationEvent
 import com.annasolox.kipon.data.api.models.request.create.LoginRequest
-import com.annasolox.kipon.data.api.utils.mappers.UserMapper
+import com.annasolox.kipon.core.utils.mappers.UserMapper
 import com.annasolox.kipon.data.repository.AuthRepository
 import com.annasolox.kipon.ui.models.LoginUiState
 import kotlinx.coroutines.launch
@@ -92,6 +92,7 @@ class AuthViewModel(
                 if(token != "Nombre de usuario o contraseña incorrectos" && token.isNotEmpty()){
                     _loginState.value = LoginUiState.Success(token)
                     saveToken(token)
+                    saveUserName(_userName.value!!)
                     _navigationEvent.value = LoginNavigationEvent.NavigateToHome
                     Log.d("AuthViewModel", "Login successfull!")
                 } else {
@@ -134,6 +135,12 @@ class AuthViewModel(
     private fun saveToken(token: String) {
         sharedPreferences.edit {
             putString("auth_token", token)
+        }
+    }
+
+    private fun saveUserName(userName: String){
+        sharedPreferences.edit {
+            putString("username", userName)
         }
     }
 
@@ -247,5 +254,9 @@ class AuthViewModel(
 
     fun clearToken() {
         sharedPreferences.edit { remove("auth_token") }
+    }
+
+    fun clearUserName() {
+        sharedPreferences.edit { remove("username") }
     }
 }

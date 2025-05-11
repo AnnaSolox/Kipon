@@ -1,6 +1,6 @@
 package com.annasolox.kipon.data.api.models.request.create
 
-import com.annasolox.kipon.data.api.utils.serializers.LocalDateSerializer
+import com.annasolox.kipon.core.utils.serializers.LocalDateSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.LocalDate

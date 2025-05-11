@@ -24,6 +24,10 @@ class AuthViewModel(
     val userNameError: LiveData<String?> get() = _userNameError
     private var _password = MutableLiveData<String>()
     val password: LiveData<String> get() = _password
+    private var _passwordConfirmation = MutableLiveData<String>()
+    val passwordConfirmation: LiveData<String> get() = _passwordConfirmation
+    private var _passwordConfirmationError = MutableLiveData<String?>(null)
+    val passwordConfirmationError: LiveData<String?> get() = _passwordConfirmationError
     private var _passwordError = MutableLiveData<String?>(null)
     val passwordError: LiveData<String?> get() = _passwordError
     private var _email = MutableLiveData<String>()
@@ -54,6 +58,9 @@ class AuthViewModel(
     }
     fun onPasswordChanged(password: String) {
         _password.postValue(password)
+    }
+    fun onPasswordConfirmationChanged(passwordConfirmation: String) {
+        _passwordConfirmation.postValue(passwordConfirmation)
     }
     fun onEmailChanged(email: String) {
         _email.postValue(email)
@@ -179,6 +186,11 @@ class AuthViewModel(
             isValid = false
         }
 
+        if(_passwordConfirmation.value.isNullOrBlank() || _passwordConfirmation.value!! != _password.value) {
+            _passwordConfirmationError.value = "Las contraseñas no coinciden"
+            isValid = false
+        }
+
         if (_email.value.isNullOrBlank()) {
             _emailError.value = "Correo electrónico obligatorio"
             isValid = false
@@ -218,6 +230,7 @@ class AuthViewModel(
     fun clearErrors() {
         _userNameError.value = null
         _passwordError.value = null
+        _passwordConfirmationError.value = null
         _emailError.value = null
         _completeNameError.value = null
         _phoneError.value = null

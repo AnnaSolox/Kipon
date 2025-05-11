@@ -71,9 +71,9 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.navigation.compose)
 
-    //compose-viewmodel
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
+    //compose-viewmodel
+    implementation(libs.androidx.runtime.livedata)
 
     //ktor
     implementation(libs.ktor.client.core)

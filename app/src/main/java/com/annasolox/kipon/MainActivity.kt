@@ -23,12 +23,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        //Start koin
-        startKoin {
-            androidLogger()
-            androidContext(this@MainActivity)
-            modules(appModule, dataModule, viewModelModule)
-        }
         setContent {
             KiponTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->

@@ -6,6 +6,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.edit
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.annasolox.kipon.data.api.models.request.create.LoginRequest
@@ -18,23 +20,28 @@ class AuthViewModel(
     private val authRepository: AuthRepository,
     private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
-    var userName by mutableStateOf("")
-    var password by mutableStateOf("")
-    var passwordHidden by mutableStateOf(true)
-    var loginState by mutableStateOf<LoginUiState>(LoginUiState.Idle)
-        private set
+
+    private var _loginState = MutableLiveData<LoginUiState>(LoginUiState.Idle)
+    val loginState: LiveData<LoginUiState> get() = _loginState
+
 
     fun login(userName: String, password: String) {
         viewModelScope.launch {
-            loginState = LoginUiState.Loading
+            _loginState.value = LoginUiState.Loading
             try {
-                val token = authRepository.login(LoginRequest(userName, password))
-                saveToken(token)
-                loginState = LoginUiState.Success(token)
-                Log.d("AuthViewModel", "Login successfull!! Token: $token")
+                val result = authRepository.login(LoginRequest(userName, password))
+                val token = result.getOrThrow()
+
+                if(token.isNotEmpty()){
+                    _loginState.value = LoginUiState.Success(token)
+                    saveToken(token)
+                    Log.d("AuthViewModel", "Login successfull!! Token: $token")
+                } else {
+                    _loginState.value = LoginUiState.Error("Error al iniciar sesión")
+                    Log.d("AuthViewModel", "Error al iniciar sesión")
+                }
             } catch (e: Exception) {
-                loginState = LoginUiState.Error("Usuario o contraseña incorrectos")
-                Log.d("AuthViewModel", "Usuario o contraseña incorrectos")
+                Log.e("AuthViewModel", "Error al iniciar sesión: ${e.message}")
             }
         }
     }
@@ -61,10 +68,10 @@ class AuthViewModel(
                         photo
                     )
                 )
-                loginState = LoginUiState.Success("")
+                _loginState.value = LoginUiState.Success("")
 
             } catch (e: Exception) {
-                loginState = LoginUiState.Error("Error al registrar el usuario")
+                _loginState.value = LoginUiState.Error("Error al registrar el usuario")
                 Log.d("AuthViewModel", "Error al registrar el usuario: ${e.message}")
             }
         }
@@ -77,6 +84,6 @@ class AuthViewModel(
     }
 
     fun resetState() {
-        loginState = LoginUiState.Idle
+        _loginState.value = LoginUiState.Idle
     }
 }

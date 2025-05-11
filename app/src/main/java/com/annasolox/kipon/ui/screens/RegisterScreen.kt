@@ -28,19 +28,19 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.annasolox.kipon.core.navigation.LoginScreen
 import com.annasolox.kipon.ui.composables.textFields.RegisterPasswordTextField
 import com.annasolox.kipon.ui.composables.textFields.RegisterTextField
+import com.annasolox.kipon.ui.viewmodels.AuthViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun RegisterScreen(navController: NavController) {
+fun RegisterScreen(authViewModel: AuthViewModel = koinViewModel()) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var completeName by remember { mutableStateOf("") }
-    var telefono by remember { mutableStateOf("") }
-    var direccion by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf("") }
+    var adress by remember { mutableStateOf("") }
     var passwordConfirmation by remember { mutableStateOf("") }
 
     val diagonalGradient = Brush.linearGradient(
@@ -102,16 +102,26 @@ fun RegisterScreen(navController: NavController) {
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterTextField(telefono, "Phone number") { telefono = it }
+                RegisterTextField(phoneNumber, "Phone number") { phoneNumber = it }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterTextField(direccion, "Address") { direccion = it }
+                RegisterTextField(adress, "Address") { adress = it }
 
                 Spacer(Modifier.size(40.dp))
 
                 Button(
-                    {},
+                    {
+                        authViewModel.register(
+                            userName = username,
+                            password = password,
+                            email = email,
+                            completeName = completeName,
+                            phone = phoneNumber,
+                            address = adress,
+                            photo = null,
+                        )
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.tertiary
                     )
@@ -128,10 +138,11 @@ fun RegisterScreen(navController: NavController) {
                         text = "Inicia sesión",
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Black,
-                        modifier = Modifier.clickable{ navController.navigate(LoginScreen) }
-                    )
+                        modifier = Modifier.clickable {})
                 }
             }
         }
     }
 }
+
+

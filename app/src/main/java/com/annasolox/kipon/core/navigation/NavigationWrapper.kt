@@ -13,11 +13,11 @@ fun NavigationWrapper() {
 
     NavHost(navController = navController, startDestination = LoginScreen){
         composable<LoginScreen> {
-            LoginScreen(navController)
+            LoginScreen()
         }
 
         composable<RegisterScreen> {
-            RegisterScreen(navController)
+            RegisterScreen()
         }
     }
 }

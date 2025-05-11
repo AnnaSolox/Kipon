@@ -46,9 +46,9 @@ ktor-client-negotiation = { module = "io.ktor:ktor-client-content-negotiation", 
 kotlin-ktor-serialization = {module = "io.ktor:ktor-serialization-kotlinx-json", version.ref="ktor"}
 
 #koin (ID)
-koin-bom = { group = "io-insert-koin", name = "koin-bom", version.ref = "koin"}
-koin-core = { group = "io-insert-koin", name = "koin-core"}
-koin-android = { group = "io-insert-koin", name = "koin-android"}
+koin-bom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koin"}
+koin-core = { group = "io.insert-koin", name = "koin-core"}
+koin-android = { group = "io.insert-koin", name = "koin-android"}
 koin-coroutines = { group = "io.insert-koin", name = "koin-core-coroutines"}
 koin-compose = { group = "io.insert-koin", name = "koin-compose"}
 koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmodel"}

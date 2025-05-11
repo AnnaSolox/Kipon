@@ -5,11 +5,12 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
+@Serializable
 data class UserCreate(
     @SerialName("nombre")
-    val name: String,
-    val password: String,
-    val email: String,
+    var name: String,
+    var password: String,
+    var email: String,
     @SerialName("fechaRegistro")
     @Serializable(with = LocalDateSerializer::class)
     val registerDate: LocalDate,

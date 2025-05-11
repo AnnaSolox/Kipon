@@ -20,10 +20,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,15 +32,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.annasolox.kipon.R
-import com.annasolox.kipon.core.navigation.RegisterScreen
+import com.annasolox.kipon.ui.viewmodels.AuthViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun LoginScreen(navController: NavController) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordHidden by remember { mutableStateOf(true) }
+fun LoginScreen(authViewModel: AuthViewModel = koinViewModel()) {
+    var username = authViewModel.userName
+    var password = authViewModel.password
+    var passwordHidden = authViewModel.passwordHidden
 
     val diagonalGradient = Brush.linearGradient(
         colors = listOf(
@@ -84,7 +80,7 @@ fun LoginScreen(navController: NavController) {
             {
                 OutlinedTextField(
                     value = username,
-                    onValueChange = { username = it },
+                    onValueChange = { authViewModel.userName = it },
                     singleLine = true,
                     label = { Text(text = "Username") },
                     shape = RoundedCornerShape(100f)
@@ -94,7 +90,7 @@ fun LoginScreen(navController: NavController) {
 
                 OutlinedTextField(
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = { authViewModel.password = it },
                     label = { Text(text = "Password") },
                     singleLine = true,
                     shape = RoundedCornerShape(100f),
@@ -110,14 +106,13 @@ fun LoginScreen(navController: NavController) {
                     }
                 )
 
-                Spacer(Modifier.size(12.dp))
-
-                Text(text = "¿Has olvidado la contraseña?")
+                //Spacer(Modifier.size(12.dp))
+                //Text(text = "¿Has olvidado la contraseña?")
 
                 Spacer(Modifier.size(60.dp))
 
                 Button(
-                    {},
+                    { authViewModel.login(username, password) },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.tertiary
                     )
@@ -135,9 +130,7 @@ fun LoginScreen(navController: NavController) {
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Black,
                         modifier = Modifier.clickable {
-                            navController.navigate(
-                                RegisterScreen
-                            )
+
                         }
                     )
                 }

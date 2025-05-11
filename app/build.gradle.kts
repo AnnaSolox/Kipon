@@ -19,13 +19,23 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures{
+        buildConfig = true
+    }
+
     buildTypes {
+        debug {
+            buildConfigField("String", "HOST_URL",  "\"10.0.2.2\"")
+            buildConfigField("int", "HOST_PORT", "8080")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "HOST_URL",  "\"10.0.2.2\"")
+            buildConfigField("int", "HOST_PORT", "8080")
         }
     }
     compileOptions {
@@ -73,13 +83,13 @@ dependencies {
     implementation(libs.kotlin.ktor.serialization)
 
     //koin
-    /*implementation(platform(libs.koin.bom))
+    implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.koin.coroutines)
     implementation(libs.koin.compose)
     implementation(libs.koin.compose.viewmodel)
     implementation(libs.koin.ktor)
-    implementation(libs.koin.ktor.logger)*/
+    implementation(libs.koin.ktor.logger)
 
 }

@@ -21,18 +21,22 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.annasolox.kipon.core.navigation.LoginScreen
+import com.annasolox.kipon.ui.composables.backgrounds.AuthBackground
 import com.annasolox.kipon.ui.composables.textFields.RegisterPasswordTextField
 import com.annasolox.kipon.ui.composables.textFields.RegisterTextField
 import com.annasolox.kipon.ui.viewmodels.AuthViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun RegisterScreen(authViewModel: AuthViewModel = koinViewModel()) {
+fun RegisterScreen(
+    navController: NavController,
+    authViewModel: AuthViewModel = koinViewModel()
+) {
     val username by authViewModel.userName.observeAsState("")
     val usernameError by authViewModel.userNameError.observeAsState()
     val password by authViewModel.password.observeAsState("")
@@ -48,36 +52,22 @@ fun RegisterScreen(authViewModel: AuthViewModel = koinViewModel()) {
     val passwordConfirmation by authViewModel.passwordConfirmation.observeAsState("")
     val passwordConfirmationError by authViewModel.passwordConfirmationError.observeAsState("")
 
-    val diagonalGradient = Brush.linearGradient(
-        colors = listOf(
-            Color.White,
-            MaterialTheme.colorScheme.primary,
-            MaterialTheme.colorScheme.tertiary
-        ),
-        start = Offset(150f, 150f),
-        end = Offset(2000f, 2000f)
-    )
-
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(diagonalGradient)
-    ) {
-
+    AuthBackground {
         Box(
             modifier = Modifier
-                .clip(
-                    shape = RoundedCornerShape(
-                        topStart = 16.dp,
-                        topEnd = 16.dp,
-                        bottomStart = 0.dp,
-                        bottomEnd = 0.dp
-                    )
-                )
-                .align(Alignment.BottomCenter)
+                .fillMaxSize()
         ) {
             Column(
                 modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .clip(
+                        shape = RoundedCornerShape(
+                            topStart = 16.dp,
+                            topEnd = 16.dp,
+                            bottomStart = 0.dp,
+                            bottomEnd = 0.dp
+                        )
+                    )
                     .background(Color.White)
                     .width(380.dp)
                     .padding(start = 16.dp, end = 16.dp, top = 42.dp, bottom = 75.dp),
@@ -132,7 +122,9 @@ fun RegisterScreen(authViewModel: AuthViewModel = koinViewModel()) {
                         text = "Inicia sesión",
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Black,
-                        modifier = Modifier.clickable {})
+                        modifier = Modifier.clickable {
+                            navController.navigate(LoginScreen)
+                        })
                 }
             }
         }

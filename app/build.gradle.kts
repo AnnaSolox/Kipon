@@ -74,6 +74,8 @@ dependencies {
 
     //compose-viewmodel
     implementation(libs.androidx.runtime.livedata)
+    //compose-constraintlayout
+    implementation(libs.androidx.constraintlayout.compose)
 
     //ktor
     implementation(libs.ktor.client.core)

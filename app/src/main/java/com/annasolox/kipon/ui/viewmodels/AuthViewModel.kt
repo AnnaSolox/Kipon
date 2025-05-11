@@ -2,9 +2,6 @@ package com.annasolox.kipon.ui.viewmodels
 
 import android.content.SharedPreferences
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -21,15 +18,66 @@ class AuthViewModel(
     private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
+    private var _userName = MutableLiveData<String>()
+    val userName: LiveData<String> get() = _userName
+    private val _userNameError = MutableLiveData<String?>(null)
+    val userNameError: LiveData<String?> get() = _userNameError
+    private var _password = MutableLiveData<String>()
+    val password: LiveData<String> get() = _password
+    private var _passwordError = MutableLiveData<String?>(null)
+    val passwordError: LiveData<String?> get() = _passwordError
+    private var _email = MutableLiveData<String>()
+    val email: LiveData<String> get() = _email
+    private var _emailError = MutableLiveData<String?>(null)
+    val emailError: LiveData<String?> get() = _emailError
+    private var _completeName = MutableLiveData<String>()
+    val completeName: LiveData<String> get() = _completeName
+    private var _completeNameError = MutableLiveData<String?>(null)
+    val completeNameError: LiveData<String?> get() = _completeNameError
+    private var _phone = MutableLiveData<String>()
+    val phone: LiveData<String> get() = _phone
+    private var _phoneError = MutableLiveData<String?>(null)
+    val phoneError: LiveData<String?> get() = _phoneError
+    private var _address = MutableLiveData<String>()
+    val address: LiveData<String> get() = _address
+    private var _addressError = MutableLiveData<String?>(null)
+    val addressError: LiveData<String?> get() = _addressError
+    private var _photo = MutableLiveData<String>()
+    val photo: LiveData<String> get() = _photo
+    private var _photoError = MutableLiveData<String?>(null)
+    val photoError: LiveData<String?> get() = _photoError
     private var _loginState = MutableLiveData<LoginUiState>(LoginUiState.Idle)
     val loginState: LiveData<LoginUiState> get() = _loginState
 
+    fun onUserNameChanged(userName: String) {
+        _userName.postValue(userName)
+    }
+    fun onPasswordChanged(password: String) {
+        _password.postValue(password)
+    }
+    fun onEmailChanged(email: String) {
+        _email.postValue(email)
+    }
+    fun onCompleteNameChanged(completeName: String) {
+        _completeName.postValue(completeName)
+    }
+    fun onPhoneChanged(phone: String) {
+        _phone.postValue(phone)
+    }
+    fun onAddressChanged(address: String) {
+        _address.postValue(address)
+    }
+    fun onPhotoChanged(photo: String) {
+        _photo.postValue(photo)
+    }
 
-    fun login(userName: String, password: String) {
+    fun login() {
         viewModelScope.launch {
             _loginState.value = LoginUiState.Loading
             try {
-                val result = authRepository.login(LoginRequest(userName, password))
+                if(!attemptLogin())return@launch
+
+                val result = authRepository.login(LoginRequest(_userName.value!!, _password.value!!))
                 val token = result.getOrThrow()
 
                 if(token.isNotEmpty()){
@@ -46,29 +94,24 @@ class AuthViewModel(
         }
     }
 
-    fun register(
-        userName: String,
-        password: String,
-        email: String,
-        completeName: String,
-        phone: String,
-        address: String,
-        photo: String? = null
-    ) {
+    fun register() {
         viewModelScope.launch {
             try {
+                if(!attemptRegister()) return@launch
+
                 authRepository.register(
                     UserMapper.toUserCreate(
-                        userName,
-                        password,
-                        email,
-                        completeName,
-                        phone,
-                        address,
-                        photo
+                        _userName.value!!,
+                        _password.value!!,
+                        _email.value!!,
+                        _completeName.value!!,
+                        _phone.value!!,
+                        _address.value!!,
+                        _photo.value
                     )
                 )
                 _loginState.value = LoginUiState.Success("")
+                clearErrors()
 
             } catch (e: Exception) {
                 _loginState.value = LoginUiState.Error("Error al registrar el usuario")
@@ -85,5 +128,99 @@ class AuthViewModel(
 
     fun resetState() {
         _loginState.value = LoginUiState.Idle
+    }
+
+    fun attemptLogin(): Boolean {
+        clearErrors()
+        var isValid = true
+
+        if (_userName.value.isNullOrBlank()) {
+            _userNameError.value = "Nombre de usuario obligatorio"
+            isValid = false
+        } else if (_userName.value!!.length > 50) {
+            _userNameError.value = "Debe tener menos de 50 caracteres"
+            isValid = false
+        }
+
+        if (_password.value.isNullOrBlank()) {
+            _passwordError.value = "Contraseña obligatoria"
+            isValid = false
+        } else if (_password.value!!.length < 8) {
+            _passwordError.value = "Debe tener al menos 8 caracteres"
+            isValid = false
+        } else if (_password.value!!.length > 50) {
+            _passwordError.value = "Debe tener menos de 50 caracteres"
+            isValid = false
+        }
+
+        return isValid
+    }
+
+    fun attemptRegister(): Boolean{
+        clearErrors()
+        var isValid = true
+
+        if (_userName.value.isNullOrBlank()) {
+            _userNameError.value = "Nombre de usuario obligatorio"
+            isValid = false
+        } else if (_userName.value!!.length > 50) {
+            _userNameError.value = "Debe tener menos de 50 caracteres"
+            isValid = false
+        }
+
+        if (_password.value.isNullOrBlank()) {
+            _passwordError.value = "Contraseña obligatoria"
+            isValid = false
+        } else if (_password.value!!.length < 8) {
+            _passwordError.value = "Debe tener al menos 8 caracteres"
+            isValid = false
+        } else if (_password.value!!.length > 50) {
+            _passwordError.value = "Debe tener menos de 50 caracteres"
+            isValid = false
+        }
+
+        if (_email.value.isNullOrBlank()) {
+            _emailError.value = "Correo electrónico obligatorio"
+            isValid = false
+        } else if (!_email.value!!.contains("@")) {
+            _emailError.value = "Correo electrónico no válido"
+            isValid = false
+        }
+
+        if (_completeName.value.isNullOrBlank()) {
+            _completeNameError.value = "Nombre completo obligatorio"
+            isValid = false
+        } else if (_completeName.value!!.length > 100) {
+            _completeNameError.value = "Debe tener menos de 100 caracteres"
+            isValid = false
+        }
+
+        if (_phone.value.isNullOrBlank()) {
+            _phoneError.value = "Teléfono obligatorio"
+            isValid = false
+
+        } else if (!_phone.value!!.matches(Regex("[0-9]+")) || _phone.value!!.length != 9) {
+            _phoneError.value = "Teléfono no válido"
+            isValid = false
+        }
+
+        if (_address.value.isNullOrBlank()) {
+            _addressError.value = "Dirección obligatoria"
+            isValid = false
+        } else if (_address.value!!.length > 50) {
+            _addressError.value = "Debe tener menos de 50 caracteres"
+            isValid = false
+        }
+
+        return isValid
+    }
+
+    fun clearErrors() {
+        _userNameError.value = null
+        _passwordError.value = null
+        _emailError.value = null
+        _completeNameError.value = null
+        _phoneError.value = null
+        _addressError.value = null
     }
 }

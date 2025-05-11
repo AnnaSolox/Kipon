@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -35,12 +36,18 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun RegisterScreen(authViewModel: AuthViewModel = koinViewModel()) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var completeName by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var adress by remember { mutableStateOf("") }
+    val username by authViewModel.userName.observeAsState("")
+    val usernameError by authViewModel.userNameError.observeAsState()
+    val password by authViewModel.password.observeAsState("")
+    val passwordError by authViewModel.passwordError.observeAsState()
+    val email by authViewModel.email.observeAsState("")
+    val emailError by authViewModel.emailError.observeAsState()
+    val completeName by authViewModel.completeName.observeAsState("")
+    val completeNameError by authViewModel.completeNameError.observeAsState()
+    val phoneNumber by authViewModel.phone.observeAsState("")
+    val phoneNumberError by authViewModel.phoneError.observeAsState()
+    val adress by authViewModel.address.observeAsState("")
+    val addressError by authViewModel.addressError.observeAsState()
     var passwordConfirmation by remember { mutableStateOf("") }
 
     val diagonalGradient = Brush.linearGradient(
@@ -79,48 +86,37 @@ fun RegisterScreen(authViewModel: AuthViewModel = koinViewModel()) {
                 horizontalAlignment = Alignment.CenterHorizontally,
             )
             {
-                RegisterTextField(username, "Username") { username = it }
+                RegisterTextField(username, "Username", usernameError) { authViewModel.onUserNameChanged(it) }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterPasswordTextField(password, "Password") { password = it }
+                RegisterPasswordTextField(password, "Password", passwordError) { authViewModel.onPasswordChanged(it) }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterPasswordTextField(
-                    passwordConfirmation,
-                    "Password confirmation"
-                ) { passwordConfirmation = it }
+                RegisterPasswordTextField(passwordConfirmation,"Password confirmation", passwordError) { passwordConfirmation = it }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterTextField(email, "Email") { email = it }
+                RegisterTextField(email, "Email", emailError) { authViewModel.onEmailChanged(it) }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterTextField(completeName, "Complete name") { completeName = it }
+                RegisterTextField(completeName, "Complete name", completeNameError) { authViewModel.onCompleteNameChanged(it) }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterTextField(phoneNumber, "Phone number") { phoneNumber = it }
+                RegisterTextField(phoneNumber, "Phone number", phoneNumberError) { authViewModel.onPhoneChanged(it) }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterTextField(adress, "Address") { adress = it }
+                RegisterTextField(adress, "Address", addressError) { authViewModel.onAddressChanged(it) }
 
                 Spacer(Modifier.size(40.dp))
 
                 Button(
                     {
-                        authViewModel.register(
-                            userName = username,
-                            password = password,
-                            email = email,
-                            completeName = completeName,
-                            phone = phoneNumber,
-                            address = adress,
-                            photo = null,
-                        )
+                        authViewModel.register()
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.tertiary

@@ -11,19 +11,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,22 +27,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.annasolox.kipon.R
+import com.annasolox.kipon.ui.composables.textFields.LoginPasswordTextField
+import com.annasolox.kipon.ui.composables.textFields.LoginUsernameTextField
 import com.annasolox.kipon.ui.viewmodels.AuthViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LoginScreen(authViewModel: AuthViewModel = koinViewModel()) {
-    var username by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("")}
+    val username by authViewModel.userName.observeAsState("")
+    val usernameError by authViewModel.userNameError.observeAsState()
+    val password by authViewModel.password.observeAsState("")
+    val passwordError by authViewModel.passwordError.observeAsState()
     var passwordHidden by rememberSaveable { mutableStateOf(true) }
     val state = authViewModel.loginState.observeAsState()
+
 
     val diagonalGradient = Brush.linearGradient(
         colors = listOf(
@@ -85,33 +80,11 @@ fun LoginScreen(authViewModel: AuthViewModel = koinViewModel()) {
                 horizontalAlignment = Alignment.CenterHorizontally,
             )
             {
-                OutlinedTextField(
-                    value = username,
-                    onValueChange = { username = it },
-                    singleLine = true,
-                    label = { Text(text = "Username") },
-                    shape = RoundedCornerShape(100f)
-                )
+                LoginUsernameTextField(username, usernameError){authViewModel.onUserNameChanged(it)}
 
                 Spacer(Modifier.size(12.dp))
 
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text(text = "Password") },
-                    singleLine = true,
-                    shape = RoundedCornerShape(100f),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    visualTransformation = if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
-                    trailingIcon = {
-                        IconButton({ passwordHidden = !passwordHidden }) {
-                            Icon(
-                                painter = painterResource(if (passwordHidden) R.drawable.visibility_on else R.drawable.visibility_off),
-                                contentDescription = "Visibility icon"
-                            )
-                        }
-                    }
-                )
+                LoginPasswordTextField(password, passwordError) { authViewModel.onPasswordChanged(it) }
 
                 //Spacer(Modifier.size(12.dp))
                 //Text(text = "¿Has olvidado la contraseña?")
@@ -119,7 +92,7 @@ fun LoginScreen(authViewModel: AuthViewModel = koinViewModel()) {
                 Spacer(Modifier.size(60.dp))
 
                 Button(
-                    { authViewModel.login(username, password) },
+                    { authViewModel.login() },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.tertiary
                     )

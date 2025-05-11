@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.annasolox.kipon.core.navigation.LoginNavigationEvent
 import com.annasolox.kipon.data.api.models.request.create.LoginRequest
 import com.annasolox.kipon.data.api.utils.mappers.UserMapper
 import com.annasolox.kipon.data.repository.AuthRepository
@@ -47,11 +48,13 @@ class AuthViewModel(
     private var _addressError = MutableLiveData<String?>(null)
     val addressError: LiveData<String?> get() = _addressError
     private var _photo = MutableLiveData<String>()
-    val photo: LiveData<String> get() = _photo
-    private var _photoError = MutableLiveData<String?>(null)
-    val photoError: LiveData<String?> get() = _photoError
+
     private var _loginState = MutableLiveData<LoginUiState>(LoginUiState.Idle)
     val loginState: LiveData<LoginUiState> get() = _loginState
+
+    //Navigation events
+    private val _navigationEvent = MutableLiveData<LoginNavigationEvent?>()
+    val navigationEvent: LiveData<LoginNavigationEvent?> get() = _navigationEvent
 
     fun onUserNameChanged(userName: String) {
         _userName.postValue(userName)
@@ -74,9 +77,6 @@ class AuthViewModel(
     fun onAddressChanged(address: String) {
         _address.postValue(address)
     }
-    fun onPhotoChanged(photo: String) {
-        _photo.postValue(photo)
-    }
 
     fun login() {
         viewModelScope.launch {
@@ -87,11 +87,15 @@ class AuthViewModel(
                 val result = authRepository.login(LoginRequest(_userName.value!!, _password.value!!))
                 val token = result.getOrThrow()
 
-                if(token.isNotEmpty()){
+                Log.d("AuthViewModel", "Token: $token")
+
+                if(token != "Nombre de usuario o contraseña incorrectos" && token.isNotEmpty()){
                     _loginState.value = LoginUiState.Success(token)
                     saveToken(token)
-                    Log.d("AuthViewModel", "Login successfull!! Token: $token")
+                    _navigationEvent.value = LoginNavigationEvent.NavigateToHome
+                    Log.d("AuthViewModel", "Login successfull!")
                 } else {
+                    clearToken()
                     _loginState.value = LoginUiState.Error("Error al iniciar sesión")
                     Log.d("AuthViewModel", "Error al iniciar sesión")
                 }
@@ -235,5 +239,13 @@ class AuthViewModel(
         _completeNameError.value = null
         _phoneError.value = null
         _addressError.value = null
+    }
+
+    fun clearNavigationEvent() {
+        _navigationEvent.value = null
+    }
+
+    fun clearToken() {
+        sharedPreferences.edit { remove("auth_token") }
     }
 }

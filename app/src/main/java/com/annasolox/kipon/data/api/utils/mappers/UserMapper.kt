@@ -2,6 +2,9 @@ package com.annasolox.kipon.data.api.utils.mappers
 
 import com.annasolox.kipon.data.api.models.request.create.ProfileCreate
 import com.annasolox.kipon.data.api.models.request.create.UserCreate
+import com.annasolox.kipon.data.api.models.response.UserResponse
+import com.annasolox.kipon.ui.models.AccountOverview
+import com.annasolox.kipon.ui.models.UserHomeScreen
 import java.time.LocalDate
 
 object UserMapper {
@@ -28,4 +31,15 @@ object UserMapper {
             registerDate = LocalDate.now(),
         )
     }
+
+    /*fun toUserHomeScreen(
+        userResponse: UserResponse
+    ): UserHomeScreen {
+        return UserHomeScreen(
+            userName = userResponse.name,
+            accounts = userResponse.accountRole.map { account ->
+                AccountMapper.toAccountOverview(account)
+            }
+        )
+    }*/
 }

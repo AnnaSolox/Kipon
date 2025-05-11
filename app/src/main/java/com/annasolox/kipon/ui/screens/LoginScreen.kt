@@ -17,6 +17,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -30,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.annasolox.kipon.R
+import com.annasolox.kipon.core.navigation.LoginNavigationEvent.*
+import com.annasolox.kipon.core.navigation.HomeScreen
 import com.annasolox.kipon.core.navigation.LoginScreen
 import com.annasolox.kipon.core.navigation.RegisterScreen
 import com.annasolox.kipon.ui.composables.backgrounds.AuthBackground
@@ -46,7 +49,22 @@ fun LoginScreen(
     val usernameError by authViewModel.userNameError.observeAsState()
     val password by authViewModel.password.observeAsState("")
     val passwordError by authViewModel.passwordError.observeAsState()
-    val state = authViewModel.loginState.observeAsState()
+    val navEvent by authViewModel.navigationEvent.observeAsState()
+
+    LaunchedEffect(navEvent) {
+        when(navEvent) {
+            NavigateToHome -> {
+                navController.navigate(HomeScreen) {
+                    popUpTo(LoginScreen) { inclusive = true }
+                    launchSingleTop = true
+                }
+                authViewModel.clearNavigationEvent()
+            }
+
+            null -> {}
+
+        }
+    }
 
     AuthBackground {
         ConstraintLayout(Modifier.fillMaxSize()) {
@@ -112,7 +130,7 @@ fun LoginScreen(
                             containerColor = MaterialTheme.colorScheme.tertiary
                         )
                     ) {
-                        Text(text = "Iniciar sesión")
+                        Text(text = "Login")
                     }
 
                     Spacer(Modifier.size(12.dp))

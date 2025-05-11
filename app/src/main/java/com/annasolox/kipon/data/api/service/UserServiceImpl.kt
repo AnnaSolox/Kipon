@@ -15,7 +15,7 @@ class UserServiceImpl(private val client: HttpClient): UserService {
     }
 
     override suspend fun fetchUserByUsername(username: String): UserResponse {
-        return client.get("/usuarios/{username}") {
+        return client.get("/usuarios/nombre/{username}") {
             parameter("username", username)
         }.body()
     }

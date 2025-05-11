@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 data class Saving(
     val id: Long,
-    val user: User,
+    val user: UserProfileScreen,
     val amount: Double,
     val date: LocalDate
 )

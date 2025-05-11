@@ -1,6 +1,6 @@
 package com.annasolox.kipon.ui.models
 
-data class User(
+data class UserProfileScreen(
     val id: Long,
     var name: String,
     var email: String,

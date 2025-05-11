@@ -9,6 +9,7 @@ import com.annasolox.kipon.data.api.service.UserServiceImpl
 import com.annasolox.kipon.data.repository.AccountRepository
 import com.annasolox.kipon.data.repository.AuthRepository
 import com.annasolox.kipon.data.repository.UserRepository
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 val dataModule = module {
@@ -17,8 +18,7 @@ val dataModule = module {
     single<UserService> { UserServiceImpl(get()) }
     single<AccountService> { AccountServiceImpl(get()) }
     //repositories
-    single { AuthRepository(get()) }
-    single { UserRepository(get()) }
-    single { AccountRepository(get()) }
-
+    factoryOf(::AuthRepository)
+    factoryOf(::UserRepository)
+    factoryOf(::AccountRepository)
 }

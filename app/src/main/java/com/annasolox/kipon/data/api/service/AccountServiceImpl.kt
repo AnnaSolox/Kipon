@@ -9,11 +9,11 @@ import io.ktor.client.request.parameter
 class AccountServiceImpl(private val client: HttpClient): AccountService {
 
     override suspend fun fecthAccounts(): List<AccountResponse> {
-        return client.get("/huchas").body()
+        return client.get("huchas").body()
     }
 
     override suspend fun fechtAccoutnById(id: Long): AccountResponse {
-        return client.get("/huchas/{id}") {
+        return client.get("huchas/{id}") {
             parameter("id", id)
         }.body()
     }

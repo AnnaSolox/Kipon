@@ -17,6 +17,6 @@ fun HomeScreen(userViewModel: UserViewModel = koinViewModel()) {
     val user by userViewModel.user.observeAsState(null)
 
     Box(Modifier.fillMaxSize().background(Color.Gray)){
-        Text("${user?.name} ?: Nombre vacío ")
+        Text(user?.name ?: "Nombre vacío")
     }
 }

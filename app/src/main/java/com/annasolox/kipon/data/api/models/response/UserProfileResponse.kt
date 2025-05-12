@@ -11,5 +11,7 @@ data class UserProfileResponse(
     @SerialName("telefono")
     val telephone: String,
     @SerialName("direccion")
-    val address: String
+    val address: String,
+    @SerialName("foto_perfil")
+    val photo: String
 )

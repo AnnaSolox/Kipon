@@ -14,9 +14,9 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(userViewModel: UserViewModel = koinViewModel()) {
-    val user by userViewModel.user.observeAsState(null)
+    val user by userViewModel.userHome.observeAsState(null)
 
     Box(Modifier.fillMaxSize().background(Color.Gray)){
-        Text(user?.name ?: "Nombre vacío")
+        Text(user?.userName ?: "Nombre vacío")
     }
 }

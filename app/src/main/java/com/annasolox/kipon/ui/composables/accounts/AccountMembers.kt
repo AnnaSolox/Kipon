@@ -10,14 +10,14 @@ import com.annasolox.kipon.R
 import com.annasolox.kipon.ui.composables.images.ImageThumbnail
 
 @Composable
-fun AccountMembers(modifier: Modifier, users: Int){
+fun AccountMembers(modifier: Modifier, users: Int, imageUrl: String){
     Row {
         for (i in 0 until users) {
             ImageThumbnail(
+                imageUrl = imageUrl,
                 modifier = modifier
                     .zIndex(i.toFloat())
                     .offset(x = (-i * 25).dp),
-                R.drawable.girl_photo
             )
         }
     }

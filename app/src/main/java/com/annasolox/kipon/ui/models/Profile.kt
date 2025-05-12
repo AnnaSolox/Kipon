@@ -5,5 +5,5 @@ data class Profile(
     val completeName: String,
     var telephone: String,
     var address: String,
-    var photo: String
+    var photo: String?
 )

@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun AccountProgressBar(currentMoney: Int, moneyGoal: Int) {
+fun AccountProgressBar(currentMoney: Double, moneyGoal: Double) {
     LinearProgressIndicator(
         modifier = Modifier
             .fillMaxWidth()

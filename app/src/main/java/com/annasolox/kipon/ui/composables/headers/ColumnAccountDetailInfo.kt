@@ -12,9 +12,9 @@ import androidx.compose.ui.unit.dp
 import com.annasolox.kipon.ui.composables.accounts.AccountMembers
 
 @Composable
-fun ColumnAccountDetailInfo(members: Int, title: String, date: String) {
+fun ColumnAccountDetailInfo(members: Int, title: String, date: String, imageUrl: String) {
 
-    AccountMembers(Modifier.size(50.dp), members)
+    AccountMembers(Modifier.size(50.dp), members, imageUrl)
     Spacer(Modifier.size(8.dp))
     Text(
         style = MaterialTheme.typography.titleLarge,

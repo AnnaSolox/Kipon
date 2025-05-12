@@ -17,10 +17,20 @@ import androidx.compose.ui.unit.dp
 import com.annasolox.kipon.ui.composables.images.ImageThumbnail
 
 @Composable
-fun Contribution(imageResource: Int) {
-    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically) {
-        ImageThumbnail(Modifier.size(55.dp), imageResource)
+fun Contribution(
+    imageUrl: String,
+    userName: String = "annaSoler",
+    amount: String = "+500€",
+    date: String = "24/04/2025",
+    totalAmount: String = "6000€"
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp, horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ImageThumbnail(Modifier.size(55.dp), imageUrl = imageUrl)
 
         Spacer(Modifier.size(20.dp))
 
@@ -29,16 +39,16 @@ fun Contribution(imageResource: Int) {
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(style = MaterialTheme.typography.bodyMedium, text = "Clara Moreno García")
-                Text(style = MaterialTheme.typography.titleSmall, text = "+500€")
+                Text(style = MaterialTheme.typography.bodyMedium, text = userName)
+                Text(style = MaterialTheme.typography.titleSmall, text = amount)
             }
 
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(style = MaterialTheme.typography.bodySmall, text = "24/04/2025")
-                Text(style = MaterialTheme.typography.bodySmall, text = "6000€")
+                Text(style = MaterialTheme.typography.bodySmall, text = date)
+                Text(style = MaterialTheme.typography.bodySmall, text = totalAmount)
             }
         }
     }

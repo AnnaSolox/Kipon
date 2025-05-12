@@ -69,13 +69,16 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.kotlinx.serialization.json)
+
+    //compose-navigation
     implementation(libs.androidx.navigation.compose)
-
-
     //compose-viewmodel
     implementation(libs.androidx.runtime.livedata)
     //compose-constraintlayout
     implementation(libs.androidx.constraintlayout.compose)
+
+    //material3-icons-extended
+    implementation(libs.androidx.material.icons.extended)
 
     //ktor
     implementation(libs.ktor.client.core)
@@ -93,5 +96,9 @@ dependencies {
     implementation(libs.koin.compose.viewmodel)
     implementation(libs.koin.ktor)
     implementation(libs.koin.ktor.logger)
+
+    //coil
+    implementation(libs.coil.compose)
+
 
 }

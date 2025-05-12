@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.annasolox.kipon.ui.screens.BottomNavScreen
 import com.annasolox.kipon.ui.screens.HomeScreen
 import com.annasolox.kipon.ui.screens.LoginScreen
 import com.annasolox.kipon.ui.screens.RegisterScreen
@@ -23,6 +24,10 @@ fun NavigationWrapper() {
 
         composable<HomeScreen> {
             HomeScreen()
+        }
+
+        composable<BottomNavscreen>{
+            BottomNavScreen()
         }
     }
 }

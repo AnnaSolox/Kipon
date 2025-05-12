@@ -35,7 +35,8 @@ import com.annasolox.kipon.ui.composables.headers.ImageHeader
 fun AccountDetailScreen(
     modifier: Modifier = Modifier,
     maxSize: Dp = 300.dp,
-    minSize: Dp = 100.dp
+    minSize: Dp = 100.dp,
+    imageUrl: String
 ) {
     var currentBoxSize by remember { mutableStateOf(maxSize) }
     var infoImageElementsAlpha by remember { mutableFloatStateOf(1f) }
@@ -65,7 +66,7 @@ fun AccountDetailScreen(
 
     Box(Modifier.nestedScroll(nestedScrollConnection)) {
 
-        LazyAccountContributions(currentBoxSize, R.drawable.girl_photo)
+        LazyAccountContributions(currentBoxSize, imageUrl)
 
         Box(
             Modifier
@@ -102,7 +103,7 @@ fun AccountDetailScreen(
                         .weight(1f)
                 ) {
 
-                    ColumnAccountDetailInfo(3, "Viaje a Bali", "20/06/26")
+                    ColumnAccountDetailInfo(3, "Viaje a Bali", "20/06/26", imageUrl)
 
                 }
 

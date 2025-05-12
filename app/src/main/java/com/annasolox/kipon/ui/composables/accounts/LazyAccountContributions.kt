@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LazyAccountContributions(currentBoxSize: Dp, imageResource: Int){
+fun LazyAccountContributions(currentBoxSize: Dp, imageUrl: String){
     LazyColumn(
         Modifier
             .fillMaxWidth()
@@ -23,7 +23,7 @@ fun LazyAccountContributions(currentBoxSize: Dp, imageResource: Int){
             }
     ) {
         items(20, key = { it }) {
-            Contribution(imageResource)
+            Contribution(imageUrl)
             HorizontalDivider(Modifier.fillMaxWidth(), 1.dp, Color.Gray)
         }
     }

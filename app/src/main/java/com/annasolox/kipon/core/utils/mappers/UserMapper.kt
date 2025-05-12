@@ -39,6 +39,7 @@ object UserMapper {
     ): UserHomeScreen {
         return UserHomeScreen(
             userName = userResponse.name,
+            photoUrl = userResponse.profile.photo ?: "",
             accounts = userResponse.accountRole.map { account ->
                 AccountMapper.toAccountOverviewFromRole(account)
             }
@@ -64,7 +65,7 @@ object UserMapper {
             completeName = userProfileResponse.completeName,
             telephone = userProfileResponse.telephone,
             address = userProfileResponse.address,
-            photo = userProfileResponse.photo
+            photo = userProfileResponse.photo ?: ""
         )
     }
 }

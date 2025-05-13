@@ -48,7 +48,7 @@ fun RegisterScreen(
     val completeNameError by authViewModel.completeNameError.observeAsState()
     val phoneNumber by authViewModel.phone.observeAsState("")
     val phoneNumberError by authViewModel.phoneError.observeAsState()
-    val adress by authViewModel.address.observeAsState("")
+    val address by authViewModel.address.observeAsState("")
     val addressError by authViewModel.addressError.observeAsState()
     val passwordConfirmation by authViewModel.passwordConfirmation.observeAsState("")
     val passwordConfirmationError by authViewModel.passwordConfirmationError.observeAsState("")
@@ -99,7 +99,7 @@ fun RegisterScreen(
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterTextField(adress, "Address", addressError) { authViewModel.onAddressChanged(it) }
+                RegisterTextField(address, "Address", addressError) { authViewModel.onAddressChanged(it) }
 
                 Spacer(Modifier.size(40.dp))
 

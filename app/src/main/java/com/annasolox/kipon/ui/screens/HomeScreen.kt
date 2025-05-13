@@ -1,10 +1,14 @@
 package com.annasolox.kipon.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +24,7 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,17 +47,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.annasolox.kipon.core.navigation.AccountNavigationEvent
-import com.annasolox.kipon.core.navigation.AccountNavigationEvent.*
 import com.annasolox.kipon.core.navigation.DetailsAccountScreen
 import com.annasolox.kipon.core.navigation.HomeScreen
 import com.annasolox.kipon.ui.composables.AccountSearchBar
 import com.annasolox.kipon.ui.composables.accounts.AccountElevatedCard
 import com.annasolox.kipon.ui.composables.images.ImageThumbnail
-import com.annasolox.kipon.ui.composables.textFields.FormTextField
 import com.annasolox.kipon.ui.viewmodels.AccountViewModel
 import com.annasolox.kipon.ui.viewmodels.UserViewModel
 import kotlinx.coroutines.launch
@@ -62,8 +63,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun HomeScreen(
     navController: NavController,
-    userViewModel: UserViewModel = koinViewModel(),
-    accountViewModel: AccountViewModel = koinViewModel()
+    accountViewModel: AccountViewModel,
+    userViewModel: UserViewModel = koinViewModel()
 ) {
 
     val focusManager = LocalFocusManager.current
@@ -76,8 +77,24 @@ fun HomeScreen(
     var isSheetOpen by remember { mutableStateOf(false) }
 
 
+    LaunchedEffect(Unit) {
+        accountViewModel.clearCurrentAccount()
+    }
 
-    user?.let {
+    if (user == null) {
+        Box(
+            Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    }
+
+    AnimatedVisibility(
+        visible = user != null,
+        enter = fadeIn(tween(300))
+    ) {
+        
         Column(
             Modifier
                 .fillMaxSize()

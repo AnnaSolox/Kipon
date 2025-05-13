@@ -1,6 +1,9 @@
 package com.annasolox.kipon.ui.screens
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableFloatStateOf
@@ -25,29 +27,19 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.annasolox.kipon.R
-import com.annasolox.kipon.core.navigation.AccountNavigationEvent
-import com.annasolox.kipon.core.navigation.AccountNavigationEvent.*
-import com.annasolox.kipon.core.navigation.BottomNavscreen
-import com.annasolox.kipon.core.navigation.DetailsAccountScreen
-import com.annasolox.kipon.core.navigation.LoginNavigationEvent.NavigateToHome
-import com.annasolox.kipon.core.navigation.LoginScreen
 import com.annasolox.kipon.ui.composables.accounts.LazyAccountContributions
 import com.annasolox.kipon.ui.composables.buttons.OptionsButton
 import com.annasolox.kipon.ui.composables.headers.ColumnAccountDetailInfo
 import com.annasolox.kipon.ui.composables.headers.ImageHeader
-import com.annasolox.kipon.ui.models.LoginUiState
 import com.annasolox.kipon.ui.viewmodels.AccountViewModel
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AccountDetailScreen(
     navController: NavController,
-    accountViewModel: AccountViewModel = koinViewModel()
+    accountViewModel: AccountViewModel
 ) {
     //currentAccount
     val currentAccount by accountViewModel.currentAccount.observeAsState()
@@ -88,61 +80,80 @@ fun AccountDetailScreen(
         }
     }
 
-    currentAccount?.let{
-        Box(Modifier.nestedScroll(nestedScrollConnection)) {
-
-            LazyAccountContributions(currentBoxSize, currentAccount!!.photo ?: "")
-
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(currentBoxSize)
-                    .graphicsLayer {
-                        clip = true
-                        shape = RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomStart = 16.dp,
-                            bottomEnd = 16.dp
-                        )
-                    },
-            ) {
-                ImageHeader(
-                    height = currentBoxSize,
-                    imageResource = R.drawable.account_photo,
-                    contentImageDescription = "Account image"
-                )
-
-                Row(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(20.dp)
-                        .graphicsLayer(
-                            alpha = infoImageElementsAlpha
-                        ),
-                    verticalAlignment = Alignment.Bottom
-                ) {
-
-                    Column(
-                        Modifier
-                            .weight(1f)
-                    ) {
-
-                        ColumnAccountDetailInfo(
-                            members = currentAccount!!.userMembers,
-                            title = currentAccount!!.name,
-                            currentAccount!!.dateGoal,
-                            currentAccount!!.photo ?: ""
-                        )
-                    }
-
-                    OptionsButton()
-                }
-            }
+    if (currentAccount == null) {
+        Box(
+            Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
         }
-    } ?: run {
-        CircularProgressIndicator()
     }
 
 
+    Box(Modifier.nestedScroll(nestedScrollConnection)) {
+
+        AnimatedVisibility(
+            visible = currentAccount != null,
+            enter = fadeIn(
+                animationSpec = tween(durationMillis = 500)
+            )
+        ) {
+
+            val contributions = currentAccount!!.savings
+            LazyAccountContributions(currentBoxSize, contributions, currentAccount!!.photo ?: "")
+
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .align(Alignment.TopCenter)
+            ) {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(currentBoxSize)
+                        .graphicsLayer {
+                            clip = true
+                            shape = RoundedCornerShape(
+                                topStart = 0.dp,
+                                topEnd = 0.dp,
+                                bottomStart = 16.dp,
+                                bottomEnd = 16.dp
+                            )
+                        },
+                ) {
+                    ImageHeader(
+                        height = currentBoxSize,
+                        imageResource = R.drawable.account_photo,
+                        contentImageDescription = "Account image"
+                    )
+
+                    Row(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(20.dp)
+                            .graphicsLayer(
+                                alpha = infoImageElementsAlpha
+                            ),
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+
+                        Column(
+                            Modifier
+                                .weight(1f)
+                        ) {
+
+                            ColumnAccountDetailInfo(
+                                members = currentAccount!!.userMembers,
+                                title = currentAccount!!.name,
+                                currentAccount!!.dateGoal,
+                                currentAccount!!.photo ?: ""
+                            )
+                        }
+
+                        OptionsButton()
+                    }
+                }
+            }
+        }
+    }
 }

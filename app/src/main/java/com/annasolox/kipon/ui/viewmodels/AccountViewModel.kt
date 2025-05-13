@@ -12,6 +12,7 @@ import com.annasolox.kipon.ui.models.AccountDetails
 import com.annasolox.kipon.ui.models.LoginUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 class AccountViewModel(
@@ -28,8 +29,8 @@ class AccountViewModel(
     val photo: LiveData<String> get() = _photo
 
     //current account
-    private var _currentAccount = MutableLiveData<AccountDetails>()
-    val currentAccount: LiveData<AccountDetails> get() = _currentAccount
+    private var _currentAccount = MutableLiveData<AccountDetails?>()
+    val currentAccount: LiveData<AccountDetails?> get() = _currentAccount
 
     //Navigation events
     private val _navigationEvent = MutableLiveData<AccountNavigationEvent?>()
@@ -40,19 +41,19 @@ class AccountViewModel(
     val loadingState: LiveData<LoginUiState> get() = _loadingState
 
     fun loadCurrentAccount(id: Long) {
-        viewModelScope.launch {
-            _loadingState.value = LoginUiState.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            _loadingState.postValue(LoginUiState.Loading)
             try {
                 val accountResponse = accountRepository.getAccountById(id)
                 Log.d("AccountViewModel", "Account response: $accountResponse")
 
-                _loadingState.value = LoginUiState.Success("Account loaded successfully")
+                _loadingState.postValue(LoginUiState.Success("Account loaded successfully"))
                 val mappedAccount = AccountMapper.toDetailAccount(accountResponse)
-                _currentAccount.value = mappedAccount
+                withContext(Dispatchers.Main) { _currentAccount.value = mappedAccount  }
                 Log.d("AccountViewModel", "Current account: ${_currentAccount.value}")
 
             } catch (e: Exception) {
-                _loadingState.value = LoginUiState.Error("Error loading account")
+                _loadingState.postValue(LoginUiState.Error("Error loading account"))
                 Log.e("AccountViewModel", "Error loading account: ${e.message}")
             }
         }
@@ -60,6 +61,10 @@ class AccountViewModel(
 
     fun clearNavigationEvent() {
         _navigationEvent.value = null
+    }
+
+    fun clearCurrentAccount() {
+        _currentAccount.value = null
     }
 
 }

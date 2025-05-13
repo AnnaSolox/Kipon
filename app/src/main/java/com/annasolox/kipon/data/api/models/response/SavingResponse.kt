@@ -9,7 +9,7 @@ import java.time.LocalDate
 data class SavingResponse(
     val id: Long,
     @SerialName("usuario")
-    val user: UserResponse,
+    val user: String,
     @SerialName("cantidad")
     val amount: Double,
     @SerialName("fecha")

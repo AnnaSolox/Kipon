@@ -11,9 +11,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.annasolox.kipon.ui.models.Saving
 
 @Composable
-fun LazyAccountContributions(currentBoxSize: Dp, imageUrl: String){
+fun LazyAccountContributions(currentBoxSize: Dp, contributions: List<Saving>, imageUrl: String){
     LazyColumn(
         Modifier
             .fillMaxWidth()
@@ -22,7 +23,7 @@ fun LazyAccountContributions(currentBoxSize: Dp, imageUrl: String){
                 IntOffset(0, currentBoxSize.roundToPx())
             }
     ) {
-        items(20, key = { it }) {
+        items(contributions.size, key = { it }) {
             Contribution(imageUrl)
             HorizontalDivider(Modifier.fillMaxWidth(), 1.dp, Color.Gray)
         }

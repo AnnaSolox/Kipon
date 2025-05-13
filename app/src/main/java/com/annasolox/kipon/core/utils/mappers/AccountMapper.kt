@@ -2,12 +2,10 @@ package com.annasolox.kipon.core.utils.mappers
 
 import com.annasolox.kipon.data.api.models.response.AccountResponse
 import com.annasolox.kipon.data.api.models.response.AccountRoleResponse
+import com.annasolox.kipon.data.api.models.response.SavingResponse
 import com.annasolox.kipon.ui.models.AccountDetails
 import com.annasolox.kipon.ui.models.AccountOverview
-import com.annasolox.kipon.core.utils.mappers.UserMapper.toSimpleUserFromRoleResponse
-import com.annasolox.kipon.data.api.models.response.SavingResponse
 import com.annasolox.kipon.ui.models.Saving
-import org.koin.core.component.getScopeName
 
 object AccountMapper {
     fun toAccountOverview(
@@ -58,7 +56,7 @@ object AccountMapper {
     ): Saving {
         return Saving(
             id = savingResponse.id,
-            user = toSimpleUserFromRoleResponse(savingResponse.user),
+            user = savingResponse.user,
             date = savingResponse.date.toString(),
             amount = savingResponse.amount
         )

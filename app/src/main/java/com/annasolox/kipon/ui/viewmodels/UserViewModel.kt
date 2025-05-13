@@ -11,7 +11,9 @@ import com.annasolox.kipon.core.utils.mappers.UserMapper.toUserProfileScreenFrom
 import com.annasolox.kipon.data.repository.UserRepository
 import com.annasolox.kipon.ui.models.UserHomeScreen
 import com.annasolox.kipon.ui.models.UserProfileScreen
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class UserViewModel(
     private val userRepository: UserRepository,
@@ -27,13 +29,15 @@ class UserViewModel(
     }
 
     fun loadUser() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val username = sharedPreferences.getString("username", null)
             username?.let {
                 try {
                     val response = userRepository.getUserByUsername(it)
-                    _userHome.value = toUserHomeScreen(response)
-                    _userProfile.value = toUserProfileScreenFromUserResponse(response)
+                    withContext(Dispatchers.Main) {
+                        _userHome.value = toUserHomeScreen(response)
+                    }
+                    _userProfile.postValue(toUserProfileScreenFromUserResponse(response))
                 } catch (e: Exception) {
                     Log.e("UserViewModel", "Error loading user: ${e.message}")
                 }

@@ -8,8 +8,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.annasolox.kipon.core.navigation.LoginNavigationEvent
-import com.annasolox.kipon.data.api.models.request.create.LoginRequest
 import com.annasolox.kipon.core.utils.mappers.UserMapper
+import com.annasolox.kipon.data.api.models.request.create.LoginRequest
 import com.annasolox.kipon.data.repository.AuthRepository
 import com.annasolox.kipon.ui.models.LoginUiState
 import kotlinx.coroutines.Dispatchers
@@ -80,8 +80,8 @@ class AuthViewModel(
     }
 
     fun login() {
-        viewModelScope.launch {
-            _loginState.value = LoginUiState.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            _loginState.postValue(LoginUiState.Loading)
             try {
                 if(!attemptLogin())return@launch
 
@@ -91,14 +91,14 @@ class AuthViewModel(
                 Log.d("AuthViewModel", "Token: $token")
 
                 if(token != "Nombre de usuario o contraseña incorrectos" && token.isNotEmpty()){
-                    _loginState.value = LoginUiState.Success(token)
+                    _loginState.postValue(LoginUiState.Success(token))
                     saveToken(token)
                     saveUserName(_userName.value!!)
-                    _navigationEvent.value = LoginNavigationEvent.NavigateToHome
+                    _navigationEvent.postValue(LoginNavigationEvent.NavigateToHome)
                     Log.d("AuthViewModel", "Login successfull!")
                 } else {
                     clearToken()
-                    _loginState.value = LoginUiState.Error("Error al iniciar sesión")
+                    _loginState.postValue(LoginUiState.Error("Error al iniciar sesión"))
                     Log.d("AuthViewModel", "Error al iniciar sesión")
                 }
             } catch (e: Exception) {
@@ -108,7 +108,7 @@ class AuthViewModel(
     }
 
     fun register() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 if(!attemptRegister()) return@launch
 
@@ -123,11 +123,11 @@ class AuthViewModel(
                         _photo.value
                     )
                 )
-                _loginState.value = LoginUiState.Success("")
+                _loginState.postValue(LoginUiState.Success(""))
                 clearErrors()
 
             } catch (e: Exception) {
-                _loginState.value = LoginUiState.Error("Error al registrar el usuario")
+                _loginState.postValue(LoginUiState.Error("Error al registrar el usuario"))
                 Log.d("AuthViewModel", "Error al registrar el usuario: ${e.message}")
             }
         }
@@ -180,59 +180,59 @@ class AuthViewModel(
         var isValid = true
 
         if (_userName.value.isNullOrBlank()) {
-            _userNameError.value = "Nombre de usuario obligatorio"
+            _userNameError.postValue("Nombre de usuario obligatorio")
             isValid = false
         } else if (_userName.value!!.length > 50) {
-            _userNameError.value = "Debe tener menos de 50 caracteres"
+            _userNameError.postValue("Debe tener menos de 50 caracteres")
             isValid = false
         }
 
         if (_password.value.isNullOrBlank()) {
-            _passwordError.value = "Contraseña obligatoria"
+            _passwordError.postValue("Contraseña obligatoria")
             isValid = false
         } else if (_password.value!!.length < 8) {
-            _passwordError.value = "Debe tener al menos 8 caracteres"
+            _passwordError.postValue("Debe tener al menos 8 caracteres")
             isValid = false
         } else if (_password.value!!.length > 50) {
-            _passwordError.value = "Debe tener menos de 50 caracteres"
+            _passwordError.postValue("Debe tener menos de 50 caracteres")
             isValid = false
         }
 
         if(_passwordConfirmation.value.isNullOrBlank() || _passwordConfirmation.value!! != _password.value) {
-            _passwordConfirmationError.value = "Las contraseñas no coinciden"
+            _passwordConfirmationError.postValue("Las contraseñas no coinciden")
             isValid = false
         }
 
         if (_email.value.isNullOrBlank()) {
-            _emailError.value = "Correo electrónico obligatorio"
+            _emailError.postValue("Correo electrónico obligatorio")
             isValid = false
         } else if (!_email.value!!.contains("@")) {
-            _emailError.value = "Correo electrónico no válido"
+            _emailError.postValue("Correo electrónico no válido")
             isValid = false
         }
 
         if (_completeName.value.isNullOrBlank()) {
-            _completeNameError.value = "Nombre completo obligatorio"
+            _completeNameError.postValue("Nombre completo obligatorio")
             isValid = false
         } else if (_completeName.value!!.length > 100) {
-            _completeNameError.value = "Debe tener menos de 100 caracteres"
+            _completeNameError.postValue( "Debe tener menos de 100 caracteres")
             isValid = false
         }
 
         if (_phone.value.isNullOrBlank()) {
-            _phoneError.value = "Teléfono obligatorio"
+            _phoneError.postValue("Teléfono obligatorio")
             isValid = false
 
         } else if (!_phone.value!!.matches(Regex("[0-9]+")) || _phone.value!!.length != 9) {
-            _phoneError.value = "Teléfono no válido"
+            _phoneError.postValue("Teléfono no válido")
             isValid = false
         }
 
         if (_address.value.isNullOrBlank()) {
-            _addressError.value = "Dirección obligatoria"
+            _addressError.postValue("Dirección obligatoria")
             isValid = false
         } else if (_address.value!!.length > 50) {
-            _addressError.value = "Debe tener menos de 50 caracteres"
+            _addressError.postValue("Debe tener menos de 50 caracteres")
             isValid = false
         }
 
@@ -240,13 +240,13 @@ class AuthViewModel(
     }
 
     fun clearErrors() {
-        _userNameError.value = null
-        _passwordError.value = null
-        _passwordConfirmationError.value = null
-        _emailError.value = null
-        _completeNameError.value = null
-        _phoneError.value = null
-        _addressError.value = null
+        _userNameError.postValue(null)
+        _passwordError.postValue(null)
+        _passwordConfirmationError.postValue(null)
+        _emailError.postValue(null)
+        _completeNameError.postValue(null)
+        _phoneError.postValue(null)
+        _addressError.postValue(null)
     }
 
     fun clearNavigationEvent() {

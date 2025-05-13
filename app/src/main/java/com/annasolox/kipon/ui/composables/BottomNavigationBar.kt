@@ -11,8 +11,10 @@ import androidx.compose.material.icons.outlined.Timeline
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,7 +45,7 @@ fun BottomNavigationBar() {
             title = "Home",
             selectedIcon = Icons.Filled.Home,
             unselectedIcon = Icons.Outlined.Home,
-            hasNews = false,
+            hasNews = true,
         ),
         BottomNavigationItem(
             title = "Savings",
@@ -64,7 +66,7 @@ fun BottomNavigationBar() {
 
     NavigationBar(
         Modifier.shadow(16.dp),
-        containerColor = Color.White) {
+        containerColor = Color.White,) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedItemIndex == index,
@@ -91,7 +93,12 @@ fun BottomNavigationBar() {
                             contentDescription = item.title
                         )
                     }
-                }
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.tertiary,
+                    unselectedIconColor = MaterialTheme.colorScheme.tertiary,
+                    indicatorColor = MaterialTheme.colorScheme.tertiaryContainer,
+                )
             )
         }
     }

@@ -10,6 +10,8 @@ data class SimplifiedAccountResponse(
     val name: String,
     @SerialName("cantidadTotal")
     val currentMoney: Double,
+    @SerialName("fechaObjetivo")
+    val dateGoal: String?,
     @SerialName("objetivoAhorro")
     val moneyGoal: Double
 )

@@ -16,11 +16,13 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun AccountProgressBar(currentMoney: Double, moneyGoal: Double) {
+    val progress = if (moneyGoal > 0) (currentMoney / moneyGoal).coerceIn(0.0, 1.0).toFloat() else 0f
+
     LinearProgressIndicator(
         modifier = Modifier
             .fillMaxWidth()
             .height(10.dp),
-        progress = { .5f}
+        progress = { progress }
     )
 
     Spacer(Modifier.size(9.dp))
@@ -30,6 +32,10 @@ fun AccountProgressBar(currentMoney: Double, moneyGoal: Double) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(style = MaterialTheme.typography.bodySmall, text = "$currentMoney €")
-        Text(style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Black, text = "$moneyGoal €")
+        Text(
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Black,
+            text = "$moneyGoal €"
+        )
     }
 }

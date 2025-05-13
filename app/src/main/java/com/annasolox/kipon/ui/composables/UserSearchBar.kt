@@ -31,7 +31,8 @@ import androidx.compose.ui.unit.dp
 import com.annasolox.kipon.ui.models.AccountOverview
 
 @Composable
-fun AccountSearchBar(
+fun UserSearchBar(
+    accounts: List<AccountOverview>,
     query: String,
     onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -70,4 +71,37 @@ fun AccountSearchBar(
             }
         }
     )
+    if (expanded && query.isNotBlank()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .offset(y = with(LocalDensity.current) {
+                    textFieldSize.height.toDp()
+                })
+                .background(Color.White, RoundedCornerShape(16.dp))
+                .padding(16.dp)
+        ) {
+            LazyColumn {
+                items(accounts.size) { index ->
+                    val item = accounts[index]
+                    if (item.name.contains(query, ignoreCase = true)) {
+                        Text(
+                            text = item.name,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier
+                                .padding(8.dp)
+                        )
+                        HorizontalDivider(
+                            color = Color.LightGray,
+                            thickness = 1.dp,
+                            modifier = Modifier
+                                .padding(top = 8.dp, bottom = 8.dp)
+                                .fillMaxWidth()
+                        )
+                    }
+                }
+            }
+        }
+    }
 }

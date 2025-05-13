@@ -23,7 +23,7 @@ class UserServiceImpl(private val client: HttpClient): UserService {
             val error = response.bodyAsText()
             throw Exception("Error al obtener usuario: $error")
         }
-        Log.d("UserService","${response.bodyAsText()}")
+        Log.d("UserService", response.bodyAsText())
         return response.body()
     }
 }

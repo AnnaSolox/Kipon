@@ -36,7 +36,7 @@ fun AccountDetailScreen(
     modifier: Modifier = Modifier,
     maxSize: Dp = 300.dp,
     minSize: Dp = 100.dp,
-    imageUrl: String
+    imageUrl: String = ""
 ) {
     var currentBoxSize by remember { mutableStateOf(maxSize) }
     var infoImageElementsAlpha by remember { mutableFloatStateOf(1f) }

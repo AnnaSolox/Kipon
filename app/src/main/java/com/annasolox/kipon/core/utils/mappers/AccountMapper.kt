@@ -13,6 +13,7 @@ object AccountMapper {
             name = accountResponse.name,
             currentMoney = accountResponse.currentMoney,
             moneyGoal = accountResponse.moneyGoal,
+            dateGoal = accountResponse.goalDate.toString(),
         )
     }
 
@@ -24,7 +25,8 @@ object AccountMapper {
             id = account.id,
             name = account.name,
             currentMoney = account.currentMoney,
-            moneyGoal = account.moneyGoal
+            moneyGoal = account.moneyGoal,
+            dateGoal = account.dateGoal.toString(),
         )
     }
 }

@@ -1,6 +1,7 @@
 package com.annasolox.kipon.ui.viewmodels
 
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,23 +14,30 @@ import com.annasolox.kipon.ui.models.UserProfileScreen
 import kotlinx.coroutines.launch
 
 class UserViewModel(
-    userRepository: UserRepository,
-    sharedPreferences: SharedPreferences
-) : ViewModel(){
+    private val userRepository: UserRepository,
+    private val sharedPreferences: SharedPreferences
+) : ViewModel() {
     private val _userHome = MutableLiveData<UserHomeScreen>()
-    val userHome: LiveData<UserHomeScreen>  get() = _userHome
+    val userHome: LiveData<UserHomeScreen> get() = _userHome
     private val _userProfile = MutableLiveData<UserProfileScreen>()
     val userProfile: LiveData<UserProfileScreen> get() = _userProfile
 
     init {
+        loadUser()
+    }
+
+    fun loadUser() {
         viewModelScope.launch {
             val username = sharedPreferences.getString("username", null)
             username?.let {
-                val response = userRepository.getUserByUsername(it)
-                _userHome.value = toUserHomeScreen(response)
-                _userProfile.value = toUserProfileScreen(response)
+                try {
+                    val response = userRepository.getUserByUsername(it)
+                    _userHome.value = toUserHomeScreen(response)
+                    _userProfile.value = toUserProfileScreen(response)
+                } catch (e: Exception) {
+                    Log.e("UserViewModel", "Error loading user: ${e.message}")
+                }
             }
         }
     }
-
 }

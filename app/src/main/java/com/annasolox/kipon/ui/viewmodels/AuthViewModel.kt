@@ -12,6 +12,7 @@ import com.annasolox.kipon.data.api.models.request.create.LoginRequest
 import com.annasolox.kipon.core.utils.mappers.UserMapper
 import com.annasolox.kipon.data.repository.AuthRepository
 import com.annasolox.kipon.ui.models.LoginUiState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AuthViewModel(

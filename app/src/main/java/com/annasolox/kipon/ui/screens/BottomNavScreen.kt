@@ -8,10 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.navigation.NavController
 import com.annasolox.kipon.ui.composables.BottomNavigationBar
 
 @Composable
-fun BottomNavScreen() {
+fun BottomNavScreen(navController: NavController) {
     Surface(
         Modifier.fillMaxSize(),
         color = Color.White
@@ -19,7 +20,7 @@ fun BottomNavScreen() {
         Scaffold(
             bottomBar = { BottomNavigationBar() }
         ) { innerPadding ->
-            HomeScreen()
+            HomeScreen(navController)
         }
 
     }

@@ -13,5 +13,7 @@ data class SimplifiedAccountResponse(
     @SerialName("fechaObjetivo")
     val dateGoal: String?,
     @SerialName("objetivoAhorro")
-    val moneyGoal: Double
+    val moneyGoal: Double,
+    @SerialName("fotoHucha")
+    val photo: String?,
 )

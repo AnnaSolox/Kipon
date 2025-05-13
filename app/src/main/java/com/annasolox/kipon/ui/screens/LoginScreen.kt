@@ -32,13 +32,13 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.annasolox.kipon.R
 import com.annasolox.kipon.core.navigation.BottomNavscreen
+import com.annasolox.kipon.core.navigation.DetailsAccountScreen
 import com.annasolox.kipon.core.navigation.LoginNavigationEvent.*
-import com.annasolox.kipon.core.navigation.HomeScreen
 import com.annasolox.kipon.core.navigation.LoginScreen
 import com.annasolox.kipon.core.navigation.RegisterScreen
 import com.annasolox.kipon.ui.composables.backgrounds.AuthBackground
 import com.annasolox.kipon.ui.composables.textFields.LoginPasswordTextField
-import com.annasolox.kipon.ui.composables.textFields.LoginUsernameTextField
+import com.annasolox.kipon.ui.composables.textFields.FormTextField
 import com.annasolox.kipon.ui.viewmodels.AuthViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -108,9 +108,10 @@ fun LoginScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 )
                 {
-                    LoginUsernameTextField(
-                        username,
-                        usernameError
+                    FormTextField(
+                        username = username,
+                        error = usernameError,
+                        label = "Username"
                     ) { authViewModel.onUserNameChanged(it) }
 
                     Spacer(Modifier.size(12.dp))

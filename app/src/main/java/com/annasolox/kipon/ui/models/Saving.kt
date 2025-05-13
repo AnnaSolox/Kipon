@@ -1,10 +1,10 @@
 package com.annasolox.kipon.ui.models
 
-import java.time.LocalDate
+import com.annasolox.kipon.data.api.models.response.UserSimplified
 
 data class Saving(
     val id: Long,
-    val user: UserProfileScreen,
+    val user: UserSimplified,
     val amount: Double,
-    val date: LocalDate
+    val date: String
 )

@@ -7,14 +7,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.annasolox.kipon.R
+import com.annasolox.kipon.data.api.models.response.UserSimplified
 import com.annasolox.kipon.ui.composables.images.ImageThumbnail
 
 @Composable
-fun AccountMembers(modifier: Modifier, users: Int, imageUrl: String){
+fun AccountMembers(modifier: Modifier, users: List<UserSimplified>){
     Row {
-        for (i in 0 until users) {
+        for (i in 0 until users.size) {
             ImageThumbnail(
-                imageUrl = imageUrl,
+                imageUrl = users[i].photo,
                 modifier = modifier
                     .zIndex(i.toFloat())
                     .offset(x = (-i * 25).dp),

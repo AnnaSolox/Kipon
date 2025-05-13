@@ -4,6 +4,8 @@ import com.annasolox.kipon.data.api.models.request.create.ProfileCreate
 import com.annasolox.kipon.data.api.models.request.create.UserCreate
 import com.annasolox.kipon.data.api.models.response.UserProfileResponse
 import com.annasolox.kipon.data.api.models.response.UserResponse
+import com.annasolox.kipon.data.api.models.response.UserRolResponse
+import com.annasolox.kipon.data.api.models.response.UserSimplified
 import com.annasolox.kipon.ui.models.Profile
 import com.annasolox.kipon.ui.models.UserHomeScreen
 import com.annasolox.kipon.ui.models.UserProfileScreen
@@ -46,7 +48,7 @@ object UserMapper {
         )
     }
 
-    fun toUserProfileScreen(
+    fun toUserProfileScreenFromUserResponse(
         userResponse: UserResponse
     ): UserProfileScreen {
         return UserProfileScreen(
@@ -55,6 +57,16 @@ object UserMapper {
             email = userResponse.email,
             profile = toProfileUI(userResponse.profile)
             )
+    }
+
+    fun toSimpleUserFromRoleResponse(
+        userResponse: UserResponse
+    ): UserSimplified {
+        return UserSimplified(
+            id = userResponse.id,
+            name = userResponse.name,
+            photo = userResponse.profile.photo ?: "",
+        )
     }
 
     fun toProfileUI(

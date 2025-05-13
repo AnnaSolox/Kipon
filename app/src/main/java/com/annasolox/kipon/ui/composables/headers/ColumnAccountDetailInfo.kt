@@ -9,12 +9,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.annasolox.kipon.data.api.models.response.UserSimplified
 import com.annasolox.kipon.ui.composables.accounts.AccountMembers
 
 @Composable
-fun ColumnAccountDetailInfo(members: Int, title: String, date: String, imageUrl: String) {
+fun ColumnAccountDetailInfo(members: List<UserSimplified>, title: String, date: String, imageUrl: String) {
 
-    AccountMembers(Modifier.size(50.dp), members, imageUrl)
+    val images = members.map { it.photo }
+
+    AccountMembers(Modifier.size(50.dp),members)
     Spacer(Modifier.size(8.dp))
     Text(
         style = MaterialTheme.typography.titleLarge,

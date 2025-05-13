@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.annasolox.kipon.core.utils.mappers.UserMapper.toUserHomeScreen
-import com.annasolox.kipon.core.utils.mappers.UserMapper.toUserProfileScreen
+import com.annasolox.kipon.core.utils.mappers.UserMapper.toUserProfileScreenFromUserResponse
 import com.annasolox.kipon.data.repository.UserRepository
 import com.annasolox.kipon.ui.models.UserHomeScreen
 import com.annasolox.kipon.ui.models.UserProfileScreen
@@ -33,7 +33,7 @@ class UserViewModel(
                 try {
                     val response = userRepository.getUserByUsername(it)
                     _userHome.value = toUserHomeScreen(response)
-                    _userProfile.value = toUserProfileScreen(response)
+                    _userProfile.value = toUserProfileScreenFromUserResponse(response)
                 } catch (e: Exception) {
                     Log.e("UserViewModel", "Error loading user: ${e.message}")
                 }

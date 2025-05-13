@@ -24,6 +24,8 @@ data class AccountResponse(
     val goalDate: LocalDate,
     @SerialName("administrador")
     val admin: String,
+    @SerialName("fotoHucha")
+    val photo: String?,
     @SerialName("usuarios")
     val userMembers: List<UserRolResponse>,
     @SerialName("ahorros")

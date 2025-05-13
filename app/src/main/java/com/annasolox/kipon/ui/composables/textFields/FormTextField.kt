@@ -6,8 +6,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
 @Composable
-fun LoginUsernameTextField(
+fun FormTextField(
     username: String,
+    label: String,
     error: String?,
     onValueChange: (String) -> Unit,
 ) {
@@ -16,7 +17,7 @@ fun LoginUsernameTextField(
         onValueChange = { onValueChange(it) },
         singleLine = true,
         isError = error != null,
-        label = { Text(text = "Username") },
+        label = { Text(text = label) },
         shape = RoundedCornerShape(100f)
     )
     if (error != null){

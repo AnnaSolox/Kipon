@@ -25,10 +25,10 @@ import com.annasolox.kipon.R
 import com.annasolox.kipon.ui.models.AccountOverview
 
 @Composable
-fun AccountElevatedCard(accountOverview: AccountOverview, imageUrl: String) {
+fun AccountElevatedCard(accountOverview: AccountOverview, imageUrl: String, modifier: Modifier) {
 
     ElevatedCard(
-        Modifier
+        modifier
             .fillMaxWidth(),
         elevation = CardDefaults.elevatedCardElevation(4.dp),
     ) {

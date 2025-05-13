@@ -13,8 +13,6 @@ class AccountServiceImpl(private val client: HttpClient): AccountService {
     }
 
     override suspend fun fechtAccoutnById(id: Long): AccountResponse {
-        return client.get("huchas/{id}") {
-            parameter("id", id)
-        }.body()
+        return client.get("huchas/$id").body()
     }
 }

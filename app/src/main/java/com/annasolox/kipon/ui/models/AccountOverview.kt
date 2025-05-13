@@ -5,5 +5,6 @@ data class AccountOverview(
     var name: String,
     var dateGoal: String,
     var currentMoney: Double,
+    var photo: String?,
     var moneyGoal: Double
 )

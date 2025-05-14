@@ -46,7 +46,7 @@ object AccountMapper {
             dateGoal = accountResponse.goalDate.toString(),
             userMembers = accountResponse.userMembers.map { it.user},
             admin = accountResponse.admin,
-            savings = accountResponse.savings.map { toSavingUi(it)},
+            savings = accountResponse.savings?.map { toSavingUi(it)} ?: arrayListOf(),
             photo = accountResponse.photo
         )
     }

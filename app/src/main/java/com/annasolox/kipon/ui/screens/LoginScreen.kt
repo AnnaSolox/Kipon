@@ -108,7 +108,7 @@ fun LoginScreen(
                 )
                 {
                     FormTextField(
-                        username = username,
+                        value = username,
                         error = usernameError,
                         label = "Username"
                     ) { authViewModel.onUserNameChanged(it) }

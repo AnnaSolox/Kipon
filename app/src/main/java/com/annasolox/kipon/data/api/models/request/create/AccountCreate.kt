@@ -5,6 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
+@Serializable
 data class AccountCreate(
     @SerialName("nombre")
     val name: String,
@@ -12,5 +13,7 @@ data class AccountCreate(
     val moneyGoal: Double,
     @SerialName("fechaObjetivo")
     @Serializable(with = LocalDateSerializer::class)
-    val dateGoal: LocalDate?
+    val dateGoal: LocalDate?,
+    @SerialName("fotoHucha")
+    val photo: String? = null
 )

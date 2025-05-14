@@ -49,22 +49,28 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.annasolox.kipon.core.navigation.AccountNavigationEvent
+import com.annasolox.kipon.core.navigation.AccountNavigationEvent.*
 import com.annasolox.kipon.core.navigation.DetailsAccountScreen
 import com.annasolox.kipon.core.navigation.HomeScreen
 import com.annasolox.kipon.ui.composables.AccountSearchBar
+import com.annasolox.kipon.ui.composables.textFields.DatePickerTextField
 import com.annasolox.kipon.ui.composables.accounts.AccountElevatedCard
 import com.annasolox.kipon.ui.composables.images.ImageThumbnail
+import com.annasolox.kipon.ui.composables.textFields.FormTextField
 import com.annasolox.kipon.ui.viewmodels.AccountViewModel
 import com.annasolox.kipon.ui.viewmodels.UserViewModel
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
     accountViewModel: AccountViewModel,
-    userViewModel: UserViewModel = koinViewModel()
+    userViewModel: UserViewModel,
+    modifier: Modifier = Modifier
 ) {
 
     val focusManager = LocalFocusManager.current
@@ -76,8 +82,12 @@ fun HomeScreen(
     val coroutineScope = rememberCoroutineScope()
     var isSheetOpen by remember { mutableStateOf(false) }
 
+    //navigation event
+    val navEvent by accountViewModel.navigationEvent.observeAsState()
+
 
     LaunchedEffect(Unit) {
+        userViewModel.loadUser()
         accountViewModel.clearCurrentAccount()
     }
 
@@ -90,13 +100,29 @@ fun HomeScreen(
         }
     }
 
+    LaunchedEffect(navEvent) {
+        accountViewModel.navigationEvent.value?.let {
+            event ->
+            when(event){
+                NavigateToAccountDetail -> {
+                    navController.navigate(DetailsAccountScreen){
+                        popUpTo(HomeScreen) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                    accountViewModel.clearCreateForm()
+                    accountViewModel.clearNavigationEvent()
+                }
+            }
+        }
+    }
+
     AnimatedVisibility(
         visible = user != null,
         enter = fadeIn(tween(300))
     ) {
         
         Column(
-            Modifier
+            modifier
                 .fillMaxSize()
                 .background(Color.White)
                 .pointerInput(Unit) {
@@ -159,10 +185,13 @@ fun HomeScreen(
                 onQueryChange = { query = it }
             )
 
+            println("User accounts: ${user?.accounts?.size}")
+
             LazyColumn {
-                val filteredAccounts = user!!.accounts.filter {
+                val filteredAccounts = user?.accounts?.filter {
                     it.name.contains(query, ignoreCase = true)
-                }
+                } ?: emptyList()
+
                 items(filteredAccounts) { account ->
                     AccountElevatedCard(
                         account,
@@ -180,6 +209,11 @@ fun HomeScreen(
             }
 
             if (isSheetOpen) {
+                val accountName by accountViewModel.name.observeAsState("")
+                val moneyGoal by accountViewModel.moneyGoal.observeAsState(null)
+                val dateGoal by accountViewModel.dateGoal.observeAsState(null)
+                val photo by accountViewModel.photo.observeAsState("")
+
                 ModalBottomSheet(
                     onDismissRequest = { isSheetOpen = false },
                     sheetState = sheetState,
@@ -189,25 +223,51 @@ fun HomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Text("Create new account", style = MaterialTheme.typography.titleMedium)
-                        Spacer(Modifier.size(8.dp))
+                        Text("Create new account".uppercase(),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Black,
+                        )
 
-                        /*FormTextField(
-                            username,
-                            usernameError
-                        ) { authViewModel.onUserNameChanged(it) }*/
+                        FormTextField(
+                            value = accountName,
+                            label = "Account name",
+                            error = null,
+                        ) { accountViewModel.onAccountNameChange(it) }
+
+                        FormTextField(
+                            value = moneyGoal?.toString() ?: "",
+                            label = "Money goal",
+                            error = null,
+                        ) {
+                            accountViewModel.onAccountMoneyGoalChange(it.toDouble()) }
+
+                        DatePickerTextField(
+                            dateGoal?: LocalDate.now(),
+                            onDateSelected = {accountViewModel.onAccountDateGoalChange(it)},
+                            label = "Date goal",
+                        )
+
+                        FormTextField(
+                            value = photo.toString(),
+                            label = "Photo URL",
+                            error = null,
+                        ) { accountViewModel.onAccountPhotoChange(it) }
+
+                        Spacer(Modifier.size(8.dp))
 
                         Button(
                             onClick = {
+                                accountViewModel.createNewAccount()
                                 isSheetOpen = false
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.tertiary
                             )
                         ) {
-                            Text("Guardar")
+                            Text("Create account")
                         }
                     }
                 }

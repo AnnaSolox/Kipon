@@ -42,9 +42,9 @@ object UserMapper {
         return UserHomeScreen(
             userName = userResponse.name,
             photoUrl = userResponse.profile.photo ?: "",
-            accounts = userResponse.accountRole.map { account ->
+            accounts = ArrayList(userResponse.accountRole.map { account ->
                 AccountMapper.toAccountOverviewFromRole(account)
-            }
+            })
         )
     }
 

@@ -10,12 +10,14 @@ import com.annasolox.kipon.ui.screens.HomeScreen
 import com.annasolox.kipon.ui.screens.LoginScreen
 import com.annasolox.kipon.ui.screens.RegisterScreen
 import com.annasolox.kipon.ui.viewmodels.AccountViewModel
+import com.annasolox.kipon.ui.viewmodels.UserViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun NavigationWrapper() {
     val navController = rememberNavController()
     val accountViewModel: AccountViewModel = koinViewModel()
+    val userViewModel: UserViewModel = koinViewModel()
 
 
     NavHost(navController = navController, startDestination = LoginScreen){
@@ -28,11 +30,11 @@ fun NavigationWrapper() {
         }
 
         composable<HomeScreen> {
-            HomeScreen(navController, accountViewModel)
+            HomeScreen(navController, accountViewModel, userViewModel)
         }
 
         composable<BottomNavscreen>{
-            BottomNavScreen(navController, accountViewModel)
+            BottomNavScreen(navController, accountViewModel, userViewModel)
         }
 
         composable<DetailsAccountScreen> {

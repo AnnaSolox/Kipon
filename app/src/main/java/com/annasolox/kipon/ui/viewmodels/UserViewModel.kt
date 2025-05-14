@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.annasolox.kipon.core.utils.mappers.UserMapper.toUserHomeScreen
 import com.annasolox.kipon.core.utils.mappers.UserMapper.toUserProfileScreenFromUserResponse
 import com.annasolox.kipon.data.repository.UserRepository
+import com.annasolox.kipon.ui.models.AccountOverview
 import com.annasolox.kipon.ui.models.UserHomeScreen
 import com.annasolox.kipon.ui.models.UserProfileScreen
 import kotlinx.coroutines.Dispatchers
@@ -24,8 +25,19 @@ class UserViewModel(
     private val _userProfile = MutableLiveData<UserProfileScreen>()
     val userProfile: LiveData<UserProfileScreen> get() = _userProfile
 
-    init {
-        loadUser()
+    fun addAccountToUserAccountsList(accountOverview: AccountOverview){
+        val currentUser = _userHome.value
+        Log.d("UserViewModel", "Current User: $currentUser")
+        if (currentUser != null) {
+            val updatedAccounts = currentUser.accounts.toMutableList().apply {
+                add(accountOverview)
+            }
+            Log.d("UserViewModel", "Updated Accounts: $updatedAccounts")
+            val updatedUser = currentUser.copy(accounts = updatedAccounts)
+            _userHome.postValue(updatedUser)
+        } else {
+            Log.d("UserViewModel", "User is null")
+        }
     }
 
     fun loadUser() {

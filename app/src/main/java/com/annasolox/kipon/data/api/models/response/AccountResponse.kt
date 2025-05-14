@@ -29,5 +29,5 @@ data class AccountResponse(
     @SerialName("usuarios")
     val userMembers: List<UserRolResponse>,
     @SerialName("ahorros")
-    val savings: List<SavingResponse>
+    var savings: ArrayList<SavingResponse>? = null
 )

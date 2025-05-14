@@ -12,7 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -80,80 +84,101 @@ fun AccountDetailScreen(
         }
     }
 
-    if (currentAccount == null) {
-        Box(
-            Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-        }
-    }
+    Box(Modifier.fillMaxSize()) {
 
-
-    Box(Modifier.nestedScroll(nestedScrollConnection)) {
-
-        AnimatedVisibility(
-            visible = currentAccount != null,
-            enter = fadeIn(
-                animationSpec = tween(durationMillis = 500)
-            )
-        ) {
-
-            val contributions = currentAccount!!.savings
-            LazyAccountContributions(currentBoxSize, contributions, currentAccount!!.photo ?: "")
-
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .align(Alignment.TopCenter)
+        if (currentAccount == null) {
+            Box(
+                Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
+                CircularProgressIndicator()
+            }
+        }
+
+
+        Box(Modifier.nestedScroll(nestedScrollConnection)) {
+
+            AnimatedVisibility(
+                visible = currentAccount != null,
+                enter = fadeIn(
+                    animationSpec = tween(durationMillis = 500)
+                )
+            ) {
+
+                val contributions = currentAccount!!.savings
+                LazyAccountContributions(
+                    currentBoxSize,
+                    contributions,
+                    currentAccount!!.photo ?: ""
+                )
+
+                Column(
                     Modifier
-                        .fillMaxWidth()
-                        .height(currentBoxSize)
-                        .graphicsLayer {
-                            clip = true
-                            shape = RoundedCornerShape(
-                                topStart = 0.dp,
-                                topEnd = 0.dp,
-                                bottomStart = 16.dp,
-                                bottomEnd = 16.dp
-                            )
-                        },
+                        .fillMaxSize()
+                        .align(Alignment.TopCenter)
                 ) {
-                    ImageHeader(
-                        height = currentBoxSize,
-                        imageResource = R.drawable.account_photo,
-                        contentImageDescription = "Account image"
-                    )
-
-                    Row(
+                    Box(
                         Modifier
-                            .fillMaxSize()
-                            .padding(20.dp)
-                            .graphicsLayer(
-                                alpha = infoImageElementsAlpha
-                            ),
-                        verticalAlignment = Alignment.Bottom
+                            .fillMaxWidth()
+                            .height(currentBoxSize)
+                            .graphicsLayer {
+                                clip = true
+                                shape = RoundedCornerShape(
+                                    topStart = 0.dp,
+                                    topEnd = 0.dp,
+                                    bottomStart = 16.dp,
+                                    bottomEnd = 16.dp
+                                )
+                            },
                     ) {
+                        ImageHeader(
+                            height = currentBoxSize,
+                            imageResource = R.drawable.account_photo,
+                            contentImageDescription = "Account image"
+                        )
 
-                        Column(
+                        Row(
                             Modifier
-                                .weight(1f)
+                                .fillMaxSize()
+                                .padding(20.dp)
+                                .graphicsLayer(
+                                    alpha = infoImageElementsAlpha
+                                ),
+                            verticalAlignment = Alignment.Bottom
                         ) {
 
-                            ColumnAccountDetailInfo(
-                                members = currentAccount!!.userMembers,
-                                title = currentAccount!!.name,
-                                currentAccount!!.dateGoal,
-                                currentAccount!!.photo ?: ""
-                            )
-                        }
+                            Column(
+                                Modifier
+                                    .weight(1f)
+                            ) {
 
-                        OptionsButton()
+                                ColumnAccountDetailInfo(
+                                    members = currentAccount!!.userMembers,
+                                    title = currentAccount!!.name,
+                                    currentAccount!!.dateGoal,
+                                    currentAccount!!.photo ?: ""
+                                )
+                            }
+
+                            OptionsButton()
+                        }
                     }
                 }
             }
         }
+
+        FloatingActionButton(
+            onClick = {/*TODO*/ },
+            Modifier
+                .align(Alignment.BottomEnd)
+                .padding(20.dp)
+        )
+        {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = "Add new contribution icon"
+            )
+        }
     }
+
 }

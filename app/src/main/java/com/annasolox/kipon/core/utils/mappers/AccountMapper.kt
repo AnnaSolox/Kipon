@@ -6,6 +6,7 @@ import com.annasolox.kipon.data.api.models.response.SavingResponse
 import com.annasolox.kipon.ui.models.AccountDetails
 import com.annasolox.kipon.ui.models.AccountOverview
 import com.annasolox.kipon.ui.models.Saving
+import java.time.format.DateTimeFormatter
 
 object AccountMapper {
     fun toAccountOverview(
@@ -54,11 +55,15 @@ object AccountMapper {
     fun toSavingUi(
         savingResponse: SavingResponse
     ): Saving {
+        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        val formattedDate = savingResponse.date.format(formatter)
+
         return Saving(
             id = savingResponse.id,
             user = savingResponse.user,
-            date = savingResponse.date.toString(),
-            amount = savingResponse.amount
+            date = formattedDate,
+            amount = savingResponse.amount,
+            photo = savingResponse.photo ?: ""
         )
     }
 }

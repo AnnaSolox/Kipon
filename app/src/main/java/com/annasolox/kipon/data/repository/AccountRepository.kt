@@ -1,10 +1,13 @@
 package com.annasolox.kipon.data.repository
 
 import com.annasolox.kipon.core.utils.mappers.AccountMapper.toAccountOverview
+import com.annasolox.kipon.core.utils.mappers.AccountMapper.toSavingUi
 import com.annasolox.kipon.data.api.models.request.create.AccountCreate
+import com.annasolox.kipon.data.api.models.request.create.SavingCreate
 import com.annasolox.kipon.data.api.models.response.AccountResponse
 import com.annasolox.kipon.data.api.service.AccountService
 import com.annasolox.kipon.ui.models.AccountOverview
+import com.annasolox.kipon.ui.models.Saving
 
 class AccountRepository(
     private val accountService: AccountService,
@@ -27,5 +30,13 @@ class AccountRepository(
         }
 
         return toAccountOverview(createdAccount)
+    }
+
+    suspend fun createNewContribution(
+        accountId: Long,
+        savingCreate: SavingCreate
+    ): Saving {
+        val savingResponse = accountService.createNewContribution(accountId, savingCreate)
+        return toSavingUi(savingResponse)
     }
 }

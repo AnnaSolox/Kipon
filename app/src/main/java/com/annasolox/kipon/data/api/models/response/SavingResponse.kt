@@ -14,5 +14,7 @@ data class SavingResponse(
     val amount: Double,
     @SerialName("fecha")
     @Serializable(with = LocalDateSerializer::class)
-    val date: LocalDate
+    val date: LocalDate,
+    @SerialName("foto")
+    val photo: String?
 )

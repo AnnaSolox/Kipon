@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.annasolox.kipon.R
-import com.annasolox.kipon.core.navigation.BottomNavscreen
+import com.annasolox.kipon.core.navigation.HomeScreen
 import com.annasolox.kipon.core.navigation.LoginNavigationEvent.NavigateToHome
 import com.annasolox.kipon.core.navigation.LoginScreen
 import com.annasolox.kipon.core.navigation.RegisterScreen
@@ -54,7 +54,7 @@ fun LoginScreen(
     LaunchedEffect(navEvent) {
         when(navEvent) {
             NavigateToHome -> {
-                navController.navigate(BottomNavscreen) {
+                navController.navigate(HomeScreen) {
                     popUpTo(LoginScreen) { inclusive = true }
                     launchSingleTop = true
                 }

@@ -17,17 +17,19 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.annasolox.kipon.core.navigation.HomeScreen
+import com.annasolox.kipon.core.navigation.ProfileScreen
+import com.annasolox.kipon.core.navigation.TransactionsScreen
 
 data class BottomNavigationItem(
+    val route: String,
     val title: String,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
@@ -35,17 +37,18 @@ data class BottomNavigationItem(
     val badgeCount: Int? = null,
 )
 
-@Preview
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
         BottomNavigationItem(
+            route = HomeScreen::class.qualifiedName ?: "home",
             title = "Home",
             selectedIcon = Icons.Filled.Home,
             unselectedIcon = Icons.Outlined.Home,
             hasNews = true,
         ),
         BottomNavigationItem(
+            route = TransactionsScreen::class.qualifiedName ?: "transactions",
             title = "Savings",
             selectedIcon = Icons.Filled.Timeline,
             unselectedIcon = Icons.Outlined.Timeline,
@@ -53,14 +56,18 @@ fun BottomNavigationBar() {
             badgeCount = 45
         ),
         BottomNavigationItem(
+            route = ProfileScreen::class.qualifiedName ?: "profile",
             title = "Profile",
             selectedIcon = Icons.Filled.Person,
             unselectedIcon = Icons.Outlined.Person,
             hasNews = false,
         )
     )
-    var selectedNavigationIndex by rememberSaveable { mutableIntStateOf(0) }
-    var selectedItemIndex by rememberSaveable { mutableIntStateOf(0) }
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val selectedItemIndex = items.indexOfFirst { it.route == currentRoute }.takeIf { it >= 0 } ?: 0
 
     NavigationBar(
         Modifier.shadow(16.dp),
@@ -69,8 +76,13 @@ fun BottomNavigationBar() {
             NavigationBarItem(
                 selected = selectedItemIndex == index,
                 onClick = {
-                    selectedItemIndex = index
-                    //navController.navigate(item.title)
+                    navController.navigate(item.route){
+                        launchSingleTop = true
+                        restoreState = true
+                        popUpTo (navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                    }
                 },
                 label = { Text(text = item.title) },
                 icon = {

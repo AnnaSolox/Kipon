@@ -1,6 +1,7 @@
 package com.annasolox.kipon.ui.composables
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Search
@@ -18,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun AccountSearchBar(
@@ -27,7 +29,6 @@ fun AccountSearchBar(
 ) {
 
     var expanded by remember { mutableStateOf(false) }
-    var textFieldSize by remember { mutableStateOf(IntSize.Zero) }
 
     OutlinedTextField(
         value = query,
@@ -36,10 +37,10 @@ fun AccountSearchBar(
             expanded = it.isNotEmpty()
         },
         label = { Text("Search") },
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         singleLine = true,
-        shape = MaterialTheme.shapes.large,
+        shape = RoundedCornerShape(40.dp),
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent
@@ -54,10 +55,10 @@ fun AccountSearchBar(
                 }
             ) {
                 Icon(
-                    if (expanded) Icons.Outlined.Close else Icons.Outlined.Search,
+                    Icons.Outlined.Search,
                     contentDescription = "Trailing icon"
                 )
             }
-        }
+        },
     )
 }

@@ -13,7 +13,10 @@ object RegisterScreen
 object HomeScreen
 
 @Serializable
-object BottomNavscreen
+object DetailsAccountScreen
 
 @Serializable
-object DetailsAccountScreen
+object TransactionsScreen
+
+@Serializable
+object ProfileScreen

@@ -1,6 +1,7 @@
 package com.annasolox.kipon.ui.screens
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -48,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.annasolox.kipon.R
+import com.annasolox.kipon.core.navigation.HomeScreen
 import com.annasolox.kipon.ui.composables.accounts.LazyAccountContributions
 import com.annasolox.kipon.ui.composables.buttons.OptionsButton
 import com.annasolox.kipon.ui.composables.headers.ColumnAccountDetailInfo
@@ -106,6 +108,14 @@ fun AccountDetailScreen(
         }
     }
 
+    BackHandler {
+        navController.navigate(HomeScreen) {
+            popUpTo(HomeScreen) {
+                inclusive = true
+            }
+        }
+    }
+
     LaunchedEffect(currentAccount) {
         if (currentAccount != null){
             accountViewModel.loadingSavingsList()
@@ -136,8 +146,7 @@ fun AccountDetailScreen(
                 savings?.let {
                     LazyAccountContributions(
                         currentBoxSize,
-                        savings!!,
-                        currentAccount?.currentAmount ?: 0.0
+                        savings!!
                     )
                 }
 
@@ -214,8 +223,6 @@ fun AccountDetailScreen(
         }
 
         if (isSheetOpen) {
-            val accountName by accountViewModel.name.observeAsState("")
-            val moneyGoal by accountViewModel.moneyGoal.observeAsState(null)
 
             ModalBottomSheet(
                 onDismissRequest = { isSheetOpen = false },

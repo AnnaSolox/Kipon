@@ -1,14 +1,21 @@
 package com.annasolox.kipon.core.navigation
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.annasolox.kipon.ui.composables.BottomNavigationBar
 import com.annasolox.kipon.ui.screens.AccountDetailScreen
-import com.annasolox.kipon.ui.screens.BottomNavScreen
 import com.annasolox.kipon.ui.screens.HomeScreen
 import com.annasolox.kipon.ui.screens.LoginScreen
+import com.annasolox.kipon.ui.screens.ProfileScreen
 import com.annasolox.kipon.ui.screens.RegisterScreen
+import com.annasolox.kipon.ui.screens.TransactionsScreen
 import com.annasolox.kipon.ui.viewmodels.AccountViewModel
 import com.annasolox.kipon.ui.viewmodels.UserViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -19,26 +26,51 @@ fun NavigationWrapper() {
     val accountViewModel: AccountViewModel = koinViewModel()
     val userViewModel: UserViewModel = koinViewModel()
 
+    val bottomBarScreens = listOf(
+        HomeScreen::class.qualifiedName,
+        TransactionsScreen::class.qualifiedName,
+        ProfileScreen::class.qualifiedName
+    )
 
-    NavHost(navController = navController, startDestination = LoginScreen){
-        composable<LoginScreen> {
-            LoginScreen(navController)
+    val navBackStackEntry = navController.currentBackStackEntryAsState().value
+    val currentRoute = navBackStackEntry?.destination?.route
+    val showBottomBar = currentRoute in bottomBarScreens
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = { if (showBottomBar) {
+            BottomNavigationBar(navController)
         }
-
-        composable<RegisterScreen> {
-            RegisterScreen(navController)
         }
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = LoginScreen,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable<LoginScreen> {
+                LoginScreen(navController)
+            }
 
-        composable<HomeScreen> {
-            HomeScreen(navController, accountViewModel, userViewModel)
-        }
+            composable<RegisterScreen> {
+                RegisterScreen(navController)
+            }
 
-        composable<BottomNavscreen>{
-            BottomNavScreen(navController, accountViewModel, userViewModel)
-        }
+            composable<HomeScreen> {
+                HomeScreen(navController, accountViewModel, userViewModel)
+            }
 
-        composable<DetailsAccountScreen> {
-            AccountDetailScreen(navController, accountViewModel)
+            composable<DetailsAccountScreen> {
+                AccountDetailScreen(navController, accountViewModel)
+            }
+
+            composable<TransactionsScreen> {
+                TransactionsScreen()
+            }
+
+            composable<ProfileScreen> {
+                ProfileScreen()
+            }
         }
     }
 }

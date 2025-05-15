@@ -20,11 +20,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             KiponTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Box(Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center){
-                        NavigationWrapper()
-                    }
-                }
+                NavigationWrapper()
             }
         }
     }

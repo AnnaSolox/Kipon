@@ -106,7 +106,6 @@ fun HomeScreen(
             when(event){
                 NavigateToAccountDetail -> {
                     navController.navigate(DetailsAccountScreen){
-                        popUpTo(HomeScreen) { inclusive = true }
                         launchSingleTop = true
                     }
                     accountViewModel.clearCreateForm()

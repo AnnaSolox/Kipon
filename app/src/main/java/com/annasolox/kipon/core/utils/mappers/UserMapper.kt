@@ -44,7 +44,10 @@ object UserMapper {
             photoUrl = userResponse.profile.photo ?: "",
             accounts = ArrayList(userResponse.accountRole.map { account ->
                 AccountMapper.toAccountOverviewFromRole(account)
-            })
+            }),
+            savings = ArrayList(userResponse.savings?.map { saving ->
+                AccountMapper.toSavingUi(saving)
+            } ?: emptyList()),
         )
     }
 

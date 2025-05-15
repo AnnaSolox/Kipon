@@ -1,10 +1,12 @@
 package com.annasolox.kipon.core.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -46,7 +48,7 @@ fun NavigationWrapper() {
         NavHost(
             navController = navController,
             startDestination = LoginScreen,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.background(Color.White).padding(innerPadding)
         ) {
             composable<LoginScreen> {
                 LoginScreen(navController)
@@ -65,7 +67,7 @@ fun NavigationWrapper() {
             }
 
             composable<TransactionsScreen> {
-                TransactionsScreen()
+                TransactionsScreen(userViewModel)
             }
 
             composable<ProfileScreen> {

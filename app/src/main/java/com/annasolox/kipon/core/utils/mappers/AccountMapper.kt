@@ -60,11 +60,14 @@ object AccountMapper {
 
         return Saving(
             id = savingResponse.id,
-            user = savingResponse.user,
+            userId = savingResponse.userId,
+            username = savingResponse.userName,
+            accountName = savingResponse.accountName,
             date = formattedDate,
             amount = savingResponse.amount,
             currentMoney = savingResponse.currentMoney,
-            photo = savingResponse.photo ?: ""
+            userPhoto = savingResponse.userPhoto ?: "",
+            accountPhoto = savingResponse.accountPhoto ?: ""
         )
     }
 }

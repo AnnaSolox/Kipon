@@ -8,15 +8,21 @@ import java.time.LocalDate
 @Serializable
 data class SavingResponse(
     val id: Long,
-    @SerialName("usuario")
-    val user: String,
+    @SerialName("nombreUsuario")
+    val userName: String,
+    @SerialName("nombreHucha")
+    val accountName: String,
+    @SerialName("idUsuario")
+    val userId: Long,
     @SerialName("cantidad")
     val amount: Double,
     @SerialName("fecha")
     @Serializable(with = LocalDateSerializer::class)
     val date: LocalDate,
-    @SerialName("foto")
-    val photo: String?,
+    @SerialName("fotoUsuario")
+    val userPhoto: String?,
+    @SerialName("fotoHucha")
+    val accountPhoto: String?,
     @SerialName("saldoActualHucha")
     val currentMoney: Double
 )

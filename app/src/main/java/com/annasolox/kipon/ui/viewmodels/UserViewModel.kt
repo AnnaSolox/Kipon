@@ -10,6 +10,7 @@ import com.annasolox.kipon.core.utils.mappers.UserMapper.toUserHomeScreen
 import com.annasolox.kipon.core.utils.mappers.UserMapper.toUserProfileScreenFromUserResponse
 import com.annasolox.kipon.data.repository.UserRepository
 import com.annasolox.kipon.ui.models.AccountOverview
+import com.annasolox.kipon.ui.models.Saving
 import com.annasolox.kipon.ui.models.UserHomeScreen
 import com.annasolox.kipon.ui.models.UserProfileScreen
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +25,9 @@ class UserViewModel(
     val userHome: LiveData<UserHomeScreen> get() = _userHome
     private val _userProfile = MutableLiveData<UserProfileScreen>()
     val userProfile: LiveData<UserProfileScreen> get() = _userProfile
+
+    private val _allUserSavings = MutableLiveData<List<Saving>>()
+    val allUserSavings: LiveData<List<Saving>> get() = _allUserSavings
 
     fun addAccountToUserAccountsList(accountOverview: AccountOverview){
         val currentUser = _userHome.value
@@ -53,6 +57,18 @@ class UserViewModel(
                 } catch (e: Exception) {
                     Log.e("UserViewModel", "Error loading user: ${e.message}")
                 }
+            }
+        }
+    }
+
+    fun getSavingsFromUser(){
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d("UserViewModel", "Userhome: ${_userHome.value}")
+            Log.d("UserViewModel", "Getting savings from user")
+            _userHome.value?.savings?.let {
+                val savings = _userHome.value?.savings
+                savings?.let { _allUserSavings.postValue(savings) }
+                Log.d("UserViewModel", "Savings: $savings")
             }
         }
     }

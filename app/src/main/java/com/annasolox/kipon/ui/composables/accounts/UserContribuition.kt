@@ -18,16 +18,14 @@ import com.annasolox.kipon.ui.composables.images.ImageThumbnail
 import com.annasolox.kipon.ui.models.Saving
 
 @Composable
-fun Contribution(
-    saving: Saving
-) {
+fun UserContribuition(saving: Saving) {
     Row(
         Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        ImageThumbnail(Modifier.size(55.dp), imageUrl = saving.photo)
+        ImageThumbnail(Modifier.size(55.dp), imageUrl = saving.accountPhoto)
 
         Spacer(Modifier.size(20.dp))
 
@@ -36,7 +34,7 @@ fun Contribution(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(style = MaterialTheme.typography.bodyMedium, text = saving.user)
+                Text(style = MaterialTheme.typography.bodyMedium, text = saving.accountName)
                 Text(style = MaterialTheme.typography.titleSmall, text = "+${saving.amount}€",
                     fontWeight = FontWeight.Black)
             }

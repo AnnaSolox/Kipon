@@ -2,9 +2,12 @@ package com.annasolox.kipon.ui.models
 
 data class Saving(
     val id: Long,
-    val user: String,
+    val userId: Long,
+    val username: String,
+    val accountName:String,
     val amount: Double,
     val currentMoney: Double,
     val date: String,
-    val photo: String?
+    val userPhoto: String?,
+    val accountPhoto: String?
 )

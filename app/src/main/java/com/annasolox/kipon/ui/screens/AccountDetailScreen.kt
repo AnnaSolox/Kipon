@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -50,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.annasolox.kipon.R
 import com.annasolox.kipon.core.navigation.HomeScreen
+import com.annasolox.kipon.ui.composables.accounts.AccountProgressBar
 import com.annasolox.kipon.ui.composables.accounts.LazyAccountContributions
 import com.annasolox.kipon.ui.composables.buttons.OptionsButton
 import com.annasolox.kipon.ui.composables.headers.ColumnAccountDetailInfo
@@ -84,6 +86,8 @@ fun AccountDetailScreen(
     val navEvent by accountViewModel.navigationEvent.observeAsState()
 
     val savings by accountViewModel.savingsList.observeAsState()
+
+    val listState = rememberLazyListState()
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
@@ -142,11 +146,11 @@ fun AccountDetailScreen(
                     animationSpec = tween(durationMillis = 500)
                 )
             ) {
-
                 savings?.let {
                     LazyAccountContributions(
                         currentBoxSize,
-                        savings!!
+                        savings!!,
+                        currentAccount!!
                     )
                 }
 

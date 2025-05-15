@@ -137,7 +137,7 @@ fun AccountDetailScreen(
                     LazyAccountContributions(
                         currentBoxSize,
                         savings!!,
-                        currentAccount!!.photo ?: ""
+                        currentAccount?.currentAmount ?: 0.0
                     )
                 }
 
@@ -185,8 +185,7 @@ fun AccountDetailScreen(
                                 ColumnAccountDetailInfo(
                                     members = currentAccount!!.userMembers,
                                     title = currentAccount!!.name,
-                                    currentAccount!!.dateGoal,
-                                    currentAccount!!.photo ?: ""
+                                    currentAccount!!.dateGoal
                                 )
                             }
 

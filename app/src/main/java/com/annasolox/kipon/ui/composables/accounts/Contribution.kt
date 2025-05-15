@@ -12,17 +12,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.annasolox.kipon.ui.composables.images.ImageThumbnail
+import com.annasolox.kipon.ui.models.Saving
 
 @Composable
 fun Contribution(
-    imageUrl: String,
-    userName: String = "annaSoler",
-    amount: String = "+500€",
-    date: String = "24/04/2025",
-    totalAmount: String = "6000€"
+    saving: Saving
 ) {
     Row(
         Modifier
@@ -30,7 +27,7 @@ fun Contribution(
             .padding(vertical = 8.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        ImageThumbnail(Modifier.size(55.dp), imageUrl = imageUrl)
+        ImageThumbnail(Modifier.size(55.dp), imageUrl = saving.photo)
 
         Spacer(Modifier.size(20.dp))
 
@@ -39,16 +36,17 @@ fun Contribution(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(style = MaterialTheme.typography.bodyMedium, text = userName)
-                Text(style = MaterialTheme.typography.titleSmall, text = amount)
+                Text(style = MaterialTheme.typography.bodyMedium, text = saving.user)
+                Text(style = MaterialTheme.typography.titleSmall, text = "+${saving.amount}€",
+                    fontWeight = FontWeight.Black)
             }
 
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(style = MaterialTheme.typography.bodySmall, text = date)
-                Text(style = MaterialTheme.typography.bodySmall, text = totalAmount)
+                Text(style = MaterialTheme.typography.bodySmall, text = saving.date)
+                Text(style = MaterialTheme.typography.bodySmall, text = "${saving.currentMoney}€")
             }
         }
     }

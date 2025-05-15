@@ -16,5 +16,7 @@ data class SavingResponse(
     @Serializable(with = LocalDateSerializer::class)
     val date: LocalDate,
     @SerialName("foto")
-    val photo: String?
+    val photo: String?,
+    @SerialName("saldoActualHucha")
+    val currentMoney: Double
 )

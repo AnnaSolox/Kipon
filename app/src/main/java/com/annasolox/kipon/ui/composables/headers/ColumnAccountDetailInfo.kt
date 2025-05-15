@@ -13,9 +13,7 @@ import com.annasolox.kipon.data.api.models.response.UserSimplified
 import com.annasolox.kipon.ui.composables.accounts.AccountMembers
 
 @Composable
-fun ColumnAccountDetailInfo(members: List<UserSimplified>, title: String, date: String, imageUrl: String) {
-
-    val images = members.map { it.photo }
+fun ColumnAccountDetailInfo(members: List<UserSimplified>, title: String, date: String) {
 
     AccountMembers(Modifier.size(50.dp),members)
     Spacer(Modifier.size(8.dp))

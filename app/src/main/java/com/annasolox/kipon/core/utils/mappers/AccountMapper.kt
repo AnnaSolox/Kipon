@@ -63,6 +63,7 @@ object AccountMapper {
             user = savingResponse.user,
             date = formattedDate,
             amount = savingResponse.amount,
+            currentMoney = savingResponse.currentMoney,
             photo = savingResponse.photo ?: ""
         )
     }

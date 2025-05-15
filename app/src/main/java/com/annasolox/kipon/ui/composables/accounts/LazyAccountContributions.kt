@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.annasolox.kipon.ui.models.Saving
 
 @Composable
-fun LazyAccountContributions(currentBoxSize: Dp, contributions: List<Saving>, imageUrl: String){
+fun LazyAccountContributions(currentBoxSize: Dp, contributions: List<Saving>){
     LazyColumn(
         Modifier
             .fillMaxWidth()
@@ -23,8 +24,8 @@ fun LazyAccountContributions(currentBoxSize: Dp, contributions: List<Saving>, im
                 IntOffset(0, currentBoxSize.roundToPx())
             }
     ) {
-        items(contributions.size, key = { it }) {
-            Contribution(imageUrl)
+        items(contributions, key = { it.id }) {
+            Contribution(it)
             HorizontalDivider(Modifier.fillMaxWidth(), 1.dp, Color.Gray)
         }
     }

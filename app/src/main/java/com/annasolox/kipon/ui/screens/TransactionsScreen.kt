@@ -8,36 +8,46 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterAlt
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.annasolox.kipon.ui.composables.AccountSearchBar
-import com.annasolox.kipon.ui.composables.accounts.LazyAccountContributions
-import com.annasolox.kipon.ui.viewmodels.UserViewModel
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.unit.IntOffset
-import com.annasolox.kipon.ui.composables.accounts.AccountContribution
 import com.annasolox.kipon.ui.composables.accounts.UserContribuition
+import com.annasolox.kipon.ui.composables.textFields.FormTextField
+import com.annasolox.kipon.ui.viewmodels.UserViewModel
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionsScreen(
     userViewModel: UserViewModel,
@@ -45,13 +55,36 @@ fun TransactionsScreen(
     val allUserSavings by userViewModel.allUserSavings.observeAsState(emptyList())
     var query by remember { mutableStateOf("") }
 
+    // Filter min and max values
+    var minAmountText by remember { mutableStateOf("") }
+    var maxAmountText by remember { mutableStateOf("") }
+
+    val minAmount = minAmountText.toDoubleOrNull()
+    val maxAmount = maxAmountText.toDoubleOrNull()
+
+    var appliedMinAmount by remember { mutableStateOf<Float?>(null) }
+    var appliedMaxAmount by remember { mutableStateOf<Float?>(null) }
+
+    val filteredAccounts = allUserSavings.filter {
+        val amount = it.amount
+        val minOk = appliedMinAmount?.let { min -> amount >= min } != false
+        val maxOk = appliedMaxAmount?.let { max -> amount <= max } != false
+        minOk && maxOk
+    }
+
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val coroutineScope = rememberCoroutineScope()
+    var isSheetOpen by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         userViewModel.getSavingsFromUser()
     }
 
-    Box(Modifier
-        .fillMaxSize()
-        .padding(16.dp), contentAlignment = Alignment.TopCenter) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .padding(16.dp), contentAlignment = Alignment.TopCenter
+    ) {
         Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -67,30 +100,106 @@ fun TransactionsScreen(
                 Spacer(Modifier.size(8.dp))
 
                 IconButton(
-                    {},
+                    onClick = {
+                        if (appliedMinAmount != null || appliedMaxAmount != null) {
+                            // Limpiar filtros sin abrir modal
+                            appliedMinAmount = null
+                            appliedMaxAmount = null
+                        } else {
+                            // Abrir el modal solo si no hay filtros aplicados
+                            isSheetOpen = true
+                            coroutineScope.launch { sheetState.show() }
+                        }
+                    },
                     modifier = Modifier
                         .padding(top = 4.dp)
                         .clip(CircleShape)
                         .border(1.dp, Color.Black, shape = CircleShape)
                 ) {
-                    Icon(Icons.Default.FilterAlt, "Filter icon")
+                    if (appliedMinAmount != null || appliedMaxAmount != null) {
+                        Icon(Icons.Default.Close, "Clear filter")
+                    } else {
+                        Icon(Icons.Default.FilterAlt, "Filter icon")
+                    }
                 }
             }
 
             val filteredAccounts = allUserSavings.filter {
-                it.accountName.contains(query, ignoreCase = true)
+                it.accountName.contains(query, ignoreCase = true) &&
+                        (appliedMinAmount?.let { min -> it.amount >= min } != false) &&
+                        (appliedMaxAmount?.let { max -> it.amount <= max } != false)
             }
 
-            allUserSavings.let {
-                LazyColumn(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 15.dp)
-                ) {
-                    items(filteredAccounts, key = { it.id }) {
-                        UserContribuition(it)
-                        HorizontalDivider(Modifier.fillMaxWidth(), 1.dp, Color.Gray)
+            LazyColumn(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 15.dp)
+            ) {
+                items(filteredAccounts, key = { it.id }) {
+                    UserContribuition(it)
+                    HorizontalDivider(Modifier.fillMaxWidth(), 1.dp, Color.Gray)
+                }
+            }
+        }
+    }
+
+    if (isSheetOpen) {
+
+        ModalBottomSheet(
+            onDismissRequest = { isSheetOpen = false },
+            sheetState = sheetState,
+            containerColor = Color.White
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Text(
+                    "Create new contribution".uppercase(),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Black,
+                )
+
+                Row(Modifier.fillMaxWidth()) {
+                    Box(Modifier.weight(1f)){
+                        FormTextField(
+                            value = minAmountText,
+                            label = "Min. amount",
+                            error = null,
+                            keyboardType = KeyboardType.Number,
+                        ) {
+                            minAmountText = it
+                        }
                     }
+
+                    Spacer(Modifier.size(8.dp))
+
+                    Box(Modifier.weight(1f)){
+                        FormTextField(
+                            value = maxAmountText,
+                            label = "Max. amount",
+                            error = null,
+                            keyboardType = KeyboardType.Number,
+                        ) {
+                            maxAmountText = it
+                        }
+                    }
+                }
+                Spacer(Modifier.size(8.dp))
+                Button(
+                    onClick = {
+                        appliedMinAmount = minAmountText.toFloatOrNull()
+                        appliedMaxAmount = maxAmountText.toFloatOrNull()
+                        isSheetOpen = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary
+                    )
+                ) {
+                    Text("Apply filter")
                 }
             }
         }

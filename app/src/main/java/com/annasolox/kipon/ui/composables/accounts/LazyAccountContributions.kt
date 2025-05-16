@@ -23,7 +23,9 @@ import com.annasolox.kipon.ui.models.Saving
 fun LazyAccountContributions(
     currentBoxSize: Dp,
     contributions: List<Saving>,
-    currentAccount: AccountDetails
+    currentAccount: AccountDetails,
+    currentAccountAmount: Double,
+    listState: LazyListState
 ) {
 
     Column(
@@ -36,11 +38,12 @@ fun LazyAccountContributions(
     ) {
         Spacer(Modifier.size(35.dp))
 
-        AccountProgressBar(currentAccount.currentAmount, currentAccount.moneyGoal)
+        AccountProgressBar(currentAccountAmount, currentAccount.moneyGoal)
 
         Spacer(Modifier.size(35.dp))
 
         LazyColumn(
+            state = listState
         ) {
             items(contributions, key = { it.id }) {
                 AccountContribution(it)

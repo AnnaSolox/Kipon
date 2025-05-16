@@ -5,6 +5,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,6 +27,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -46,16 +49,17 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil3.compose.AsyncImage
 import com.annasolox.kipon.R
 import com.annasolox.kipon.core.navigation.HomeScreen
-import com.annasolox.kipon.ui.composables.accounts.AccountProgressBar
 import com.annasolox.kipon.ui.composables.accounts.LazyAccountContributions
 import com.annasolox.kipon.ui.composables.buttons.OptionsButton
 import com.annasolox.kipon.ui.composables.headers.ColumnAccountDetailInfo
-import com.annasolox.kipon.ui.composables.headers.ImageHeader
 import com.annasolox.kipon.ui.composables.textFields.FormTextField
 import com.annasolox.kipon.ui.viewmodels.AccountViewModel
 import kotlinx.coroutines.launch
@@ -86,8 +90,15 @@ fun AccountDetailScreen(
     val navEvent by accountViewModel.navigationEvent.observeAsState()
 
     val savings by accountViewModel.savingsList.observeAsState()
+    val currentAccountAmount by accountViewModel.currentAccountAmount.observeAsState()
 
     val listState = rememberLazyListState()
+
+    LaunchedEffect(savings) {
+        if (!savings.isNullOrEmpty()) {
+            listState.animateScrollToItem(0)
+        }
+    }
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
@@ -121,7 +132,7 @@ fun AccountDetailScreen(
     }
 
     LaunchedEffect(currentAccount) {
-        if (currentAccount != null){
+        if (currentAccount != null) {
             accountViewModel.loadingSavingsList()
         }
     }
@@ -137,7 +148,6 @@ fun AccountDetailScreen(
             }
         }
 
-
         Box(Modifier.nestedScroll(nestedScrollConnection)) {
 
             AnimatedVisibility(
@@ -150,16 +160,18 @@ fun AccountDetailScreen(
                     LazyAccountContributions(
                         currentBoxSize,
                         savings!!,
-                        currentAccount!!
+                        currentAccount!!,
+                        currentAccountAmount ?: 0.0,
+                        listState = listState
                     )
                 }
-
 
                 Column(
                     Modifier
                         .fillMaxSize()
                         .align(Alignment.TopCenter)
                 ) {
+
                     Box(
                         Modifier
                             .fillMaxWidth()
@@ -174,11 +186,26 @@ fun AccountDetailScreen(
                                 )
                             },
                     ) {
-                        ImageHeader(
-                            height = currentBoxSize,
-                            imageResource = R.drawable.account_photo,
-                            contentImageDescription = "Account image"
-                        )
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .height(currentBoxSize)
+                        ) {
+                            AsyncImage(
+                                model = currentAccount?.photo,
+                                error = painterResource(R.drawable.account_photo),
+                                contentDescription = "User image thumbnail",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                            )
+
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .background(Color.Black.copy(alpha = 0.45f))
+                            )
+                        }
 
                         Row(
                             Modifier
@@ -194,27 +221,53 @@ fun AccountDetailScreen(
                                 Modifier
                                     .weight(1f)
                             ) {
-
                                 ColumnAccountDetailInfo(
                                     members = currentAccount!!.userMembers,
                                     title = currentAccount!!.name,
                                     currentAccount!!.dateGoal
                                 )
                             }
-
                             OptionsButton()
+                        }
+
+                        Row(
+                            Modifier
+                                .fillMaxSize()
+                                .padding(10.dp)
+                                .graphicsLayer(alpha = 1f - infoImageElementsAlpha),
+                            verticalAlignment = Alignment.Top,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                currentAccount!!.name,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Black,
+                                color = Color.White,
+                            )
                         }
                     }
                 }
             }
         }
+
+        IconButton({ navController.navigate(HomeScreen) }) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back button",
+                modifier = Modifier.size(30.dp),
+                tint = Color.White
+            )
+        }
+
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         val coroutineScope = rememberCoroutineScope()
         var isSheetOpen by remember { mutableStateOf(false) }
 
         FloatingActionButton(
-            onClick = {isSheetOpen = true
-                coroutineScope.launch { sheetState.show() } },
+            onClick = {
+                isSheetOpen = true
+                coroutineScope.launch { sheetState.show() }
+            },
             Modifier
                 .align(Alignment.BottomEnd)
                 .padding(20.dp)
@@ -240,7 +293,8 @@ fun AccountDetailScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Text("Create new contribution".uppercase(),
+                    Text(
+                        "Create new contribution".uppercase(),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Black,
                     )
@@ -250,7 +304,8 @@ fun AccountDetailScreen(
                         label = "Amount",
                         error = null,
                     ) {
-                        accountViewModel.onContributionAmountChange(it.toDouble()) }
+                        accountViewModel.onContributionAmountChange(it.toDouble())
+                    }
 
 
                     Spacer(Modifier.size(8.dp))

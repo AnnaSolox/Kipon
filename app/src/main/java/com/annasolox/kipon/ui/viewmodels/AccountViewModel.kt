@@ -69,6 +69,8 @@ class AccountViewModel(
     val currentAccount: LiveData<AccountDetails?> get() = _currentAccount
     private var _savingsList = MutableLiveData<List<Saving>>()
     val savingsList: LiveData<List<Saving>> get() = _savingsList
+    private var _currentAccountAmount = MutableLiveData<Double>(0.0)
+    val currentAccountAmount: LiveData<Double> get() = _currentAccountAmount
 
     //Navigation events
     private val _navigationEvent = MutableLiveData<AccountNavigationEvent?>()
@@ -86,7 +88,10 @@ class AccountViewModel(
                 Log.d("AccountViewModel", "Account response: $accountResponse")
                 _loadingState.postValue(LoginUiState.Success("Account loaded successfully"))
                 val mappedAccount = AccountMapper.toDetailAccount(accountResponse)
-                withContext(Dispatchers.Main) { _currentAccount.value = mappedAccount }
+                withContext(Dispatchers.Main) {
+                    _currentAccount.value = mappedAccount
+                    _currentAccountAmount.value = _currentAccount.value?.currentAmount
+                }
                 Log.d("AccountViewModel", "Current account: ${_currentAccount.value}")
 
             } catch (e: Exception) {
@@ -132,7 +137,8 @@ class AccountViewModel(
                         _currentAccount.value!!.id,
                         newSaving
                     )
-                    val updatedList = _savingsList.value.orEmpty() + newContribution
+                    _currentAccountAmount.postValue(newContribution.currentMoney)
+                    val updatedList = listOf(newContribution) + _savingsList.value.orEmpty()
                     val savingList = updatedList.map { it }
                     _savingsList.postValue(savingList)
 

@@ -1,7 +1,6 @@
 package com.annasolox.kipon.ui.composables.images
 
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable

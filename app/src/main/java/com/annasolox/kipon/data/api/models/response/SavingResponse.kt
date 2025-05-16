@@ -23,6 +23,6 @@ data class SavingResponse(
     val userPhoto: String?,
     @SerialName("fotoHucha")
     val accountPhoto: String?,
-    @SerialName("saldoActualHucha")
+    @SerialName("saldoPosterior")
     val currentMoney: Double
 )

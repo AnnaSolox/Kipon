@@ -47,9 +47,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.annasolox.kipon.core.navigation.AccountNavigationEvent
 import com.annasolox.kipon.core.navigation.AccountNavigationEvent.*
 import com.annasolox.kipon.core.navigation.DetailsAccountScreen
 import com.annasolox.kipon.core.navigation.HomeScreen
@@ -61,8 +61,6 @@ import com.annasolox.kipon.ui.composables.textFields.FormTextField
 import com.annasolox.kipon.ui.viewmodels.AccountViewModel
 import com.annasolox.kipon.ui.viewmodels.UserViewModel
 import kotlinx.coroutines.launch
-import org.koin.compose.viewmodel.koinViewModel
-import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,6 +82,19 @@ fun HomeScreen(
 
     //navigation event
     val navEvent by accountViewModel.navigationEvent.observeAsState()
+
+    //Creation account form fields
+    val accountName by accountViewModel.name.observeAsState("")
+    val moneyGoal by accountViewModel.moneyGoal.observeAsState(null)
+    val dateGoal by accountViewModel.dateGoal.observeAsState(null)
+    val photo by accountViewModel.photo.observeAsState("")
+
+    //Creation account form errors
+    val accountNameError by accountViewModel.nameError.observeAsState()
+    val moneyGoalError by accountViewModel.moneyGoalError.observeAsState()
+    val dateGoalError by accountViewModel.dateGoalError.observeAsState()
+    val photoError by accountViewModel.photoError.observeAsState()
+    val creationAccountValidation by accountViewModel.isValidAccountCreate.observeAsState()
 
 
     LaunchedEffect(Unit) {
@@ -208,13 +219,13 @@ fun HomeScreen(
             }
 
             if (isSheetOpen) {
-                val accountName by accountViewModel.name.observeAsState("")
-                val moneyGoal by accountViewModel.moneyGoal.observeAsState(null)
-                val dateGoal by accountViewModel.dateGoal.observeAsState(null)
-                val photo by accountViewModel.photo.observeAsState("")
 
                 ModalBottomSheet(
-                    onDismissRequest = { isSheetOpen = false },
+                    onDismissRequest = {
+                        isSheetOpen = false
+                        accountViewModel.clearCreateForm()
+                        accountViewModel.clearErrors()
+                                       },
                     sheetState = sheetState,
                     containerColor = Color.White
                 ) {
@@ -233,26 +244,28 @@ fun HomeScreen(
                         FormTextField(
                             value = accountName,
                             label = "Account name",
-                            error = null,
+                            error = accountNameError,
                         ) { accountViewModel.onAccountNameChange(it) }
 
                         FormTextField(
                             value = moneyGoal?.toString() ?: "",
                             label = "Money goal",
-                            error = null,
+                            error = moneyGoalError,
+                            keyboardType = KeyboardType.Number
                         ) {
                             accountViewModel.onAccountMoneyGoalChange(it.toDouble()) }
 
                         DatePickerTextField(
-                            dateGoal?: LocalDate.now(),
+                            dateGoal,
                             onDateSelected = {accountViewModel.onAccountDateGoalChange(it)},
                             label = "Date goal",
+                            error = dateGoalError
                         )
 
                         FormTextField(
                             value = photo.toString(),
                             label = "Photo URL",
-                            error = null,
+                            error = photoError,
                         ) { accountViewModel.onAccountPhotoChange(it) }
 
                         Spacer(Modifier.size(8.dp))
@@ -260,7 +273,10 @@ fun HomeScreen(
                         Button(
                             onClick = {
                                 accountViewModel.createNewAccount()
-                                isSheetOpen = false
+                                if(creationAccountValidation == true){
+                                    isSheetOpen = false
+                                    accountViewModel.clearCreateForm()
+                                }
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.tertiary

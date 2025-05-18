@@ -33,6 +33,7 @@ fun DatePickerTextField(
     onDateSelected: (LocalDate) -> Unit,
     label: String = "Date goal",
     modifier: Modifier = Modifier,
+    error: String?,
 ) {
     val context = LocalContext.current
     var showPicker by remember { mutableStateOf(false) }
@@ -101,4 +102,8 @@ fun DatePickerTextField(
             )
         }
     )
+
+    if (error != null) {
+        FormErrorText(error)
+    }
 }

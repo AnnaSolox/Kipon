@@ -22,7 +22,7 @@ import java.time.LocalDate
 
 class AccountViewModel(
     private val accountRepository: AccountRepository,
-    private val userReository: UserRepository
+    private val userRepository: UserRepository
 ) : ViewModel() {
     //Form create account info fields
     private var _name = MutableLiveData<String>()
@@ -31,11 +31,17 @@ class AccountViewModel(
         _name.postValue(accountName)
     }
 
+    private var _nameError = MutableLiveData<String?>(null)
+    val nameError: LiveData<String?> get() = _nameError
+
     private var _moneyGoal = MutableLiveData<Double?>(null)
     val moneyGoal: LiveData<Double?> get() = _moneyGoal
     fun onAccountMoneyGoalChange(accountMoneyGoal: Double) {
         _moneyGoal.postValue(accountMoneyGoal)
     }
+
+    private var _moneyGoalError = MutableLiveData<String?>(null)
+    val moneyGoalError: LiveData<String?> get() = _moneyGoalError
 
     private var _dateGoal = MutableLiveData<LocalDate?>()
     val dateGoal: LiveData<LocalDate?> get() = _dateGoal
@@ -47,18 +53,34 @@ class AccountViewModel(
         }
     }
 
+    private var _dateGoalError = MutableLiveData<String?>(null)
+    val dateGoalError: LiveData<String?> get() = _dateGoalError
+
     private var _photo = MutableLiveData<String>()
     val photo: LiveData<String> get() = _photo
     fun onAccountPhotoChange(accountPhoto: String) {
         _photo.postValue(accountPhoto)
     }
 
+    private var _photoError = MutableLiveData<String?>(null)
+    val photoError: LiveData<String?> get() = _photoError
+
+    //Flag to check if the creation of an account is valid
+    private val _isValidAccountCreate = MutableLiveData<Boolean>(false)
+    val isValidAccountCreate: LiveData<Boolean> get() = _isValidAccountCreate
+
+    //Flag to check if the creation of a contribution is valid
+    private val _isValidContributionCreate = MutableLiveData<Boolean>(false)
+    val isValidContributionCreate: LiveData<Boolean> get() = _isValidContributionCreate
+
     //Form new contribution info fields
-    private var _contributionAmount = MutableLiveData<Double>(0.0)
-    val contributionAmount: LiveData<Double> get() = _contributionAmount
+    private var _contributionAmount = MutableLiveData<Double?>(null)
+    val contributionAmount: LiveData<Double?> get() = _contributionAmount
     fun onContributionAmountChange(contributionAmount: Double) {
         _contributionAmount.postValue(contributionAmount)
     }
+    private var _contributionAmountError = MutableLiveData<String?>(null)
+    val contributionAmountError: LiveData<String?> get() = _contributionAmountError
 
     //Last created account
     private var _lastCreatedAccount = MutableLiveData<AccountOverview?>()
@@ -105,6 +127,7 @@ class AccountViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             _loadingState.postValue(LoginUiState.Loading)
             try {
+                if(!attemptAccountCreation())return@launch
                 val accountToCreate = AccountCreate(
                     name = _name.value.toString(),
                     moneyGoal = _moneyGoal.value!!.toDouble(),
@@ -128,9 +151,10 @@ class AccountViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             _loadingState.postValue(LoginUiState.Loading)
             try {
+                if(!attemptContributionCreation())return@launch
                 _contributionAmount.value?.let {
                     val newSaving = SavingCreate(
-                        userReository.getCurrentUserId(),
+                        userRepository.getCurrentUserId(),
                         _contributionAmount.value!!.toDouble()
                     )
                     val newContribution = accountRepository.createNewContribution(
@@ -152,7 +176,7 @@ class AccountViewModel(
         }
     }
 
-    fun loadingSavingsList(){
+    fun loadingSavingsList() {
         viewModelScope.launch(Dispatchers.IO) {
             val savings = _currentAccount.value!!.savings
             _savingsList.postValue(savings)
@@ -176,6 +200,69 @@ class AccountViewModel(
     }
 
     fun clearContributionForm() {
-        _contributionAmount.postValue(0.0)
+        _contributionAmount.postValue(null)
+    }
+
+    fun clearContributionError() {
+            _contributionAmountError.postValue(null)
+    }
+
+    fun clearErrors(){
+        _nameError.postValue(null)
+        _moneyGoalError.postValue(null)
+        _dateGoalError.postValue(null)
+        _photoError.postValue(null)
+    }
+
+    suspend fun attemptContributionCreation(): Boolean {
+        clearContributionError()
+
+        var isValid = true
+
+        if (_contributionAmount.value == null) {
+            _contributionAmountError.postValue("Campo obligatorio")
+            isValid = false
+        } else if (_contributionAmount.value!! <= 0) {
+            _contributionAmountError.postValue("La cantidad debe ser mayor a 0")
+            isValid = false
+        }
+
+        withContext(Dispatchers.Main) { _isValidContributionCreate.value = isValid }
+
+        return isValid
+    }
+
+    fun attemptAccountCreation(): Boolean {
+        clearErrors()
+
+        var isValid = true
+
+        if (_name.value.isNullOrBlank()) {
+            _nameError.postValue("Nombre de cuenta obligatorio")
+            isValid = false
+        } else if (_name.value!!.length > 100) {
+            _nameError.postValue("Debe tener menos de 100 caracteres")
+            isValid = false
+        }
+
+        if (_moneyGoal.value == null) {
+            _moneyGoalError.postValue("Campo obligatorio")
+            isValid = false
+        } else if (_moneyGoal.value!! <= 0) {
+            _moneyGoalError.postValue("La cantidad debe ser mayor a 0")
+            isValid = false
+        }
+
+        if (_dateGoal.value == null) {
+            _dateGoalError.postValue("Campo obligatorio")
+            isValid = false
+        } else if (!_dateGoal.value!!.isAfter(LocalDate.now())) {
+            _dateGoalError.postValue("La fecha ha de ser posterior a hoy")
+            isValid = false
+        }
+
+        // TODO: Validación de foto
+        _isValidAccountCreate.postValue(isValid)
+        return isValid
     }
 }

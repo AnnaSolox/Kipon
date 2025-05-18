@@ -52,8 +52,7 @@ fun BottomNavigationBar(navController: NavController) {
             title = "Savings",
             selectedIcon = Icons.Filled.Timeline,
             unselectedIcon = Icons.Outlined.Timeline,
-            hasNews = false,
-            badgeCount = 45
+            hasNews = false
         ),
         BottomNavigationItem(
             route = ProfileScreen::class.qualifiedName ?: "profile",

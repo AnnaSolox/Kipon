@@ -52,6 +52,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
@@ -91,6 +92,12 @@ fun AccountDetailScreen(
 
     val savings by accountViewModel.savingsList.observeAsState()
     val currentAccountAmount by accountViewModel.currentAccountAmount.observeAsState()
+    val contributionAmountError by accountViewModel.contributionAmountError.observeAsState()
+    val contributionValidation by accountViewModel.isValidContributionCreate.observeAsState()
+
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val coroutineScope = rememberCoroutineScope()
+    var isSheetOpen by remember { mutableStateOf(false) }
 
     val listState = rememberLazyListState()
 
@@ -128,6 +135,12 @@ fun AccountDetailScreen(
             popUpTo(HomeScreen) {
                 inclusive = true
             }
+        }
+    }
+
+    LaunchedEffect(contributionValidation) {
+        if(contributionValidation == true) {
+            isSheetOpen = false
         }
     }
 
@@ -259,10 +272,6 @@ fun AccountDetailScreen(
             )
         }
 
-        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-        val coroutineScope = rememberCoroutineScope()
-        var isSheetOpen by remember { mutableStateOf(false) }
-
         FloatingActionButton(
             onClick = {
                 isSheetOpen = true
@@ -282,7 +291,11 @@ fun AccountDetailScreen(
         if (isSheetOpen) {
 
             ModalBottomSheet(
-                onDismissRequest = { isSheetOpen = false },
+                onDismissRequest = {
+                    isSheetOpen = false
+                    accountViewModel.clearContributionForm()
+                    accountViewModel.clearContributionError()
+                },
                 sheetState = sheetState,
                 containerColor = Color.White
             ) {
@@ -302,7 +315,8 @@ fun AccountDetailScreen(
                     FormTextField(
                         value = contribAmount?.toString() ?: "",
                         label = "Amount",
-                        error = null,
+                        error = contributionAmountError,
+                        keyboardType = KeyboardType.Number,
                     ) {
                         accountViewModel.onContributionAmountChange(it.toDouble())
                     }
@@ -313,7 +327,10 @@ fun AccountDetailScreen(
                     Button(
                         onClick = {
                             accountViewModel.createNewContribution()
-                            isSheetOpen = false
+                            if(contributionValidation == true){
+                                accountViewModel.clearContributionForm()
+                                accountViewModel.clearContributionError()
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.tertiary

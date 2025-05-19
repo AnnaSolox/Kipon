@@ -13,5 +13,5 @@ data class UserProfileResponse(
     @SerialName("direccion")
     val address: String,
     @SerialName("fotoPerfil")
-    val photo: String?
+    val photo: String?,
 )

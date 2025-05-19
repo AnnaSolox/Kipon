@@ -19,5 +19,5 @@ data class UserResponse(
     @SerialName("huchas")
     val accountRole: List<AccountRoleResponse>,
     @SerialName("ahorros")
-    val savings: List<SavingResponse>?
+    val savings: List<SavingResponse>?,
 )

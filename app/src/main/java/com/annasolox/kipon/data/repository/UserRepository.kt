@@ -1,6 +1,7 @@
 package com.annasolox.kipon.data.repository
 
 import android.content.SharedPreferences
+import com.annasolox.kipon.data.api.models.request.patch.UserPatch
 import com.annasolox.kipon.data.api.models.response.UserResponse
 import com.annasolox.kipon.data.api.service.UserService
 
@@ -23,5 +24,11 @@ class UserRepository(
 
     suspend fun getCurrentUserId(): Long{
         return getCurrentUser()?.id ?: -1
+    }
+
+    suspend fun updateCurrentUser(userPatch: UserPatch): UserResponse {
+        val userId = getCurrentUserId()
+        if (userId == -1L) throw Exception("ID de usuario no disponible o sesión no iniciada")
+        return userService.updateUserInformation(userId, userPatch)
     }
 }

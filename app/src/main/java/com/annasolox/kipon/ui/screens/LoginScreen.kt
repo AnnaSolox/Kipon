@@ -116,8 +116,9 @@ fun LoginScreen(
                     Spacer(Modifier.size(12.dp))
 
                     LoginPasswordTextField(
-                        password,
-                        passwordError
+                        modifier = Modifier,
+                        password = password,
+                        error = passwordError
                     ) { authViewModel.onPasswordChanged(it) }
 
                     //Spacer(Modifier.size(12.dp))

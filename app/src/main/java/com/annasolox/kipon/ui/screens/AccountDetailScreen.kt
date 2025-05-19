@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -240,7 +241,7 @@ fun AccountDetailScreen(
                                     currentAccount!!.dateGoal
                                 )
                             }
-                            OptionsButton()
+                            OptionsButton(Icons.Filled.MoreVert)
                         }
 
                         Row(

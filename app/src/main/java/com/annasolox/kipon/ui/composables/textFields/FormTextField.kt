@@ -16,12 +16,15 @@ fun FormTextField(
     error: String?,
     keyboardType: KeyboardType = KeyboardType.Text,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     onValueChange: (String) -> Unit,
 ) {
     OutlinedTextField(
+        modifier = modifier,
         value = value,
         onValueChange = { onValueChange(it) },
         singleLine = true,
+        enabled = enabled,
         isError = error != null,
         label = { Text(text = label) },
         shape = RoundedCornerShape(100f),

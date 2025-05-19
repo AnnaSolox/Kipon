@@ -71,7 +71,7 @@ fun NavigationWrapper() {
             }
 
             composable<ProfileScreen> {
-                ProfileScreen()
+                ProfileScreen(navController, userViewModel)
             }
         }
     }

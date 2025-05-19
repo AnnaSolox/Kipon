@@ -4,7 +4,6 @@ import com.annasolox.kipon.data.api.models.request.create.ProfileCreate
 import com.annasolox.kipon.data.api.models.request.create.UserCreate
 import com.annasolox.kipon.data.api.models.response.UserProfileResponse
 import com.annasolox.kipon.data.api.models.response.UserResponse
-import com.annasolox.kipon.data.api.models.response.UserRolResponse
 import com.annasolox.kipon.data.api.models.response.UserSimplified
 import com.annasolox.kipon.ui.models.Profile
 import com.annasolox.kipon.ui.models.UserHomeScreen
@@ -58,6 +57,7 @@ object UserMapper {
             id = userResponse.id,
             name = userResponse.name,
             email = userResponse.email,
+            registrationDate = userResponse.registerDate,
             profile = toProfileUI(userResponse.profile)
             )
     }

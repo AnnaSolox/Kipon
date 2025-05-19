@@ -8,5 +8,5 @@ data class UserRolResponse(
     @SerialName("usuario")
     val user: UserSimplified,
     @SerialName("rol")
-    val role : String
+    val role : String,
 )

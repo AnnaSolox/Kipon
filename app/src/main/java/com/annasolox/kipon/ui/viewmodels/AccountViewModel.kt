@@ -222,7 +222,7 @@ class AccountViewModel(
         if (_contributionAmount.value == null) {
             _contributionAmountError.postValue("Campo obligatorio")
             isValid = false
-        } else if (_contributionAmount.value!! <= 0) {
+        } else if (_contributionAmount.value!! < 0) {
             _contributionAmountError.postValue("La cantidad debe ser mayor a 0")
             isValid = false
         }

@@ -94,6 +94,44 @@ class AccountViewModel(
     private var _currentAccountAmount = MutableLiveData<Double>(0.0)
     val currentAccountAmount: LiveData<Double> get() = _currentAccountAmount
 
+    //Account edit form fields
+    private var _editAccountName = MutableLiveData<String>()
+    val editAccountName: LiveData<String> get() = _editAccountName
+    fun onEditAccountNameChange(accountName: String) {
+        _editAccountName.postValue(accountName)
+    }
+
+    private var _editAccountNameError = MutableLiveData<String?>(null)
+    val editAccountNameError: LiveData<String?> get() = _editAccountNameError
+
+    private var _editAccountMoneyGoal = MutableLiveData<Double?>(null)
+    val editAccountMoneyGoal: LiveData<Double?> get() = _editAccountMoneyGoal
+    fun onEditAccountMoneyGoalChange(accountMoneyGoal: Double) {
+        _editAccountMoneyGoal.postValue(accountMoneyGoal)
+    }
+    private var _editAccountMoneyGoalError = MutableLiveData<String?>(null)
+    val editAccountMoneyGoalError: LiveData<String?> get() = _editAccountMoneyGoalError
+
+    private var _editAccountDateGoal = MutableLiveData<LocalDate?>()
+    val editAccountDateGoal: LiveData<LocalDate?> get() = _editAccountDateGoal
+    fun onEditAccountDateGoalChange(accountDateGoal: LocalDate?) {
+        accountDateGoal?.let {
+            _editAccountDateGoal.postValue(it)
+        } ?: run {
+            _editAccountDateGoal.postValue(null)
+        }
+    }
+    private var _editAccountDateGoalError = MutableLiveData<String?>(null)
+    val editAccountDateGoalError: LiveData<String?> get() = _editAccountDateGoalError
+
+    private var _editAccountPhoto = MutableLiveData<String>()
+    val editAccountPhoto: LiveData<String> get() = _editAccountPhoto
+    fun onEditAccountPhotoChange(accountPhoto: String) {
+        _editAccountPhoto.postValue(accountPhoto)
+    }
+    private var _editAccountPhotoError = MutableLiveData<String?>(null)
+
+
     //Navigation events
     private val _navigationEvent = MutableLiveData<AccountNavigationEvent?>()
     val navigationEvent: LiveData<AccountNavigationEvent?> get() = _navigationEvent

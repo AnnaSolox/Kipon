@@ -21,7 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.People
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -51,6 +52,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -62,6 +64,7 @@ import com.annasolox.kipon.core.navigation.HomeScreen
 import com.annasolox.kipon.ui.composables.accounts.LazyAccountContributions
 import com.annasolox.kipon.ui.composables.buttons.OptionsButton
 import com.annasolox.kipon.ui.composables.headers.ColumnAccountDetailInfo
+import com.annasolox.kipon.ui.composables.textFields.DatePickerTextField
 import com.annasolox.kipon.ui.composables.textFields.FormTextField
 import com.annasolox.kipon.ui.viewmodels.AccountViewModel
 import kotlinx.coroutines.launch
@@ -96,9 +99,11 @@ fun AccountDetailScreen(
     val contributionAmountError by accountViewModel.contributionAmountError.observeAsState()
     val contributionValidation by accountViewModel.isValidContributionCreate.observeAsState()
 
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
-    var isSheetOpen by remember { mutableStateOf(false) }
+    val addSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var isAddSheetOpen by remember { mutableStateOf(false) }
+    val ediSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var isEditSheetOpen by remember { mutableStateOf(false) }
 
     val listState = rememberLazyListState()
 
@@ -141,7 +146,7 @@ fun AccountDetailScreen(
 
     LaunchedEffect(contributionValidation) {
         if(contributionValidation == true) {
-            isSheetOpen = false
+            isAddSheetOpen = false
         }
     }
 
@@ -241,7 +246,15 @@ fun AccountDetailScreen(
                                     currentAccount!!.dateGoal
                                 )
                             }
-                            OptionsButton(Icons.Filled.MoreVert)
+                            Row{
+                                OptionsButton(Icons.Filled.People)
+                                Spacer(Modifier.size(8.dp))
+                                OptionsButton(Icons.Filled.Edit){
+                                    isEditSheetOpen = true
+                                    coroutineScope.launch { ediSheetState.show() }
+                                }
+                            }
+
                         }
 
                         Row(
@@ -275,8 +288,8 @@ fun AccountDetailScreen(
 
         FloatingActionButton(
             onClick = {
-                isSheetOpen = true
-                coroutineScope.launch { sheetState.show() }
+                isAddSheetOpen = true
+                coroutineScope.launch { addSheetState.show() }
             },
             Modifier
                 .align(Alignment.BottomEnd)
@@ -289,15 +302,102 @@ fun AccountDetailScreen(
             )
         }
 
-        if (isSheetOpen) {
+        val editAccountName by accountViewModel.editAccountName.observeAsState()
+        val editAccountNameError by accountViewModel.editAccountNameError.observeAsState()
+        val editMoneyGoal by accountViewModel.editAccountMoneyGoal.observeAsState()
+        val editMoneyGoalError by accountViewModel.editAccountMoneyGoalError.observeAsState()
+        val editDateGoal by accountViewModel.editAccountDateGoal.observeAsState()
+        val editDateGoalError by accountViewModel.editAccountDateGoalError.observeAsState()
+        val editAccountPhoto by accountViewModel.editAccountPhoto.observeAsState()
+
+        if (isEditSheetOpen) {
 
             ModalBottomSheet(
                 onDismissRequest = {
-                    isSheetOpen = false
+                    isEditSheetOpen = false
                     accountViewModel.clearContributionForm()
                     accountViewModel.clearContributionError()
                 },
-                sheetState = sheetState,
+                sheetState = ediSheetState,
+                containerColor = Color.White
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        "Edit account".uppercase(),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Black,
+                    )
+
+                    FormTextField(
+                        value = editAccountName ?: "",
+                        label = "Amount",
+                        placeholder = currentAccount!!.name,
+                        error = editAccountNameError,
+                    ) {
+                        accountViewModel.onEditAccountNameChange(it)
+                    }
+
+                    FormTextField(
+                        value = editMoneyGoal.toString(),
+                        label = "Money goal",
+                        error = editMoneyGoalError,
+                        placeholder = currentAccount!!.moneyGoal.toString(),
+                        keyboardType = KeyboardType.Number,
+                    ) {
+                        accountViewModel.onEditAccountNameChange(it)
+                    }
+
+                    DatePickerTextField(
+                        editDateGoal,
+                        onDateSelected = {accountViewModel.onEditAccountDateGoalChange(it)},
+                        label = "Date goal",
+                        error = editDateGoalError
+                    )
+
+                    FormTextField(
+                        value = editAccountPhoto ?: "",
+                        label = "Photo",
+                        error = null,
+                    ) {
+                        accountViewModel.onEditAccountNameChange(it)
+                    }
+
+
+                    Spacer(Modifier.size(8.dp))
+
+                    Button(
+                        onClick = {
+                            accountViewModel.createNewContribution()
+                            if(contributionValidation == true){
+                                accountViewModel.clearContributionForm()
+                                accountViewModel.clearContributionError()
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiary
+                        )
+                    ) {
+                        Text("Create contribution")
+                    }
+                }
+            }
+        }
+
+        if (isAddSheetOpen) {
+
+            ModalBottomSheet(
+                onDismissRequest = {
+                    isAddSheetOpen = false
+                    accountViewModel.clearContributionForm()
+                    accountViewModel.clearContributionError()
+                },
+                sheetState = addSheetState,
                 containerColor = Color.White
             ) {
                 Column(
@@ -337,7 +437,7 @@ fun AccountDetailScreen(
                             containerColor = MaterialTheme.colorScheme.tertiary
                         )
                     ) {
-                        Text("Create contribution")
+                        Text("Save")
                     }
                 }
             }

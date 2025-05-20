@@ -52,7 +52,7 @@ fun NavigationWrapper() {
             modifier = Modifier.background(Color.White).padding(innerPadding)
         ) {
             composable<LoginScreen> {
-                LoginScreen(navController)
+                LoginScreen(navController, userViewModel)
             }
 
             composable<RegisterScreen> {
@@ -64,7 +64,7 @@ fun NavigationWrapper() {
             }
 
             composable<DetailsAccountScreen> {
-                AccountDetailScreen(navController, accountViewModel)
+                AccountDetailScreen(navController, accountViewModel, userViewModel)
             }
 
             composable<TransactionsScreen> {

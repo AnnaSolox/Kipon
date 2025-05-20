@@ -14,12 +14,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,31 +42,41 @@ import com.annasolox.kipon.core.navigation.RegisterScreen
 import com.annasolox.kipon.ui.composables.backgrounds.AuthBackground
 import com.annasolox.kipon.ui.composables.textFields.FormTextField
 import com.annasolox.kipon.ui.composables.textFields.LoginPasswordTextField
+import com.annasolox.kipon.ui.models.LoginUiState
 import com.annasolox.kipon.ui.viewmodels.AuthViewModel
+import com.annasolox.kipon.ui.viewmodels.UserViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LoginScreen(
     navController: NavController,
-    authViewModel: AuthViewModel = koinViewModel()) {
+    userViewModel: UserViewModel,
+    authViewModel: AuthViewModel = koinViewModel()
+) {
     val username by authViewModel.userName.observeAsState("")
     val usernameError by authViewModel.userNameError.observeAsState()
     val password by authViewModel.password.observeAsState("")
     val passwordError by authViewModel.passwordError.observeAsState()
-    val navEvent by authViewModel.navigationEvent.observeAsState()
+    val loginState by authViewModel.loginState.observeAsState(LoginUiState.Idle)
+    val user by userViewModel.userHome.observeAsState()
+    var chargingUser by remember { mutableStateOf(false) }
 
-    LaunchedEffect(navEvent) {
-        when(navEvent) {
-            NavigateToHome -> {
-                navController.navigate(HomeScreen) {
-                    popUpTo(LoginScreen) { inclusive = true }
-                    launchSingleTop = true
-                }
-                authViewModel.clearNavigationEvent()
+    LaunchedEffect(loginState) {
+        if (loginState is LoginUiState.Loading){
+            chargingUser = true
+        }
+        else if (loginState is LoginUiState.Success) {
+            userViewModel.loadUser()
+        } else if (loginState is LoginUiState.Error) {
+            chargingUser = false
+        }
+    }
+
+    LaunchedEffect(user) {
+        if(user!=null){
+            navController.navigate(HomeScreen){
+                launchSingleTop = true
             }
-
-            null -> {}
-
         }
     }
 
@@ -126,8 +140,14 @@ fun LoginScreen(
 
                     Spacer(Modifier.size(60.dp))
 
+                    if(chargingUser){
+                        CircularProgressIndicator()
+                    }
+
                     Button(
-                        { authViewModel.login() },
+                        {
+                            authViewModel.login()
+                        },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.tertiary
                         )
@@ -146,7 +166,7 @@ fun LoginScreen(
                             fontWeight = FontWeight.Black,
                             modifier = Modifier.clickable {
                                 navController.navigate(RegisterScreen) {
-                                    popUpTo<LoginScreen>{inclusive = true}
+                                    popUpTo<LoginScreen> { inclusive = true }
                                     launchSingleTop = true
                                 }
                             }

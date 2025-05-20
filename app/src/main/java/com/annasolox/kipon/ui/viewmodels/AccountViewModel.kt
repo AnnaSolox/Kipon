@@ -18,6 +18,8 @@ import com.annasolox.kipon.ui.models.AccountOverview
 import com.annasolox.kipon.ui.models.LoginUiState
 import com.annasolox.kipon.ui.models.Saving
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -145,6 +147,9 @@ class AccountViewModel(
     //Loading state
     private var _loadingState = MutableLiveData<LoginUiState>(LoginUiState.Idle)
     val loadingState: LiveData<LoginUiState> get() = _loadingState
+
+    private val _onUserAdded = MutableSharedFlow<Unit>()
+    val onUserAdded = _onUserAdded.asSharedFlow()
 
     fun loadCurrentAccount(id: Long) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -363,6 +368,7 @@ class AccountViewModel(
                     )
                     accountRepository.addUserToAccount(userAccountCreate)
                     loadCurrentAccount(_currentAccount.value!!.id)
+                    _onUserAdded.emit(Unit)
                 }
             } catch (e: Exception){
                 Log.d("AccountViewModel", "Error al añadir usuario a la cuenta: ${e.message}")

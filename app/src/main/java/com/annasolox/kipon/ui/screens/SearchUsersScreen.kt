@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -48,8 +49,15 @@ fun SearchUsersScreen(
     ) {
 
         val fetchedUsers by userViewModel.fetchedUsers.observeAsState()
+
         var query by remember { mutableStateOf("") }
         val coroutineScope = rememberCoroutineScope()
+
+        LaunchedEffect(Unit) {
+            accountViewModel.onUserAdded.collect {
+                navController.navigate(DetailsAccountScreen)
+            }
+        }
 
         Column {
 
@@ -93,7 +101,6 @@ fun SearchUsersScreen(
                         val user = fetchedUsers!!.get(index)
                         UserSearchComposable(user = user, modifier = Modifier.clickable {
                             accountViewModel.addUserToAccount(user.id)
-                            navController.navigate(DetailsAccountScreen)
                         })
                         HorizontalDivider(Modifier.fillMaxWidth(), 1.dp, Color.Gray)
                     }

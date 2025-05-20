@@ -67,13 +67,15 @@ import com.annasolox.kipon.ui.composables.headers.ColumnAccountDetailInfo
 import com.annasolox.kipon.ui.composables.textFields.DatePickerTextField
 import com.annasolox.kipon.ui.composables.textFields.FormTextField
 import com.annasolox.kipon.ui.viewmodels.AccountViewModel
+import com.annasolox.kipon.ui.viewmodels.UserViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountDetailScreen(
     navController: NavController,
-    accountViewModel: AccountViewModel
+    accountViewModel: AccountViewModel,
+    userViewModel: UserViewModel
 ) {
     //currentAccount
     val currentAccount by accountViewModel.currentAccount.observeAsState()

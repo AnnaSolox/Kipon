@@ -93,12 +93,6 @@ fun AccountDetailScreen(
     var currentBoxSize by remember { mutableStateOf(maxSize) }
     var infoImageElementsAlpha by remember { mutableFloatStateOf(1f) }
 
-    //loading state
-    val loadingState by accountViewModel.loadingState.observeAsState()
-
-    //navigation
-    val navEvent by accountViewModel.navigationEvent.observeAsState()
-
     val savings by accountViewModel.savingsList.observeAsState()
     val currentAccountAmount by accountViewModel.currentAccountAmount.observeAsState()
     val contributionAmountError by accountViewModel.contributionAmountError.observeAsState()
@@ -116,6 +110,12 @@ fun AccountDetailScreen(
     LaunchedEffect(savings) {
         if (!savings.isNullOrEmpty()) {
             listState.animateScrollToItem(0)
+        }
+    }
+
+    LaunchedEffect(editAccountValidation) {
+        if (editAccountValidation == true) {
+            isEditSheetOpen = false
         }
     }
 
@@ -383,9 +383,6 @@ fun AccountDetailScreen(
                     Button(
                         onClick = {
                             accountViewModel.updateAccountInformation()
-                            if(editAccountValidation == true){
-                                isEditSheetOpen = false
-                            }
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.tertiary

@@ -319,6 +319,7 @@ class AccountViewModel(
     }
 
     suspend fun attempAcountEdit(): Boolean {
+        withContext(Dispatchers.Main) { _isValidEditAccount.value = false }
         var isValid = true
 
         _editAccountName.value?.let {

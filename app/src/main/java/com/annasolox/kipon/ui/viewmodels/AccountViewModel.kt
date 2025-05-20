@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.annasolox.kipon.core.navigation.AccountNavigationEvent
+import com.annasolox.kipon.core.utils.formatters.Formatters
 import com.annasolox.kipon.core.utils.mappers.AccountMapper
 import com.annasolox.kipon.data.api.models.request.create.AccountCreate
 import com.annasolox.kipon.data.api.models.request.create.SavingCreate
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.Format
 import java.time.LocalDate
 
 class AccountViewModel(
@@ -379,7 +381,7 @@ class AccountViewModel(
     fun populateEditAccountForm(){
         _editAccountName.postValue(_currentAccount.value?.name)
         _editAccountMoneyGoal.postValue(_currentAccount.value?.moneyGoal)
-        _editAccountDateGoal.postValue(LocalDate.parse(_currentAccount.value?.dateGoal))
+        _editAccountDateGoal.postValue(Formatters.parseDate(_currentAccount.value!!.dateGoal))
         _editAccountPhoto.postValue(_currentAccount.value?.photo.toString())
     }
 

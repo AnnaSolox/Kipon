@@ -1,12 +1,12 @@
 package com.annasolox.kipon.core.utils.mappers
 
+import com.annasolox.kipon.core.utils.formatters.Formatters.formatDateToUi
 import com.annasolox.kipon.data.api.models.response.AccountResponse
 import com.annasolox.kipon.data.api.models.response.AccountRoleResponse
 import com.annasolox.kipon.data.api.models.response.SavingResponse
 import com.annasolox.kipon.ui.models.AccountDetails
 import com.annasolox.kipon.ui.models.AccountOverview
 import com.annasolox.kipon.ui.models.Saving
-import java.time.format.DateTimeFormatter
 
 object AccountMapper {
     fun toAccountOverview(
@@ -17,7 +17,7 @@ object AccountMapper {
             name = accountResponse.name,
             currentMoney = accountResponse.currentMoney,
             moneyGoal = accountResponse.moneyGoal,
-            dateGoal = accountResponse.goalDate.toString(),
+            dateGoal = formatDateToUi(accountResponse.goalDate),
             photo = accountResponse.photo
         )
     }
@@ -31,7 +31,7 @@ object AccountMapper {
             name = account.name,
             currentMoney = account.currentMoney,
             moneyGoal = account.moneyGoal,
-            dateGoal = account.dateGoal.toString(),
+            dateGoal = if (account.dateGoal != null) { formatDateToUi(account.dateGoal) } else "",
             photo = account.photo,
         )
     }
@@ -44,7 +44,7 @@ object AccountMapper {
             name = accountResponse.name,
             currentAmount = accountResponse.currentMoney,
             moneyGoal = accountResponse.moneyGoal,
-            dateGoal = accountResponse.goalDate.toString(),
+            dateGoal = formatDateToUi(accountResponse.goalDate),
             userMembers = accountResponse.userMembers.map { it.user},
             admin = accountResponse.admin,
             savings = accountResponse.savings?.map { toSavingUi(it)} ?: arrayListOf(),
@@ -55,15 +55,13 @@ object AccountMapper {
     fun toSavingUi(
         savingResponse: SavingResponse
     ): Saving {
-        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-        val formattedDate = savingResponse.date.format(formatter)
 
         return Saving(
             id = savingResponse.id,
             userId = savingResponse.userId,
             username = savingResponse.userName,
             accountName = savingResponse.accountName,
-            date = formattedDate,
+            date = formatDateToUi(savingResponse.date),
             amount = savingResponse.amount,
             currentMoney = savingResponse.currentMoney,
             userPhoto = savingResponse.userPhoto ?: "",

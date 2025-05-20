@@ -2,9 +2,12 @@ package com.annasolox.kipon.data.api.service
 
 import com.annasolox.kipon.data.api.models.request.create.AccountCreate
 import com.annasolox.kipon.data.api.models.request.create.SavingCreate
+import com.annasolox.kipon.data.api.models.request.create.UserAccountCreate
 import com.annasolox.kipon.data.api.models.request.patch.AccountPatch
 import com.annasolox.kipon.data.api.models.response.AccountResponse
 import com.annasolox.kipon.data.api.models.response.SavingResponse
+import com.annasolox.kipon.data.api.models.response.UserResponse
+import com.typesafe.config.ConfigSyntax.JSON
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -54,6 +57,20 @@ class AccountServiceImpl(private val client: HttpClient): AccountService {
         if (!response.status.isSuccess()) {
             val error = response.bodyAsText()
             throw Exception("Error al actualizar la hucha: $error")
+        }
+
+        return response.body()
+    }
+
+    override suspend fun addUserToAccount(userAccountCreate: UserAccountCreate): UserResponse {
+        val response = client.post("huchas/usuario-hucha") {
+            contentType(Json)
+            setBody(userAccountCreate)
+        }
+
+        if(!response.status.isSuccess()) {
+            val error = response.bodyAsText()
+            throw Exception("Error al insertar usuario en la hucha: $error")
         }
 
         return response.body()

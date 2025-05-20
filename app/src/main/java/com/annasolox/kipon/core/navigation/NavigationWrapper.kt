@@ -76,7 +76,7 @@ fun NavigationWrapper() {
             }
 
             composable<SearchUsersScreen>{
-                SearchUsersScreen(navController, userViewModel)
+                SearchUsersScreen(navController, userViewModel, accountViewModel)
             }
         }
     }

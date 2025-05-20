@@ -63,7 +63,7 @@ object UserMapper {
             )
     }
 
-    fun toSimpleUserFromRoleResponse(
+    fun toSimpleUserFromUserResponse(
         userResponse: UserResponse
     ): UserSimplified {
         return UserSimplified(

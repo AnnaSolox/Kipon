@@ -15,9 +15,9 @@ import com.annasolox.kipon.ui.composables.images.ImageThumbnail
 import com.annasolox.kipon.ui.models.SearchedUser
 
 @Composable
-fun UserSearchComposable(user: SearchedUser) {
+fun UserSearchComposable(modifier:Modifier = Modifier, user: SearchedUser) {
     Row(
-        Modifier
+        modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically

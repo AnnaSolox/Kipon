@@ -9,6 +9,7 @@ import com.annasolox.kipon.core.navigation.AccountNavigationEvent
 import com.annasolox.kipon.core.utils.mappers.AccountMapper
 import com.annasolox.kipon.data.api.models.request.create.AccountCreate
 import com.annasolox.kipon.data.api.models.request.create.SavingCreate
+import com.annasolox.kipon.data.api.models.request.create.UserAccountCreate
 import com.annasolox.kipon.data.api.models.request.patch.AccountPatch
 import com.annasolox.kipon.data.repository.AccountRepository
 import com.annasolox.kipon.data.repository.UserRepository
@@ -347,6 +348,24 @@ class AccountViewModel(
                 clearEditAccountError()
             } catch (e: Exception){
                 Log.e("AccountViewModel", "error actualizando cuenta: ${e.message}")
+            }
+        }
+    }
+
+    fun addUserToAccount(userId: Long){
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _currentAccount.value?.let {
+                    val userAccountCreate = UserAccountCreate(
+                        userId = userId,
+                        accountId = _currentAccount.value!!.id,
+                        role = "Miembro"
+                    )
+                    accountRepository.addUserToAccount(userAccountCreate)
+                    loadCurrentAccount(_currentAccount.value!!.id)
+                }
+            } catch (e: Exception){
+                Log.d("AccountViewModel", "Error al añadir usuario a la cuenta: ${e.message}")
             }
         }
     }

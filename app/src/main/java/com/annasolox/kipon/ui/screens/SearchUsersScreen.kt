@@ -27,8 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.annasolox.kipon.ui.composables.UserSearchComposable
 import com.annasolox.kipon.ui.viewmodels.UserViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @Composable
@@ -85,8 +85,8 @@ fun SearchUsersScreen(
                         .padding(horizontal = 15.dp)
                 ) {
                     items(fetchedUsers!!.size) { index ->
-                        val username = fetchedUsers!!.get(index).userName
-                        Text(username)
+                        val user = fetchedUsers!!.get(index)
+                        UserSearchComposable(user)
                         HorizontalDivider(Modifier.fillMaxWidth(), 1.dp, Color.Gray)
                     }
                 }

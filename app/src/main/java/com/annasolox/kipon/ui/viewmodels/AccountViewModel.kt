@@ -13,6 +13,7 @@ import com.annasolox.kipon.data.api.models.request.create.SavingCreate
 import com.annasolox.kipon.data.api.models.request.create.UserAccountCreate
 import com.annasolox.kipon.data.api.models.request.patch.AccountPatch
 import com.annasolox.kipon.data.repository.AccountRepository
+import com.annasolox.kipon.data.repository.ImageUploadRepository
 import com.annasolox.kipon.data.repository.UserRepository
 import com.annasolox.kipon.ui.models.AccountDetails
 import com.annasolox.kipon.ui.models.AccountOverview
@@ -28,7 +29,8 @@ import java.time.LocalDate
 
 class AccountViewModel(
     private val accountRepository: AccountRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val imageRepository: ImageUploadRepository
 ) : ViewModel() {
     //Form create account info fields
     private var _name = MutableLiveData<String>()

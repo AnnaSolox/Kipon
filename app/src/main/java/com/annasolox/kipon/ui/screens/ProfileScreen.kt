@@ -1,5 +1,9 @@
 package com.annasolox.kipon.ui.screens
 
+import android.net.Uri
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -39,6 +43,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
@@ -49,6 +54,7 @@ import com.annasolox.kipon.R
 import com.annasolox.kipon.ui.composables.buttons.OptionsButton
 import com.annasolox.kipon.ui.composables.textFields.FormTextField
 import com.annasolox.kipon.ui.composables.textFields.LoginPasswordTextField
+import com.annasolox.kipon.ui.composables.textFields.PhotoTextField
 import com.annasolox.kipon.ui.viewmodels.UserViewModel
 
 @Composable
@@ -99,6 +105,33 @@ fun ProfileScreen(
             }
         }
     }
+
+    val context = LocalContext.current
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            val imageBytes = inputStream?.readBytes()
+            inputStream?.close()
+
+            imageBytes?.let {
+                userViewModel.uploadImage(it)
+            }
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            imagePickerLauncher.launch("image/*")
+        }
+    }
+
+
+    val requiresPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
     var editEnable by remember { mutableStateOf(false) }
     var isProfileScreen = true
@@ -185,15 +218,20 @@ fun ProfileScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) { userViewModel.onAddressChanged(it) }
 
-                FormTextField(
+                PhotoTextField(
+                    modifier = Modifier.fillMaxWidth(),
                     enabled = editEnable,
                     value = photo ?: "",
+                    onValueChange = { userViewModel.onPhotoChanged(it) },
                     label = "Photo URL",
                     error = null,
-                    modifier = Modifier.fillMaxWidth()
-                ) { userViewModel.onPhotoChanged(it) }
-
-
+                ) {
+                    if (requiresPermission) {
+                        permissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES)
+                    } else {
+                        imagePickerLauncher.launch("image/*")
+                    }
+                }
                 if (editEnable) {
                     Row(
                         Modifier
@@ -217,96 +255,99 @@ fun ProfileScreen(
                     }
                 }
             }
+        }
 
-            Column(
+
+
+
+        Column(
+            Modifier
+                .fillMaxSize()
+                .align(Alignment.TopCenter)
+        ) {
+
+            Box(
                 Modifier
-                    .fillMaxSize()
-                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .height(currentBoxSize)
+                    .graphicsLayer {
+                        clip = true
+                        shape = RoundedCornerShape(
+                            topStart = 0.dp,
+                            topEnd = 0.dp,
+                            bottomStart = 16.dp,
+                            bottomEnd = 16.dp
+                        )
+                    },
             ) {
-
                 Box(
                     Modifier
                         .fillMaxWidth()
                         .height(currentBoxSize)
-                        .graphicsLayer {
-                            clip = true
-                            shape = RoundedCornerShape(
-                                topStart = 0.dp,
-                                topEnd = 0.dp,
-                                bottomStart = 16.dp,
-                                bottomEnd = 16.dp
-                            )
-                        },
                 ) {
+                    AsyncImage(
+                        model = currentUser?.profile?.photo,
+                        error = painterResource(R.drawable.girl_photo),
+                        contentDescription = "User profile image header",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
+
                     Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .background(Color.Black.copy(alpha = 0.45f))
+                    )
+                }
+
+                Row(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(20.dp)
+                        .graphicsLayer(
+                            alpha = infoImageElementsAlpha
+                        ),
+                    verticalAlignment = Alignment.Bottom
+                ) {
+
+                    Column(
                         Modifier
-                            .fillMaxWidth()
-                            .height(currentBoxSize)
-                    ) {
-                        AsyncImage(
-                            model = currentUser?.profile?.photo,
-                            error = painterResource(R.drawable.girl_photo),
-                            contentDescription = "User profile image header",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .fillMaxSize()
-                        )
-
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .background(Color.Black.copy(alpha = 0.45f))
-                        )
-                    }
-
-                    Row(
-                        Modifier
-                            .fillMaxSize()
-                            .padding(20.dp)
-                            .graphicsLayer(
-                                alpha = infoImageElementsAlpha
-                            ),
-                        verticalAlignment = Alignment.Bottom
-                    ) {
-
-                        Column(
-                            Modifier
-                                .weight(1f)
-                        ) {
-                            Text(
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.Black,
-                                color = Color.White,
-                                text = "Fecha de registro"
-                            )
-                            Spacer(Modifier.size(4.dp))
-                            Text(
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Black,
-                                color = Color.White,
-                                text = currentUser?.registrationDate.toString()
-                            )
-                        }
-                        OptionsButton(Icons.Filled.Edit) {
-                            editEnable = !editEnable
-                        }
-                    }
-
-                    Row(
-                        Modifier
-                            .fillMaxSize()
-                            .padding(10.dp)
-                            .graphicsLayer(alpha = 1f - infoImageElementsAlpha),
-                        verticalAlignment = Alignment.Top,
-                        horizontalArrangement = Arrangement.Center
+                            .weight(1f)
                     ) {
                         Text(
-                            currentUser!!.name,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Black,
+                            color = Color.White,
+                            text = "Fecha de registro"
+                        )
+                        Spacer(Modifier.size(4.dp))
+                        Text(
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Black,
                             color = Color.White,
+                            text = currentUser?.registrationDate.toString()
                         )
                     }
+                    OptionsButton(Icons.Filled.Edit) {
+                        editEnable = !editEnable
+                    }
+                }
+
+                Row(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(10.dp)
+                        .graphicsLayer(alpha = 1f - infoImageElementsAlpha),
+                    verticalAlignment = Alignment.Top,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        currentUser!!.name,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Black,
+                        color = Color.White,
+                    )
                 }
             }
         }

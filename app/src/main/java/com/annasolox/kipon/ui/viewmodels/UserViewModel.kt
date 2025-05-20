@@ -11,6 +11,7 @@ import com.annasolox.kipon.core.utils.mappers.UserMapper.toUserHomeScreen
 import com.annasolox.kipon.core.utils.mappers.UserMapper.toUserProfileScreenFromUserResponse
 import com.annasolox.kipon.data.api.models.request.patch.ProfilePatch
 import com.annasolox.kipon.data.api.models.request.patch.UserPatch
+import com.annasolox.kipon.data.repository.ImageUploadRepository
 import com.annasolox.kipon.data.repository.UserRepository
 import com.annasolox.kipon.ui.models.AccountOverview
 import com.annasolox.kipon.ui.models.Saving
@@ -23,6 +24,7 @@ import kotlinx.coroutines.withContext
 
 class UserViewModel(
     private val userRepository: UserRepository,
+    private val imageUploadRepository: ImageUploadRepository,
     private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
     private val _userHome = MutableLiveData<UserHomeScreen>()
@@ -129,6 +131,7 @@ class UserViewModel(
                     withContext(Dispatchers.Main) {
                         _userHome.value = toUserHomeScreen(response)
                         _userProfile.value = toUserProfileScreenFromUserResponse(response)
+                        Log.d("UserViewModel", "User: ${_userProfile.value}")
                         populateProfileFields()
                     }
 
@@ -222,6 +225,19 @@ class UserViewModel(
         Log.d("UserViewModel", "isValid: $isValid")
 
         return isValid
+    }
+
+    fun uploadImage(image: ByteArray) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val imageUrl = imageUploadRepository.uploadImage(image)
+                withContext(Dispatchers.Main) {
+                    _photo.value = imageUrl
+                }
+            } catch (e: Exception) {
+                Log.e("UserViewModel", "Error uploading image: ${e.message}")
+            }
+        }
     }
 
     fun populateProfileFields() {

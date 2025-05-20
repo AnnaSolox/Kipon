@@ -5,14 +5,15 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
+@Serializable
 data class AccountPatch(
     @SerialName("nombre")
-    val name: String,
+    val name: String? = null,
     @SerialName("objetivoAhorro")
-    val moneyGoal: Double,
+    val moneyGoal: Double? = null,
     @SerialName("fechaObjetivo")
     @Serializable(with = LocalDateSerializer::class)
-    val dateGoal: LocalDate,
+    val dateGoal: LocalDate? = null,
     @SerialName("idAdminitrador")
-    val adminId: Long
+    val adminId: Long? = null
 )

@@ -4,6 +4,7 @@ import com.annasolox.kipon.core.utils.mappers.AccountMapper.toAccountOverview
 import com.annasolox.kipon.core.utils.mappers.AccountMapper.toSavingUi
 import com.annasolox.kipon.data.api.models.request.create.AccountCreate
 import com.annasolox.kipon.data.api.models.request.create.SavingCreate
+import com.annasolox.kipon.data.api.models.request.patch.AccountPatch
 import com.annasolox.kipon.data.api.models.response.AccountResponse
 import com.annasolox.kipon.data.api.service.AccountService
 import com.annasolox.kipon.ui.models.AccountOverview
@@ -38,5 +39,10 @@ class AccountRepository(
     ): Saving {
         val savingResponse = accountService.createNewContribution(accountId, savingCreate)
         return toSavingUi(savingResponse)
+    }
+
+    suspend fun updateCurrentAccount(accountId:Long, accountPatch: AccountPatch): AccountResponse {
+        if (accountId == -1L) throw Exception("ID de hucha no disponible o sin permisos de edición")
+        return accountService.updateAccountInformation(accountId, accountPatch)
     }
 }

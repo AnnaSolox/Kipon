@@ -52,7 +52,6 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -61,6 +60,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.annasolox.kipon.R
 import com.annasolox.kipon.core.navigation.HomeScreen
+import com.annasolox.kipon.core.navigation.SearchUsersScreen
 import com.annasolox.kipon.ui.composables.accounts.LazyAccountContributions
 import com.annasolox.kipon.ui.composables.buttons.OptionsButton
 import com.annasolox.kipon.ui.composables.headers.ColumnAccountDetailInfo
@@ -98,6 +98,7 @@ fun AccountDetailScreen(
     val currentAccountAmount by accountViewModel.currentAccountAmount.observeAsState()
     val contributionAmountError by accountViewModel.contributionAmountError.observeAsState()
     val contributionValidation by accountViewModel.isValidContributionCreate.observeAsState()
+    val editAccountValidation by accountViewModel.isValidEditAccount.observeAsState()
 
     val coroutineScope = rememberCoroutineScope()
     val addSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -247,7 +248,9 @@ fun AccountDetailScreen(
                                 )
                             }
                             Row{
-                                OptionsButton(Icons.Filled.People)
+                                OptionsButton(Icons.Filled.People){
+                                    navController.navigate(SearchUsersScreen)
+                                }
                                 Spacer(Modifier.size(8.dp))
                                 OptionsButton(Icons.Filled.Edit){
                                     isEditSheetOpen = true
@@ -315,8 +318,8 @@ fun AccountDetailScreen(
             ModalBottomSheet(
                 onDismissRequest = {
                     isEditSheetOpen = false
-                    accountViewModel.clearContributionForm()
-                    accountViewModel.clearContributionError()
+                    accountViewModel.clearEditAccountError()
+                    accountViewModel.populateEditAccountForm()
                 },
                 sheetState = ediSheetState,
                 containerColor = Color.White
@@ -336,7 +339,7 @@ fun AccountDetailScreen(
 
                     FormTextField(
                         value = editAccountName ?: "",
-                        label = "Amount",
+                        label = "AccountName",
                         placeholder = currentAccount!!.name,
                         error = editAccountNameError,
                     ) {
@@ -350,7 +353,7 @@ fun AccountDetailScreen(
                         placeholder = currentAccount!!.moneyGoal.toString(),
                         keyboardType = KeyboardType.Number,
                     ) {
-                        accountViewModel.onEditAccountNameChange(it)
+                        accountViewModel.onEditAccountMoneyGoalChange(it.toDouble())
                     }
 
                     DatePickerTextField(
@@ -373,17 +376,16 @@ fun AccountDetailScreen(
 
                     Button(
                         onClick = {
-                            accountViewModel.createNewContribution()
-                            if(contributionValidation == true){
-                                accountViewModel.clearContributionForm()
-                                accountViewModel.clearContributionError()
+                            accountViewModel.updateAccountInformation()
+                            if(editAccountValidation == true){
+                                isEditSheetOpen = false
                             }
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.tertiary
                         )
                     ) {
-                        Text("Create contribution")
+                        Text("Save")
                     }
                 }
             }
@@ -437,7 +439,7 @@ fun AccountDetailScreen(
                             containerColor = MaterialTheme.colorScheme.tertiary
                         )
                     ) {
-                        Text("Save")
+                        Text("Create contribution")
                     }
                 }
             }

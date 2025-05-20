@@ -1,6 +1,5 @@
 package com.annasolox.kipon.core.navigation
 
-import com.annasolox.kipon.ui.models.AccountDetails
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -20,3 +19,6 @@ object TransactionsScreen
 
 @Serializable
 object ProfileScreen
+
+@Serializable
+object SearchUsersScreen

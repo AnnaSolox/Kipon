@@ -1,9 +1,11 @@
 package com.annasolox.kipon.data.repository
 
 import android.content.SharedPreferences
+import com.annasolox.kipon.core.utils.mappers.UserMapper
 import com.annasolox.kipon.data.api.models.request.patch.UserPatch
 import com.annasolox.kipon.data.api.models.response.UserResponse
 import com.annasolox.kipon.data.api.service.UserService
+import com.annasolox.kipon.ui.models.SearchedUser
 
 class UserRepository(
     private val userService: UserService,
@@ -30,5 +32,11 @@ class UserRepository(
         val userId = getCurrentUserId()
         if (userId == -1L) throw Exception("ID de usuario no disponible o sesión no iniciada")
         return userService.updateUserInformation(userId, userPatch)
+    }
+
+    suspend fun fetchUsersByPartialName(partialName: String): List<SearchedUser>{
+        val response = userService.fetchUserByPartialUsername(partialName)
+        val searchedUserLists = response.map { UserMapper.toSearchedUser(it) }
+        return searchedUserLists
     }
 }

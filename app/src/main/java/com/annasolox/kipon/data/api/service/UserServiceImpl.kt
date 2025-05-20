@@ -10,10 +10,11 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.patch
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType.Application.Json
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 
-class UserServiceImpl(private val client: HttpClient): UserService {
+class UserServiceImpl(private val client: HttpClient) : UserService {
 
     override suspend fun fetchUserById(id: Long): UserResponse {
         return client.get("usuarios/{id}") {
@@ -31,9 +32,9 @@ class UserServiceImpl(private val client: HttpClient): UserService {
         return response.body()
     }
 
-    override suspend fun updateUserInformation(id:Long, userPatch: UserPatch): UserResponse {
+    override suspend fun updateUserInformation(id: Long, userPatch: UserPatch): UserResponse {
         val response = client.patch("usuarios/$id") {
-            contentType(io.ktor.http.ContentType.Application.Json)
+            contentType(Json)
             setBody(userPatch)
         }
 
@@ -42,6 +43,21 @@ class UserServiceImpl(private val client: HttpClient): UserService {
             throw Exception("Error al actualizar usuario: $error")
         }
 
+        return response.body()
+    }
+
+    override suspend fun fetchUserByPartialUsername(search: String): List<UserResponse> {
+        val response = client.get("usuarios/nombre"){
+            url {
+                parameters.append("contiene", search)
+            }
+        }
+
+        if (!response.status.isSuccess()) {
+            val error = response.bodyAsText()
+            throw Exception("Error al buscar usuarios: $error")
+        }
+        Log.d("UserService", "Fetched users: ${response.bodyAsText()}")
         return response.body()
     }
 }

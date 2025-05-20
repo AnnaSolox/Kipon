@@ -17,6 +17,7 @@ import com.annasolox.kipon.ui.screens.HomeScreen
 import com.annasolox.kipon.ui.screens.LoginScreen
 import com.annasolox.kipon.ui.screens.ProfileScreen
 import com.annasolox.kipon.ui.screens.RegisterScreen
+import com.annasolox.kipon.ui.screens.SearchUsersScreen
 import com.annasolox.kipon.ui.screens.TransactionsScreen
 import com.annasolox.kipon.ui.viewmodels.AccountViewModel
 import com.annasolox.kipon.ui.viewmodels.UserViewModel
@@ -72,6 +73,10 @@ fun NavigationWrapper() {
 
             composable<ProfileScreen> {
                 ProfileScreen(navController, userViewModel)
+            }
+
+            composable<SearchUsersScreen>{
+                SearchUsersScreen(navController, userViewModel)
             }
         }
     }

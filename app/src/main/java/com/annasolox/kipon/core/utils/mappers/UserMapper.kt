@@ -6,6 +6,7 @@ import com.annasolox.kipon.data.api.models.response.UserProfileResponse
 import com.annasolox.kipon.data.api.models.response.UserResponse
 import com.annasolox.kipon.data.api.models.response.UserSimplified
 import com.annasolox.kipon.ui.models.Profile
+import com.annasolox.kipon.ui.models.SearchedUser
 import com.annasolox.kipon.ui.models.UserHomeScreen
 import com.annasolox.kipon.ui.models.UserProfileScreen
 import java.time.LocalDate
@@ -81,6 +82,16 @@ object UserMapper {
             telephone = userProfileResponse.telephone,
             address = userProfileResponse.address,
             photo = userProfileResponse.photo ?: ""
+        )
+    }
+
+    fun toSearchedUser(
+        userResponse: UserResponse
+    ): SearchedUser {
+        return SearchedUser(
+            id = userResponse.id,
+            userName = userResponse.name,
+            photo = userResponse.profile.photo ?: ""
         )
     }
 }

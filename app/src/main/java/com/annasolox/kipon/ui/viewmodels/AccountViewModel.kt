@@ -9,6 +9,7 @@ import com.annasolox.kipon.core.navigation.AccountNavigationEvent
 import com.annasolox.kipon.core.utils.mappers.AccountMapper
 import com.annasolox.kipon.data.api.models.request.create.AccountCreate
 import com.annasolox.kipon.data.api.models.request.create.SavingCreate
+import com.annasolox.kipon.data.api.models.request.patch.AccountPatch
 import com.annasolox.kipon.data.repository.AccountRepository
 import com.annasolox.kipon.data.repository.UserRepository
 import com.annasolox.kipon.ui.models.AccountDetails
@@ -72,6 +73,10 @@ class AccountViewModel(
     //Flag to check if the creation of a contribution is valid
     private val _isValidContributionCreate = MutableLiveData<Boolean>(false)
     val isValidContributionCreate: LiveData<Boolean> get() = _isValidContributionCreate
+
+    //Flag to ckeck if the edit of an account is valid
+    private val _isValidEditAccount = MutableLiveData<Boolean>(false)
+    val isValidEditAccount: LiveData<Boolean> get() = _isValidEditAccount
 
     //Form new contribution info fields
     private var _contributionAmount = MutableLiveData<Double?>(null)
@@ -151,6 +156,7 @@ class AccountViewModel(
                 withContext(Dispatchers.Main) {
                     _currentAccount.value = mappedAccount
                     _currentAccountAmount.value = _currentAccount.value?.currentAmount
+                    populateEditAccountForm()
                 }
                 Log.d("AccountViewModel", "Current account: ${_currentAccount.value}")
 
@@ -302,5 +308,60 @@ class AccountViewModel(
         // TODO: Validación de foto
         _isValidAccountCreate.postValue(isValid)
         return isValid
+    }
+
+    suspend fun attempAcountEdit(): Boolean {
+        var isValid = true
+
+        _editAccountName.value?.let {
+            if(_editAccountName.value!!.length > 100){
+                _editAccountNameError.postValue("Debe tener menos de 100 caracteres")
+            }
+        }
+
+        _editAccountMoneyGoal.value?.let {
+            if(_editAccountMoneyGoal.value!! < 0){
+                _moneyGoalError.postValue("La cantidad debe ser mayor a 0")
+            }
+        }
+
+        withContext(Dispatchers.Main) { _isValidEditAccount.value = isValid }
+
+        return isValid
+    }
+
+    fun updateAccountInformation(){
+        viewModelScope.launch(Dispatchers.IO) {
+            if (!attempAcountEdit()) return@launch
+            try{
+                val patch = AccountPatch(
+                    name = _editAccountName.value,
+                    moneyGoal = _editAccountMoneyGoal.value?.toDouble(),
+                    dateGoal = _editAccountDateGoal.value,
+                    adminId = null,
+                )
+
+                accountRepository.updateCurrentAccount(_currentAccount.value!!.id, patch)
+                loadCurrentAccount(_currentAccount.value!!.id)
+                populateEditAccountForm()
+                clearEditAccountError()
+            } catch (e: Exception){
+                Log.e("AccountViewModel", "error actualizando cuenta: ${e.message}")
+            }
+        }
+    }
+
+    fun populateEditAccountForm(){
+        _editAccountName.postValue(_currentAccount.value?.name)
+        _editAccountMoneyGoal.postValue(_currentAccount.value?.moneyGoal)
+        _editAccountDateGoal.postValue(LocalDate.parse(_currentAccount.value?.dateGoal))
+        _editAccountPhoto.postValue(_currentAccount.value?.photo.toString())
+    }
+
+    fun clearEditAccountError(){
+        _editAccountNameError.postValue(null)
+        _editAccountMoneyGoalError.postValue(null)
+        _editAccountMoneyGoalError.postValue(null)
+        _editAccountPhotoError.postValue(null)
     }
 }

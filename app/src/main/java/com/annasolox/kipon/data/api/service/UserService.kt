@@ -7,4 +7,5 @@ interface UserService {
     suspend fun fetchUserById(id: Long): UserResponse
     suspend fun fetchUserByUsername(username: String): UserResponse
     suspend fun updateUserInformation(id: Long, userPatch: UserPatch): UserResponse
+    suspend fun fetchUserByPartialUsername(search: String): List<UserResponse>
 }

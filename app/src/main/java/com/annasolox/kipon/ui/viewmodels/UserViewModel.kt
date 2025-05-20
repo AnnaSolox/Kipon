@@ -2,6 +2,7 @@ package com.annasolox.kipon.ui.viewmodels
 
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,6 +14,7 @@ import com.annasolox.kipon.data.api.models.request.patch.UserPatch
 import com.annasolox.kipon.data.repository.UserRepository
 import com.annasolox.kipon.ui.models.AccountOverview
 import com.annasolox.kipon.ui.models.Saving
+import com.annasolox.kipon.ui.models.SearchedUser
 import com.annasolox.kipon.ui.models.UserHomeScreen
 import com.annasolox.kipon.ui.models.UserProfileScreen
 import kotlinx.coroutines.Dispatchers
@@ -81,6 +83,10 @@ class UserViewModel(
     private val _passwordError = MutableLiveData<String?>()
     val passwordError: LiveData<String?> get() = _passwordError
 
+    private val _fetchedUsers = MutableLiveData<List<SearchedUser>>()
+    val fetchedUsers: LiveData<List<SearchedUser>> get() = _fetchedUsers
+    private val _fetchedUsersError = MutableLiveData<String?>(null)
+    val fetchedUsersError: LiveData<String?> get() = _fetchedUsersError
 
     fun addAccountToUserAccountsList(accountOverview: AccountOverview){
         val currentUser = _userHome.value
@@ -94,6 +100,23 @@ class UserViewModel(
             _userHome.postValue(updatedUser)
         } else {
             Log.d("UserViewModel", "User is null")
+        }
+    }
+
+    fun searchUsers(partialName: String){
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val users = userRepository.fetchUsersByPartialName(partialName)
+                withContext(Dispatchers.Main) {
+                    _fetchedUsers.value = users
+                }
+            } catch (e: Exception){
+                withContext(Dispatchers.Main) {
+                    _fetchedUsersError.value = "No se han encontrado usuarios."
+                }
+                Log.e("UserViewModel", "Error buscando usuarios: ${e.message}")
+            }
+
         }
     }
 
@@ -149,7 +172,7 @@ class UserViewModel(
                 withContext(Dispatchers.Main) {
 
                     _username.value?.let { newUsername ->
-                        sharedPreferences.edit().putString("username", newUsername).apply()
+                        sharedPreferences.edit { putString("username", newUsername) }
                         loadUser()
                     }
                 }

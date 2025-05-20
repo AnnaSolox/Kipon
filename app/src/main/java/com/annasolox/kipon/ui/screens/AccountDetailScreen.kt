@@ -84,6 +84,9 @@ fun AccountDetailScreen(
     //Contribution form field
     val contribAmount by accountViewModel.contributionAmount.observeAsState()
 
+    //Current user
+    val currentUser by userViewModel.userHome.observeAsState()
+
     //Nested scroll
     val maxSize = 300.dp
     val minSize = 100.dp
@@ -249,17 +252,18 @@ fun AccountDetailScreen(
                                     currentAccount!!.dateGoal
                                 )
                             }
-                            Row{
-                                OptionsButton(Icons.Filled.People){
-                                    navController.navigate(SearchUsersScreen)
-                                }
-                                Spacer(Modifier.size(8.dp))
-                                OptionsButton(Icons.Filled.Edit){
-                                    isEditSheetOpen = true
-                                    coroutineScope.launch { ediSheetState.show() }
+                            if(currentUser!!.userName == currentAccount!!.admin){
+                                Row{
+                                    OptionsButton(Icons.Filled.People){
+                                        navController.navigate(SearchUsersScreen)
+                                    }
+                                    Spacer(Modifier.size(8.dp))
+                                    OptionsButton(Icons.Filled.Edit){
+                                        isEditSheetOpen = true
+                                        coroutineScope.launch { ediSheetState.show() }
+                                    }
                                 }
                             }
-
                         }
 
                         Row(

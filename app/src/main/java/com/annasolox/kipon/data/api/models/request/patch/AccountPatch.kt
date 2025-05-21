@@ -15,5 +15,7 @@ data class AccountPatch(
     @Serializable(with = LocalDateSerializer::class)
     val dateGoal: LocalDate? = null,
     @SerialName("idAdministrador")
-    val adminId: Long? = null
+    val adminId: Long? = null,
+    @SerialName("fotoHucha")
+    val photo: String? = null
 )

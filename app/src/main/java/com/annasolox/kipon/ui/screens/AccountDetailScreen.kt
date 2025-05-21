@@ -1,7 +1,12 @@
 package com.annasolox.kipon.ui.screens
 
+import android.net.Uri
+import android.os.Build
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -52,6 +57,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -66,10 +72,12 @@ import com.annasolox.kipon.ui.composables.buttons.OptionsButton
 import com.annasolox.kipon.ui.composables.headers.ColumnAccountDetailInfo
 import com.annasolox.kipon.ui.composables.textFields.DatePickerTextField
 import com.annasolox.kipon.ui.composables.textFields.FormTextField
+import com.annasolox.kipon.ui.composables.textFields.PhotoTextField
 import com.annasolox.kipon.ui.viewmodels.AccountViewModel
 import com.annasolox.kipon.ui.viewmodels.UserViewModel
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountDetailScreen(
@@ -141,6 +149,33 @@ fun AccountDetailScreen(
             }
         }
     }
+
+    val context = LocalContext.current
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            val imageBytes = inputStream?.readBytes()
+            inputStream?.close()
+
+            imageBytes?.let {
+                accountViewModel.uploadImage(it)
+            }
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            imagePickerLauncher.launch("image/*")
+        }
+    }
+
+
+    val requiresPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
     BackHandler {
         navController.navigate(HomeScreen) {
@@ -217,7 +252,7 @@ fun AccountDetailScreen(
                                 .height(currentBoxSize)
                         ) {
                             AsyncImage(
-                                model = currentAccount?.photo,
+                                model = "${currentAccount!!.photo}",
                                 error = painterResource(R.drawable.account_photo),
                                 contentDescription = "User image thumbnail",
                                 contentScale = ContentScale.Crop,
@@ -369,12 +404,19 @@ fun AccountDetailScreen(
                         error = editDateGoalError
                     )
 
-                    FormTextField(
-                        value = editAccountPhoto ?: "",
-                        label = "Photo",
+                    PhotoTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = true,
+                        value = currentAccount?.photo ?: "",
+                        onValueChange = { accountViewModel.onAccountPhotoChange(it) },
+                        label = "Photo URL",
                         error = null,
                     ) {
-                        accountViewModel.onEditAccountNameChange(it)
+                        if (requiresPermission) {
+                            permissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES)
+                        } else {
+                            imagePickerLauncher.launch("image/*")
+                        }
                     }
 
 

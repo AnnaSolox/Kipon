@@ -24,13 +24,12 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.Format
 import java.time.LocalDate
 
 class AccountViewModel(
     private val accountRepository: AccountRepository,
     private val userRepository: UserRepository,
-    private val imageRepository: ImageUploadRepository
+    private val imageUploadRepository: ImageUploadRepository
 ) : ViewModel() {
     //Form create account info fields
     private var _name = MutableLiveData<String>()
@@ -349,6 +348,7 @@ class AccountViewModel(
                     name = _editAccountName.value,
                     moneyGoal = _editAccountMoneyGoal.value?.toDouble(),
                     dateGoal = _editAccountDateGoal.value,
+                    photo = _editAccountPhoto.value,
                     adminId = null,
                 )
 
@@ -377,6 +377,19 @@ class AccountViewModel(
                 }
             } catch (e: Exception){
                 Log.d("AccountViewModel", "Error al añadir usuario a la cuenta: ${e.message}")
+            }
+        }
+    }
+
+    fun uploadImage(image: ByteArray) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val imageUrl = imageUploadRepository.uploadImage(image, "account")
+                withContext(Dispatchers.Main) {
+                    _editAccountPhoto.value = imageUrl
+                }
+            } catch (e: Exception) {
+                Log.e("UserViewModel", "Error uploading image: ${e.message}")
             }
         }
     }

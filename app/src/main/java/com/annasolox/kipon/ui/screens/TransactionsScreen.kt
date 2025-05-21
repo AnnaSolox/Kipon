@@ -59,18 +59,8 @@ fun TransactionsScreen(
     var minAmountText by remember { mutableStateOf("") }
     var maxAmountText by remember { mutableStateOf("") }
 
-    val minAmount = minAmountText.toDoubleOrNull()
-    val maxAmount = maxAmountText.toDoubleOrNull()
-
     var appliedMinAmount by remember { mutableStateOf<Float?>(null) }
     var appliedMaxAmount by remember { mutableStateOf<Float?>(null) }
-
-    val filteredAccounts = allUserSavings.filter {
-        val amount = it.amount
-        val minOk = appliedMinAmount?.let { min -> amount >= min } != false
-        val maxOk = appliedMaxAmount?.let { max -> amount <= max } != false
-        minOk && maxOk
-    }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()

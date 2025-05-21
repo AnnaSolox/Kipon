@@ -15,7 +15,7 @@ import io.ktor.http.isSuccess
 import java.io.File
 
 class ImageServiceImpl(private val client: HttpClient): ImageService{
-    override suspend fun uploadImage(image: ByteArray): String {
+    override suspend fun uploadImage(image: ByteArray, purpose: String): String {
         val response = client.post("images/upload") {
             setBody(MultiPartFormDataContent(
                 formData {
@@ -23,6 +23,7 @@ class ImageServiceImpl(private val client: HttpClient): ImageService{
                         append(HttpHeaders.ContentType, "image/jpeg")
                         append(HttpHeaders.ContentDisposition, "filename=\"image.jpg\"")
                     })
+                    append("purpose", purpose)
                 }
             ))
         }

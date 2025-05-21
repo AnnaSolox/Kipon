@@ -80,7 +80,6 @@ fun ProfileScreen(
     val address by userViewModel.address.observeAsState()
     val addressError by userViewModel.addressError.observeAsState()
     val password by userViewModel.password.observeAsState()
-    val passwordError by userViewModel.passwordError.observeAsState()
     val photo by userViewModel.photo.observeAsState()
 
     val nestedScrollConnection = remember {
@@ -286,7 +285,7 @@ fun ProfileScreen(
                         .height(currentBoxSize)
                 ) {
                     AsyncImage(
-                        model = currentUser?.profile?.photo,
+                        model = "${currentUser!!.profile.photo}",
                         error = painterResource(R.drawable.girl_photo),
                         contentDescription = "User profile image header",
                         contentScale = ContentScale.Crop,
@@ -332,22 +331,6 @@ fun ProfileScreen(
                     OptionsButton(Icons.Filled.Edit) {
                         editEnable = !editEnable
                     }
-                }
-
-                Row(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(10.dp)
-                        .graphicsLayer(alpha = 1f - infoImageElementsAlpha),
-                    verticalAlignment = Alignment.Top,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        currentUser!!.name,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Black,
-                        color = Color.White,
-                    )
                 }
             }
         }

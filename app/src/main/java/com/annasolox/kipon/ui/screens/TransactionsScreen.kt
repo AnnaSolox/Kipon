@@ -1,5 +1,6 @@
 package com.annasolox.kipon.ui.screens
 
+import android.graphics.Paint
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -116,20 +117,29 @@ fun TransactionsScreen(
                 }
             }
 
+            if(allUserSavings.isEmpty()){
+                Box(Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center){
+                    Text(stringResource(R.string.no_saving_text))
+                }
+            }
+
             val filteredAccounts = allUserSavings.filter {
                 it.accountName.contains(query, ignoreCase = true) &&
                         (appliedMinAmount?.let { min -> it.amount >= min } != false) &&
                         (appliedMaxAmount?.let { max -> it.amount <= max } != false)
             }
 
-            LazyColumn(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 15.dp)
-            ) {
-                items(filteredAccounts, key = { it.id }) {
-                    UserContribuition(it)
-                    HorizontalDivider(Modifier.fillMaxWidth(), 1.dp, Color.Gray)
+            if(allUserSavings.isNotEmpty()){
+                LazyColumn(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 15.dp)
+                ) {
+                    items(filteredAccounts, key = { it.id }) {
+                        UserContribuition(it)
+                        HorizontalDivider(Modifier.fillMaxWidth(), 1.dp, Color.Gray)
+                    }
                 }
             }
         }

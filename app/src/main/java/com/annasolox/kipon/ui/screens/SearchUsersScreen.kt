@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,6 +56,8 @@ fun SearchUsersScreen(
     ) {
 
         val fetchedUsers by userViewModel.fetchedUsers.observeAsState()
+        val fetchedUsersError by userViewModel.fetchedUsersError.observeAsState()
+        val loading by userViewModel.loading.observeAsState()
 
         var query by remember { mutableStateOf("") }
         val coroutineScope = rememberCoroutineScope()
@@ -125,6 +128,16 @@ fun SearchUsersScreen(
                         })
                         HorizontalDivider(Modifier.fillMaxWidth(), 1.dp, Color.Gray)
                     }
+                }
+            } ?: Text("Write a name and press the search button to start searching")
+
+            if(fetchedUsersError != null){
+                Text("No matches found. Please try a different search.")
+            }
+
+            if(loading == true){
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                    CircularProgressIndicator()
                 }
             }
         }

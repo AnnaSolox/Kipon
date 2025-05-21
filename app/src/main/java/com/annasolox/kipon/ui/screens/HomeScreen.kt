@@ -217,27 +217,35 @@ fun HomeScreen(
                 onQueryChange = { query = it }
             )
 
-            LazyColumn(Modifier.fillMaxSize()) {
-                val filteredAccounts = user?.accounts?.filter {
-                    it.name.contains(query, ignoreCase = true)
-                } ?: emptyList()
+            if(user?.accounts?.isEmpty() == true){
+                Box(Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center){
+                    Text(stringResource(R.string.no_accounts_yet))
+                }
+            } else {
+                LazyColumn(Modifier.fillMaxSize()) {
+                    val filteredAccounts = user?.accounts?.filter {
+                        it.name.contains(query, ignoreCase = true)
+                    } ?: emptyList()
 
-                items(filteredAccounts) { account ->
-                    Spacer(Modifier.size(4.dp))
-                    AccountElevatedCard(
-                        account,
-                        account.photo ?: "",
-                        Modifier.clickable(onClick = {
-                            accountViewModel.loadCurrentAccount(account.id)
-                            navController.navigate(DetailsAccountScreen) {
-                                popUpTo(HomeScreen) { inclusive = true }
-                                launchSingleTop = true
-                            }
-                        })
-                    )
-                    Spacer(Modifier.size(4.dp))
+                    items(filteredAccounts) { account ->
+                        Spacer(Modifier.size(4.dp))
+                        AccountElevatedCard(
+                            account,
+                            account.photo ?: "",
+                            Modifier.clickable(onClick = {
+                                accountViewModel.loadCurrentAccount(account.id)
+                                navController.navigate(DetailsAccountScreen) {
+                                    popUpTo(HomeScreen) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            })
+                        )
+                        Spacer(Modifier.size(4.dp))
+                    }
                 }
             }
+
 
             if (isSheetOpen) {
 

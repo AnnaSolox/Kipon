@@ -10,12 +10,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.annasolox.kipon.R
 import com.annasolox.kipon.ui.models.AccountDetails
 import com.annasolox.kipon.ui.models.Saving
 
@@ -41,6 +44,10 @@ fun LazyAccountContributions(
         AccountProgressBar(currentAccountAmount, currentAccount.moneyGoal)
 
         Spacer(Modifier.size(35.dp))
+
+        if(contributions.isEmpty()){
+            Text(stringResource(R.string.no_saving_text))
+        }
 
         LazyColumn(
             state = listState

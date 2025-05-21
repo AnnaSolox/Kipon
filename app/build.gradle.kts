@@ -25,7 +25,8 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("String", "HOST_URL",  "\"10.0.2.2\"")
+            //buildConfigField("String", "HOST_URL",  "\"10.0.2.2\"")
+            buildConfigField("String", "HOST_URL", "\"192.168.1.244\"")
             buildConfigField("int", "HOST_PORT", "8080")
         }
         release {

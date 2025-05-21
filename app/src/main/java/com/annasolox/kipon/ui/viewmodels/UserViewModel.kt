@@ -82,6 +82,9 @@ class UserViewModel(
     private val _fetchedUsersError = MutableLiveData<String?>(null)
     val fetchedUsersError: LiveData<String?> get() = _fetchedUsersError
 
+    val _loading = MutableLiveData<Boolean>(false)
+    val loading: LiveData<Boolean> get() = _loading
+
     fun addAccountToUserAccountsList(accountOverview: AccountOverview){
         val currentUser = _userHome.value
         Log.d("UserViewModel", "Current User: $currentUser")
@@ -100,12 +103,17 @@ class UserViewModel(
     fun searchUsers(partialName: String){
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                _fetchedUsersError.postValue(null)
+                _loading.postValue(true)
+                _fetchedUsers.postValue(emptyList())
                 val users = userRepository.fetchUsersByPartialName(partialName)
                 withContext(Dispatchers.Main) {
                     _fetchedUsers.value = users
                 }
+                _loading.postValue((false))
             } catch (e: Exception){
                 withContext(Dispatchers.Main) {
+                    _loading.postValue((false))
                     _fetchedUsersError.value = "No se han encontrado usuarios."
                 }
                 Log.e("UserViewModel", "Error buscando usuarios: ${e.message}")

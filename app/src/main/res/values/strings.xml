@@ -42,4 +42,6 @@
     <string name="cd_filter_icon">Filter icon</string>
     <string name="cd_clear_filter">Clear filter</string>
     <string name="greeting_home_text">Hi</string>
+    <string name="no_accounts_yet">There are no accounts yet. Create an account by clicking the add button.</string>
+    <string name="no_saving_text">There are no savings yet.</string>
 </resources>

@@ -41,8 +41,7 @@ class UserViewModel(
     fun onUsernameChanged(username: String) {
         _username.value = username
     }
-    private val _userNameError = MutableLiveData<String?>()
-    val userNameError: LiveData<String?> get() = _userNameError
+
 
     private val _email = MutableLiveData<String>(_userProfile.value?.email ?: "")
     val email: LiveData<String?> get() = _email
@@ -77,13 +76,6 @@ class UserViewModel(
     fun onPasswordChanged(password: String) {
         _password.value = password
     }
-    private val _passwordConfirmation = MutableLiveData<String?>()
-    val passwordConfirmation: LiveData<String?> get() = _passwordConfirmation
-    fun onPasswordConfirmationChanged(passwordConfirmation: String) {
-        _passwordConfirmation.value = passwordConfirmation
-    }
-    private val _passwordError = MutableLiveData<String?>()
-    val passwordError: LiveData<String?> get() = _passwordError
 
     private val _fetchedUsers = MutableLiveData<List<SearchedUser>>()
     val fetchedUsers: LiveData<List<SearchedUser>> get() = _fetchedUsers
@@ -189,13 +181,6 @@ class UserViewModel(
     fun attemptUpdateUserInfo(): Boolean{
         var isValid = true
         Log.d("UserViewModel", "Attempting to update user info: isValid: $isValid")
-        _username.value?.let {
-            if (_username.value!!.length > 50){
-                _userNameError.postValue("El nombre de usuario no puede superar los 50 caracteres")
-                isValid = false
-            }
-            Log.d("UserViewModel", "Username error: ${_userNameError.value}, isValid: $isValid")
-        }
 
         _email.value?.let {
             if (!_email.value!!.contains("@") || !_email.value!!.contains(".")) {

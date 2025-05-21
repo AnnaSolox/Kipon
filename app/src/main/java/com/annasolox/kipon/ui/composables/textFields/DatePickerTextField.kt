@@ -29,10 +29,10 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerTextField(
+    modifier: Modifier = Modifier,
     date: LocalDate?,
     onDateSelected: (LocalDate) -> Unit,
     label: String = "Date goal",
-    modifier: Modifier = Modifier,
     error: String?,
 ) {
     val context = LocalContext.current

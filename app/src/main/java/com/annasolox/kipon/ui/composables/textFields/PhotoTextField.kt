@@ -44,7 +44,7 @@ fun PhotoTextField(
             },
             keyboardOptions = KeyboardOptions.Default,
             visualTransformation = VisualTransformation.None,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
         )
         if (error != null) {
             FormErrorText(error)

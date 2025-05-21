@@ -1,6 +1,5 @@
 package com.annasolox.kipon.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.annasolox.kipon.core.navigation.DetailsAccountScreen
+import com.annasolox.kipon.core.navigation.SearchUsersScreen
 import com.annasolox.kipon.ui.composables.UserSearchComposable
 import com.annasolox.kipon.ui.viewmodels.AccountViewModel
 import com.annasolox.kipon.ui.viewmodels.UserViewModel
@@ -101,6 +101,10 @@ fun SearchUsersScreen(
                         val user = fetchedUsers!!.get(index)
                         UserSearchComposable(user = user, modifier = Modifier.clickable {
                             accountViewModel.addUserToAccount(user.id)
+                            navController.navigate(DetailsAccountScreen){
+                                launchSingleTop = true
+                                popUpTo(SearchUsersScreen){ inclusive = true}
+                            }
                         })
                         HorizontalDivider(Modifier.fillMaxWidth(), 1.dp, Color.Gray)
                     }

@@ -33,8 +33,6 @@ data class BottomNavigationItem(
     val title: String,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
-    val hasNews: Boolean = false,
-    val badgeCount: Int? = null,
 )
 
 @Composable
@@ -44,22 +42,19 @@ fun BottomNavigationBar(navController: NavController) {
             route = HomeScreen::class.qualifiedName ?: "home",
             title = "Home",
             selectedIcon = Icons.Filled.Home,
-            unselectedIcon = Icons.Outlined.Home,
-            hasNews = true,
+            unselectedIcon = Icons.Outlined.Home
         ),
         BottomNavigationItem(
             route = TransactionsScreen::class.qualifiedName ?: "transactions",
             title = "Savings",
             selectedIcon = Icons.Filled.Timeline,
-            unselectedIcon = Icons.Outlined.Timeline,
-            hasNews = false
+            unselectedIcon = Icons.Outlined.Timeline
         ),
         BottomNavigationItem(
             route = ProfileScreen::class.qualifiedName ?: "profile",
             title = "Profile",
             selectedIcon = Icons.Filled.Person,
-            unselectedIcon = Icons.Outlined.Person,
-            hasNews = false,
+            unselectedIcon = Icons.Outlined.Person
         )
     )
 
@@ -84,24 +79,14 @@ fun BottomNavigationBar(navController: NavController) {
                     }
                 },
                 label = { Text(text = item.title) },
-                icon = {
-                    BadgedBox(
-                        badge = {
-                            if(item.badgeCount != null) {
-                                Badge{ Text(text = item.badgeCount.toString()) }
-                            } else if (item.hasNews) {
-                                Badge()
-                            }
-                        }) {
-                        Icon(
-                            imageVector = if (index == selectedItemIndex) {
-                                item.selectedIcon
-                            } else {
-                                item.unselectedIcon
-                            },
-                            contentDescription = item.title
-                        )
-                    }
+                icon = {Icon(
+                    imageVector = if (index == selectedItemIndex) {
+                        item.selectedIcon
+                    } else {
+                        item.unselectedIcon
+                    },
+                    contentDescription = item.title
+                )
                 },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.tertiary,

@@ -16,7 +16,6 @@ import com.annasolox.kipon.data.repository.AccountRepository
 import com.annasolox.kipon.data.repository.ImageUploadRepository
 import com.annasolox.kipon.data.repository.UserRepository
 import com.annasolox.kipon.ui.models.AccountDetails
-import com.annasolox.kipon.ui.models.AccountOverview
 import com.annasolox.kipon.ui.models.LoginUiState
 import com.annasolox.kipon.ui.models.Saving
 import kotlinx.coroutines.Dispatchers
@@ -93,9 +92,7 @@ class AccountViewModel(
     private var _contributionAmountError = MutableLiveData<String?>(null)
     val contributionAmountError: LiveData<String?> get() = _contributionAmountError
 
-    //Last created account
-    private var _lastCreatedAccount = MutableLiveData<AccountOverview?>()
-    val lastCreatedAccount: LiveData<AccountOverview?> get() = _lastCreatedAccount
+
 
     //current account
     private var _currentAccount = MutableLiveData<AccountDetails?>()
@@ -135,7 +132,7 @@ class AccountViewModel(
     private var _editAccountDateGoalError = MutableLiveData<String?>(null)
     val editAccountDateGoalError: LiveData<String?> get() = _editAccountDateGoalError
 
-    private var _editAccountPhoto = MutableLiveData<String>()
+    private var _editAccountPhoto = MutableLiveData<String>("")
     val editAccountPhoto: LiveData<String> get() = _editAccountPhoto
     fun onEditAccountPhotoChange(accountPhoto: String) {
         _editAccountPhoto.postValue(accountPhoto)
@@ -188,7 +185,6 @@ class AccountViewModel(
                     photo = _photo.value.toString()
                 )
                 val createdAccount = accountRepository.accountCreate(accountToCreate)
-                _lastCreatedAccount.postValue(createdAccount)
                 loadCurrentAccount(createdAccount.id)
                 _navigationEvent.postValue(AccountNavigationEvent.NavigateToAccountDetail)
 

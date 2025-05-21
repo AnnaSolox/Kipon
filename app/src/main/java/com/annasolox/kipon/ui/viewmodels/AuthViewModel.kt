@@ -249,15 +249,7 @@ class AuthViewModel(
         _addressError.postValue(null)
     }
 
-    fun clearNavigationEvent() {
-        _navigationEvent.value = null
-    }
-
     fun clearToken() {
         sharedPreferences.edit { remove("auth_token") }
-    }
-
-    fun clearUserName() {
-        sharedPreferences.edit { remove("username") }
     }
 }

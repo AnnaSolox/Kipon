@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -106,6 +107,7 @@ fun AccountDetailScreen(
     val contributionAmountError by accountViewModel.contributionAmountError.observeAsState()
     val contributionValidation by accountViewModel.isValidContributionCreate.observeAsState()
     val editAccountValidation by accountViewModel.isValidEditAccount.observeAsState()
+    val editPhoto by accountViewModel.editAccountPhoto.observeAsState()
 
     val coroutineScope = rememberCoroutineScope()
     val addSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -352,7 +354,6 @@ fun AccountDetailScreen(
         val editMoneyGoalError by accountViewModel.editAccountMoneyGoalError.observeAsState()
         val editDateGoal by accountViewModel.editAccountDateGoal.observeAsState()
         val editDateGoalError by accountViewModel.editAccountDateGoalError.observeAsState()
-        val editAccountPhoto by accountViewModel.editAccountPhoto.observeAsState()
 
         if (isEditSheetOpen) {
 
@@ -379,6 +380,7 @@ fun AccountDetailScreen(
                     )
 
                     FormTextField(
+                        modifier = Modifier.width(300.dp),
                         value = editAccountName ?: "",
                         label = "AccountName",
                         placeholder = currentAccount!!.name,
@@ -388,6 +390,7 @@ fun AccountDetailScreen(
                     }
 
                     FormTextField(
+                        modifier = Modifier.width(300.dp),
                         value = editMoneyGoal.toString(),
                         label = "Money goal",
                         error = editMoneyGoalError,
@@ -398,6 +401,7 @@ fun AccountDetailScreen(
                     }
 
                     DatePickerTextField(
+                        modifier = Modifier.width(300.dp),
                         editDateGoal,
                         onDateSelected = {accountViewModel.onEditAccountDateGoalChange(it)},
                         label = "Date goal",
@@ -405,10 +409,10 @@ fun AccountDetailScreen(
                     )
 
                     PhotoTextField(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.width(300.dp),
                         enabled = true,
-                        value = currentAccount?.photo ?: "",
-                        onValueChange = { accountViewModel.onAccountPhotoChange(it) },
+                        value = editPhoto ?: "",
+                        onValueChange = { accountViewModel.onEditAccountPhotoChange(it) },
                         label = "Photo URL",
                         error = null,
                     ) {

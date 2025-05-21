@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -50,13 +49,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.annasolox.kipon.core.navigation.AccountNavigationEvent.*
+import com.annasolox.kipon.core.navigation.AccountNavigationEvent.NavigateToAccountDetail
 import com.annasolox.kipon.core.navigation.DetailsAccountScreen
 import com.annasolox.kipon.core.navigation.HomeScreen
 import com.annasolox.kipon.ui.composables.AccountSearchBar
-import com.annasolox.kipon.ui.composables.textFields.DatePickerTextField
 import com.annasolox.kipon.ui.composables.accounts.AccountElevatedCard
 import com.annasolox.kipon.ui.composables.images.ImageThumbnail
+import com.annasolox.kipon.ui.composables.textFields.DatePickerTextField
 import com.annasolox.kipon.ui.composables.textFields.FormTextField
 import com.annasolox.kipon.ui.viewmodels.AccountViewModel
 import com.annasolox.kipon.ui.viewmodels.UserViewModel
@@ -165,18 +164,6 @@ fun HomeScreen(
                 }
                 Row {
                     IconButton(
-                        onClick = {/*TODO*/ },
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .border(1.dp, Color.Black, shape = CircleShape)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Notifications,
-                            contentDescription = "Notification icon"
-                        )
-                    }
-                    Spacer(Modifier.size(6.dp))
-                    IconButton(
                         onClick = {
                             isSheetOpen = true
                             coroutineScope.launch { sheetState.show() }
@@ -256,6 +243,7 @@ fun HomeScreen(
                             accountViewModel.onAccountMoneyGoalChange(it.toDouble()) }
 
                         DatePickerTextField(
+                            modifier = Modifier,
                             dateGoal,
                             onDateSelected = {accountViewModel.onAccountDateGoalChange(it)},
                             label = "Date goal",

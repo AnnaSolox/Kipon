@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,7 +38,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.annasolox.kipon.R
 import com.annasolox.kipon.core.navigation.HomeScreen
-import com.annasolox.kipon.core.navigation.LoginNavigationEvent.NavigateToHome
 import com.annasolox.kipon.core.navigation.LoginScreen
 import com.annasolox.kipon.core.navigation.RegisterScreen
 import com.annasolox.kipon.ui.composables.backgrounds.AuthBackground
@@ -62,10 +63,9 @@ fun LoginScreen(
     var chargingUser by remember { mutableStateOf(false) }
 
     LaunchedEffect(loginState) {
-        if (loginState is LoginUiState.Loading){
+        if (loginState is LoginUiState.Loading) {
             chargingUser = true
-        }
-        else if (loginState is LoginUiState.Success) {
+        } else if (loginState is LoginUiState.Success) {
             userViewModel.loadUser()
         } else if (loginState is LoginUiState.Error) {
             chargingUser = false
@@ -73,8 +73,8 @@ fun LoginScreen(
     }
 
     LaunchedEffect(user) {
-        if(user!=null){
-            navController.navigate(HomeScreen){
+        if (user != null) {
+            navController.navigate(HomeScreen) {
                 launchSingleTop = true
             }
         }
@@ -135,13 +135,23 @@ fun LoginScreen(
                         error = passwordError
                     ) { authViewModel.onPasswordChanged(it) }
 
-                    //Spacer(Modifier.size(12.dp))
-                    //Text(text = "¿Has olvidado la contraseña?")
+                    Box(
+                        Modifier
+                            .height(60.dp)
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (chargingUser) {
+                            CircularProgressIndicator()
+                        }
 
-                    Spacer(Modifier.size(60.dp))
-
-                    if(chargingUser){
-                        CircularProgressIndicator()
+                        if (loginState is LoginUiState.Error) {
+                            Text(
+                                text = (loginState as LoginUiState.Error).message.toString(),
+                                color = MaterialTheme.colorScheme.error,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
 
                     Button(

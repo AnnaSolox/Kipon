@@ -102,6 +102,7 @@ class AuthViewModel(
                     Log.d("AuthViewModel", "Error al iniciar sesión")
                 }
             } catch (e: Exception) {
+                _loginState.postValue(LoginUiState.Error("Error inesperado"))
                 Log.e("AuthViewModel", "Error al iniciar sesión: ${e.message}")
             }
         }

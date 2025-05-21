@@ -29,13 +29,17 @@ fun PhotoTextField(
             value = value,
             onValueChange = onValueChange,
             singleLine = true,
+            readOnly = true,
             enabled = enabled,
             placeholder = { Text(text = "Selecciona una imagen") },
             isError = error != null,
             label = { Text(text = label) },
             shape = RoundedCornerShape(100f),
             trailingIcon = {
-                IconButton(onClick = onImageClick) {
+                IconButton(
+                    onClick = onImageClick,
+                    enabled = enabled
+                ) {
                     Icon(
                         imageVector = Icons.Default.Image, // o un ícono de imagen
                         contentDescription = "Seleccionar imagen"
@@ -44,7 +48,7 @@ fun PhotoTextField(
             },
             keyboardOptions = KeyboardOptions.Default,
             visualTransformation = VisualTransformation.None,
-            modifier = Modifier
+            modifier = modifier
         )
         if (error != null) {
             FormErrorText(error)

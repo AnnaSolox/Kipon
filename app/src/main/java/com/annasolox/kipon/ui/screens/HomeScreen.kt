@@ -1,5 +1,9 @@
 package com.annasolox.kipon.ui.screens
 
+import android.net.Uri
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -16,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -44,9 +49,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -59,6 +66,7 @@ import com.annasolox.kipon.ui.composables.accounts.AccountElevatedCard
 import com.annasolox.kipon.ui.composables.images.ImageThumbnail
 import com.annasolox.kipon.ui.composables.textFields.DatePickerTextField
 import com.annasolox.kipon.ui.composables.textFields.FormTextField
+import com.annasolox.kipon.ui.composables.textFields.PhotoTextField
 import com.annasolox.kipon.ui.viewmodels.AccountViewModel
 import com.annasolox.kipon.ui.viewmodels.UserViewModel
 import kotlinx.coroutines.launch
@@ -94,9 +102,34 @@ fun HomeScreen(
     val accountNameError by accountViewModel.nameError.observeAsState()
     val moneyGoalError by accountViewModel.moneyGoalError.observeAsState()
     val dateGoalError by accountViewModel.dateGoalError.observeAsState()
-    val photoError by accountViewModel.photoError.observeAsState()
     val creationAccountValidation by accountViewModel.isValidAccountCreate.observeAsState()
 
+    val context = LocalContext.current
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            val imageBytes = inputStream?.readBytes()
+            inputStream?.close()
+
+            imageBytes?.let {
+                accountViewModel.uploadImage(it)
+            }
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            imagePickerLauncher.launch("image/*")
+        }
+    }
+
+
+    val requiresPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
     LaunchedEffect(Unit) {
         userViewModel.loadUser()
@@ -157,7 +190,7 @@ fun HomeScreen(
                     Spacer(Modifier.size(8.dp))
                     Column {
                         Text(
-                            "¡Hola ${user?.userName}!",
+                            stringResource(R.string.greeting_home_text) + " ${user?.userName}!",
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Black
                         )
@@ -180,16 +213,17 @@ fun HomeScreen(
             }
 
             AccountSearchBar(
-                query,
+                query = query,
                 onQueryChange = { query = it }
             )
 
-            LazyColumn {
+            LazyColumn(Modifier.fillMaxSize()) {
                 val filteredAccounts = user?.accounts?.filter {
                     it.name.contains(query, ignoreCase = true)
                 } ?: emptyList()
 
                 items(filteredAccounts) { account ->
+                    Spacer(Modifier.size(4.dp))
                     AccountElevatedCard(
                         account,
                         account.photo ?: "",
@@ -201,7 +235,7 @@ fun HomeScreen(
                             }
                         })
                     )
-                    Spacer(Modifier.size(8.dp))
+                    Spacer(Modifier.size(4.dp))
                 }
             }
 
@@ -230,12 +264,14 @@ fun HomeScreen(
                         )
 
                         FormTextField(
+                            modifier = Modifier.width(300.dp),
                             value = accountName,
                             label = stringResource(R.string.account_name_label),
                             error = accountNameError,
                         ) { accountViewModel.onAccountNameChange(it) }
 
                         FormTextField(
+                            modifier = Modifier.width(300.dp),
                             value = moneyGoal?.toString() ?: "",
                             label = stringResource(R.string.money_goal_label),
                             error = moneyGoalError,
@@ -244,18 +280,27 @@ fun HomeScreen(
                             accountViewModel.onAccountMoneyGoalChange(it.toDouble()) }
 
                         DatePickerTextField(
-                            modifier = Modifier,
+                            modifier = Modifier.width(300.dp),
                             dateGoal,
                             onDateSelected = {accountViewModel.onAccountDateGoalChange(it)},
                             label = stringResource(R.string.date_goal_label),
                             error = dateGoalError
                         )
 
-                        FormTextField(
-                            value = photo.toString(),
+                        PhotoTextField(
+                            modifier = Modifier.width(300.dp),
+                            enabled = true,
+                            value = photo,
+                            onValueChange = { accountViewModel.onAccountPhotoChange(it) },
                             label = stringResource(R.string.photo_url_label),
-                            error = photoError,
-                        ) { accountViewModel.onAccountPhotoChange(it) }
+                            error = null,
+                        ) {
+                            if (requiresPermission) {
+                                permissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES)
+                            } else {
+                                imagePickerLauncher.launch("image/*")
+                            }
+                        }
 
                         Spacer(Modifier.size(8.dp))
 

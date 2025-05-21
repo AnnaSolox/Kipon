@@ -17,7 +17,7 @@ import com.annasolox.kipon.R
 fun ImageThumbnail(modifier: Modifier, imageUrl: String?) {
     AsyncImage(
         model = imageUrl,
-        error = painterResource(R.drawable.girl_photo),
+        error = painterResource(R.drawable.placeholder_image),
         contentDescription = "User image thumbnail",
         contentScale = ContentScale.Crop,
         modifier = modifier

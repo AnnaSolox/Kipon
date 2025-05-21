@@ -216,6 +216,7 @@ class UserViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val imageUrl = imageUploadRepository.uploadImage(image, "profile")
+
                 withContext(Dispatchers.Main) {
                     _photo.value = imageUrl
                 }

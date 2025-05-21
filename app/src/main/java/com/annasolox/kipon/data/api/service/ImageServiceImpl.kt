@@ -2,6 +2,7 @@ package com.annasolox.kipon.data.api.service
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.post
@@ -36,4 +37,16 @@ class ImageServiceImpl(private val client: HttpClient): ImageService{
         return response.bodyAsText()
     }
 
+    override suspend fun deleteImage(key: String) {
+        val response = client.delete("images/delete") {
+            url {
+                parameters.append("key", key)
+            }
+        }
+
+        if (!response.status.isSuccess()) {
+            val error = response.bodyAsText()
+            throw Exception("Error al eliminar la imagen: $error")
+        }
+    }
 }

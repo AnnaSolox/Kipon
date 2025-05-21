@@ -6,6 +6,8 @@ import com.annasolox.kipon.data.api.models.request.create.UserCreate
 import com.annasolox.kipon.data.api.service.AuthService
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.plugins.ResponseException
+import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -30,19 +32,18 @@ class AuthRepository(private val authService: AuthService) {
     }
 
     suspend fun register(user: UserCreate): Result<Unit> {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             try {
                 authService.register(user)
                 Result.success(Unit)
-            } catch (e: IOException){
-                Log.e("Auth Repository", "Error de conexión", e)
-                Result.failure(Exception("Error de conexión"))
-            } catch (e: ClientRequestException) {
+            } catch (e: ResponseException) {
                 val errorMessage = runCatching {
-                    e.response.body<String>()
-                }.getOrNull() ?: "Error al registrar al usuario"
+                    e.response.bodyAsText()
+                }.getOrElse { "Error al leer el mensaje de error" }
                 Result.failure(Exception(errorMessage))
-            } catch (e: Exception){
+            } catch (e: IOException) {
+                Result.failure(Exception("Error de conexión"))
+            } catch (e: Exception) {
                 Result.failure(Exception("Error inesperado: ${e.message}"))
             }
         }

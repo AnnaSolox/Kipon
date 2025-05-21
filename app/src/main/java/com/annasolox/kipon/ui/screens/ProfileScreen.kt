@@ -287,7 +287,7 @@ fun ProfileScreen(
                 ) {
                     AsyncImage(
                         model = "${currentUser!!.profile.photo}",
-                        error = painterResource(R.drawable.girl_photo),
+                        error = painterResource(R.drawable.placeholder_image),
                         contentDescription = stringResource(R.string.cd_user_profile_image_header),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier

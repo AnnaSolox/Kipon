@@ -12,6 +12,7 @@ import com.annasolox.kipon.core.utils.mappers.UserMapper
 import com.annasolox.kipon.data.api.models.request.create.LoginRequest
 import com.annasolox.kipon.data.repository.AuthRepository
 import com.annasolox.kipon.ui.models.LoginUiState
+import com.annasolox.kipon.ui.screens.LoginScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -111,9 +112,13 @@ class AuthViewModel(
     fun register() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                if(!attemptRegister()) return@launch
+                _loginState.postValue(LoginUiState.Loading)
+                if (!attemptRegister()) {
+                    _loginState.postValue(LoginUiState.Idle)
+                    return@launch
+                }
 
-                authRepository.register(
+                val result = authRepository.register(
                     UserMapper.toUserCreate(
                         _userName.value!!,
                         _password.value!!,
@@ -124,12 +129,19 @@ class AuthViewModel(
                         _photo.value
                     )
                 )
-                _loginState.postValue(LoginUiState.Success(""))
-                clearErrors()
+
+                if (result.isSuccess) {
+                    _loginState.postValue(LoginUiState.Success("User registered successfully"))
+                    clearErrors()
+                } else {
+                    val errorMessage = result.exceptionOrNull()?.message ?: "Error desconocido"
+                    _loginState.postValue(LoginUiState.Error(errorMessage))
+                    Log.d("AuthViewModel", "Error on registering user: $errorMessage")
+                }
 
             } catch (e: Exception) {
-                _loginState.postValue(LoginUiState.Error("Error al registrar el usuario"))
-                Log.d("AuthViewModel", "Error al registrar el usuario: ${e.message}")
+                _loginState.postValue(LoginUiState.Error("Error inesperado: ${e.message}"))
+                Log.e("AuthViewModel", "Error en registro", e)
             }
         }
     }

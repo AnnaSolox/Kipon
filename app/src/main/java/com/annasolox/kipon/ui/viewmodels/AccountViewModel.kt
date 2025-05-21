@@ -385,7 +385,7 @@ class AccountViewModel(
                     _editAccountPhoto.value = imageUrl
                 }
             } catch (e: Exception) {
-                Log.e("UserViewModel", "Error uploading image: ${e.message}")
+                Log.e("AuthViewModel", "Error uploading image: ${e.message}")
             }
         }
     }

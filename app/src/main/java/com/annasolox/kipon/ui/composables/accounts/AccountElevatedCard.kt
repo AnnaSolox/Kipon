@@ -40,7 +40,7 @@ fun AccountElevatedCard(accountOverview: AccountOverview, imageUrl: String, modi
         ) {
             AsyncImage(
                 model = imageUrl,
-                error = painterResource(R.drawable.account_photo),
+                error = painterResource(R.drawable.placeholder_image),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxHeight()

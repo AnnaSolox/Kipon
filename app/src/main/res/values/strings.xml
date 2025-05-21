@@ -41,4 +41,5 @@
     <string name="filter_amount_of_contribution_text">Filter amount of contribution</string>
     <string name="cd_filter_icon">Filter icon</string>
     <string name="cd_clear_filter">Clear filter</string>
+    <string name="greeting_home_text">Hi</string>
 </resources>

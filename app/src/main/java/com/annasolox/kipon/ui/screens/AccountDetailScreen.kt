@@ -256,7 +256,7 @@ fun AccountDetailScreen(
                         ) {
                             AsyncImage(
                                 model = "${currentAccount!!.photo}",
-                                error = painterResource(R.drawable.account_photo),
+                                error = painterResource(R.drawable.placeholder_image),
                                 contentDescription = stringResource(R.string.cd_user_image_thumbnail),
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier

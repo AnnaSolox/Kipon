@@ -7,15 +7,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -32,6 +36,7 @@ import com.annasolox.kipon.core.navigation.RegisterScreen
 import com.annasolox.kipon.ui.composables.backgrounds.AuthBackground
 import com.annasolox.kipon.ui.composables.textFields.RegisterPasswordTextField
 import com.annasolox.kipon.ui.composables.textFields.RegisterTextField
+import com.annasolox.kipon.ui.models.LoginUiState
 import com.annasolox.kipon.ui.viewmodels.AuthViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -54,6 +59,15 @@ fun RegisterScreen(
     val addressError by authViewModel.addressError.observeAsState()
     val passwordConfirmation by authViewModel.passwordConfirmation.observeAsState("")
     val passwordConfirmationError by authViewModel.passwordConfirmationError.observeAsState("")
+    val isLogin by authViewModel.loginState.observeAsState()
+
+    LaunchedEffect(isLogin) {
+        if (isLogin is LoginUiState.Success)
+            navController.navigate(LoginScreen) {
+                popUpTo<RegisterScreen> { inclusive = true }
+                launchSingleTop = true
+            }
+    }
 
     AuthBackground {
         Box(
@@ -77,34 +91,79 @@ fun RegisterScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             )
             {
-                RegisterTextField(username, stringResource(R.string.username_label), usernameError) { authViewModel.onUserNameChanged(it) }
+                RegisterTextField(
+                    username,
+                    stringResource(R.string.username_label),
+                    usernameError
+                ) { authViewModel.onUserNameChanged(it) }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterPasswordTextField(password, stringResource(R.string.password_label), passwordError) { authViewModel.onPasswordChanged(it) }
+                RegisterPasswordTextField(
+                    password,
+                    stringResource(R.string.password_label),
+                    passwordError
+                ) { authViewModel.onPasswordChanged(it) }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterPasswordTextField(passwordConfirmation,
-                    stringResource(R.string.password_confirmation_label), passwordConfirmationError) { authViewModel.onPasswordConfirmationChanged(it) }
+                RegisterPasswordTextField(
+                    passwordConfirmation,
+                    stringResource(R.string.password_confirmation_label), passwordConfirmationError
+                ) { authViewModel.onPasswordConfirmationChanged(it) }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterTextField(email, stringResource(R.string.email_label), emailError) { authViewModel.onEmailChanged(it) }
+                RegisterTextField(
+                    email,
+                    stringResource(R.string.email_label),
+                    emailError
+                ) { authViewModel.onEmailChanged(it) }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterTextField(completeName, stringResource(R.string.complete_name_label), completeNameError) { authViewModel.onCompleteNameChanged(it) }
+                RegisterTextField(
+                    completeName,
+                    stringResource(R.string.complete_name_label),
+                    completeNameError
+                ) { authViewModel.onCompleteNameChanged(it) }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterTextField(phoneNumber, stringResource(R.string.phone_number_label), phoneNumberError) { authViewModel.onPhoneChanged(it) }
+                RegisterTextField(
+                    phoneNumber,
+                    stringResource(R.string.phone_number_label),
+                    phoneNumberError
+                ) { authViewModel.onPhoneChanged(it) }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterTextField(address, stringResource(R.string.address_label), addressError) { authViewModel.onAddressChanged(it) }
+                RegisterTextField(
+                    address,
+                    stringResource(R.string.address_label),
+                    addressError
+                ) { authViewModel.onAddressChanged(it) }
 
                 Spacer(Modifier.size(40.dp))
+
+                Box(
+                    Modifier
+                        .height(60.dp)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (isLogin is LoginUiState.Loading) {
+                        CircularProgressIndicator()
+                    }
+
+                    if (isLogin is LoginUiState.Error) {
+                        Text(
+                            text = (isLogin as LoginUiState.Error).message.toString(),
+                            color = MaterialTheme.colorScheme.error,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
 
                 Button(
                     {
@@ -127,8 +186,8 @@ fun RegisterScreen(
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Black,
                         modifier = Modifier.clickable {
-                            navController.navigate(LoginScreen){
-                                popUpTo<RegisterScreen>{inclusive = true}
+                            navController.navigate(LoginScreen) {
+                                popUpTo<RegisterScreen> { inclusive = true }
                                 launchSingleTop = true
                             }
                         })

@@ -45,6 +45,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -166,7 +167,7 @@ fun ProfileScreen(
                 FormTextField(
                     enabled = false,
                     value = username ?: "",
-                    label = "Username",
+                    label = stringResource(R.string.username_label),
                     error = null,
                     modifier = Modifier.fillMaxWidth()
                 ) { userViewModel.onUsernameChanged(it) }
@@ -174,7 +175,7 @@ fun ProfileScreen(
                 FormTextField(
                     enabled = editEnable,
                     value = email ?: "",
-                    label = "Email",
+                    label = stringResource(R.string.email_label),
                     error = emailError,
                     modifier = Modifier.fillMaxWidth()
                 ) { userViewModel.onEmailChanged(it) }
@@ -182,7 +183,7 @@ fun ProfileScreen(
                 LoginPasswordTextField(
                     enabled = false,
                     isProfileScreen = isProfileScreen,
-                    password = password ?: "fakePassword",
+                    password = password ?: stringResource(R.string.fakepassword_placeholder),
                     error = null,
                     modifier = Modifier.fillMaxWidth()
                 ) { userViewModel.onPasswordChanged(it) }
@@ -196,7 +197,7 @@ fun ProfileScreen(
                 FormTextField(
                     enabled = false,
                     value = currentUser!!.profile.completeName,
-                    label = "Complete name",
+                    label = stringResource(R.string.complete_name_label),
                     error = null,
                     modifier = Modifier.fillMaxWidth()
                 ) { }
@@ -204,7 +205,7 @@ fun ProfileScreen(
                 FormTextField(
                     enabled = editEnable,
                     value = phone ?: "",
-                    label = "Phone number",
+                    label = stringResource(R.string.phone_number_label),
                     error = phoneError,
                     modifier = Modifier.fillMaxWidth()
                 ) { userViewModel.onPhoneChanged(it) }
@@ -212,7 +213,7 @@ fun ProfileScreen(
                 FormTextField(
                     enabled = editEnable,
                     value = address ?: "",
-                    label = "Adress",
+                    label = stringResource(R.string.address_label),
                     error = addressError,
                     modifier = Modifier.fillMaxWidth()
                 ) { userViewModel.onAddressChanged(it) }
@@ -222,7 +223,7 @@ fun ProfileScreen(
                     enabled = editEnable,
                     value = photo ?: "",
                     onValueChange = { userViewModel.onPhotoChanged(it) },
-                    label = "Photo URL",
+                    label = stringResource(R.string.photo_url_label),
                     error = null,
                 ) {
                     if (requiresPermission) {
@@ -242,14 +243,14 @@ fun ProfileScreen(
                             editEnable = false
                             userViewModel.populateProfileFields()
                         }) {
-                            Text("Discard")
+                            Text(stringResource(R.string.discard_btn_text))
                         }
                         Spacer(Modifier.size(8.dp))
                         Button({
                             userViewModel.updateUserInfo()
                             editEnable = false
                         }) {
-                            Text("Save")
+                            Text(stringResource(R.string.save_btn_text))
                         }
                     }
                 }
@@ -287,7 +288,7 @@ fun ProfileScreen(
                     AsyncImage(
                         model = "${currentUser!!.profile.photo}",
                         error = painterResource(R.drawable.girl_photo),
-                        contentDescription = "User profile image header",
+                        contentDescription = stringResource(R.string.cd_user_profile_image_header),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxSize()
@@ -318,7 +319,7 @@ fun ProfileScreen(
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Black,
                             color = Color.White,
-                            text = "Fecha de registro"
+                            text = stringResource(R.string.register_date_text)
                         )
                         Spacer(Modifier.size(4.dp))
                         Text(

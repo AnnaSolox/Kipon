@@ -22,9 +22,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.annasolox.kipon.R
 import com.annasolox.kipon.core.navigation.LoginScreen
 import com.annasolox.kipon.core.navigation.RegisterScreen
 import com.annasolox.kipon.ui.composables.backgrounds.AuthBackground
@@ -75,31 +77,32 @@ fun RegisterScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             )
             {
-                RegisterTextField(username, "Username", usernameError) { authViewModel.onUserNameChanged(it) }
+                RegisterTextField(username, stringResource(R.string.username_label), usernameError) { authViewModel.onUserNameChanged(it) }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterPasswordTextField(password, "Password", passwordError) { authViewModel.onPasswordChanged(it) }
+                RegisterPasswordTextField(password, stringResource(R.string.password_label), passwordError) { authViewModel.onPasswordChanged(it) }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterPasswordTextField(passwordConfirmation,"Password confirmation", passwordConfirmationError) { authViewModel.onPasswordConfirmationChanged(it) }
+                RegisterPasswordTextField(passwordConfirmation,
+                    stringResource(R.string.password_confirmation_label), passwordConfirmationError) { authViewModel.onPasswordConfirmationChanged(it) }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterTextField(email, "Email", emailError) { authViewModel.onEmailChanged(it) }
+                RegisterTextField(email, stringResource(R.string.email_label), emailError) { authViewModel.onEmailChanged(it) }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterTextField(completeName, "Complete name", completeNameError) { authViewModel.onCompleteNameChanged(it) }
+                RegisterTextField(completeName, stringResource(R.string.complete_name_label), completeNameError) { authViewModel.onCompleteNameChanged(it) }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterTextField(phoneNumber, "Phone number", phoneNumberError) { authViewModel.onPhoneChanged(it) }
+                RegisterTextField(phoneNumber, stringResource(R.string.phone_number_label), phoneNumberError) { authViewModel.onPhoneChanged(it) }
 
                 Spacer(Modifier.size(6.dp))
 
-                RegisterTextField(address, "Address", addressError) { authViewModel.onAddressChanged(it) }
+                RegisterTextField(address, stringResource(R.string.address_label), addressError) { authViewModel.onAddressChanged(it) }
 
                 Spacer(Modifier.size(40.dp))
 
@@ -111,16 +114,16 @@ fun RegisterScreen(
                         containerColor = MaterialTheme.colorScheme.tertiary
                     )
                 ) {
-                    Text("Register")
+                    Text(stringResource(R.string.register_btn_text))
                 }
 
                 Spacer(Modifier.size(12.dp))
 
                 Row {
-                    Text(text = "Are you already registered?")
+                    Text(text = stringResource(R.string.are_you_already_registered_text))
                     Spacer(Modifier.size(6.dp))
                     Text(
-                        text = "Login",
+                        text = stringResource(R.string.login_button),
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Black,
                         modifier = Modifier.clickable {

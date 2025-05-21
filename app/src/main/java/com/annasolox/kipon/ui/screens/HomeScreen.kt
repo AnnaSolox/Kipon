@@ -45,10 +45,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.annasolox.kipon.R
 import com.annasolox.kipon.core.navigation.AccountNavigationEvent.NavigateToAccountDetail
 import com.annasolox.kipon.core.navigation.DetailsAccountScreen
 import com.annasolox.kipon.core.navigation.HomeScreen
@@ -159,7 +161,7 @@ fun HomeScreen(
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Black
                         )
-                        Text("Bienvenida de nuevo", style = MaterialTheme.typography.bodySmall)
+                        Text(stringResource(R.string.welcome_back_text), style = MaterialTheme.typography.bodySmall)
                     }
                 }
                 Row {
@@ -172,7 +174,7 @@ fun HomeScreen(
                             .clip(CircleShape)
                             .border(1.dp, Color.Black, shape = CircleShape)
                     ) {
-                        Icon(imageVector = Icons.Outlined.Add, contentDescription = "Add icon")
+                        Icon(imageVector = Icons.Outlined.Add, contentDescription = stringResource(R.string.cd_add_icon))
                     }
                 }
             }
@@ -181,8 +183,6 @@ fun HomeScreen(
                 query,
                 onQueryChange = { query = it }
             )
-
-            println("User accounts: ${user?.accounts?.size}")
 
             LazyColumn {
                 val filteredAccounts = user?.accounts?.filter {
@@ -223,20 +223,21 @@ fun HomeScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Text("Create new account".uppercase(),
+                        Text(
+                            stringResource(R.string.create_new_account_title).uppercase(),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Black,
                         )
 
                         FormTextField(
                             value = accountName,
-                            label = "Account name",
+                            label = stringResource(R.string.account_name_label),
                             error = accountNameError,
                         ) { accountViewModel.onAccountNameChange(it) }
 
                         FormTextField(
                             value = moneyGoal?.toString() ?: "",
-                            label = "Money goal",
+                            label = stringResource(R.string.money_goal_label),
                             error = moneyGoalError,
                             keyboardType = KeyboardType.Number
                         ) {
@@ -246,13 +247,13 @@ fun HomeScreen(
                             modifier = Modifier,
                             dateGoal,
                             onDateSelected = {accountViewModel.onAccountDateGoalChange(it)},
-                            label = "Date goal",
+                            label = stringResource(R.string.date_goal_label),
                             error = dateGoalError
                         )
 
                         FormTextField(
                             value = photo.toString(),
-                            label = "Photo URL",
+                            label = stringResource(R.string.photo_url_label),
                             error = photoError,
                         ) { accountViewModel.onAccountPhotoChange(it) }
 
@@ -270,7 +271,7 @@ fun HomeScreen(
                                 containerColor = MaterialTheme.colorScheme.tertiary
                             )
                         ) {
-                            Text("Create account")
+                            Text(stringResource(R.string.create_account_btn_text))
                         }
                     }
                 }

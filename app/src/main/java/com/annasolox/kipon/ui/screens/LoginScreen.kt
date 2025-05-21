@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -85,7 +86,7 @@ fun LoginScreen(
             val (logo, form) = createRefs()
             Image(
                 painter = painterResource(R.drawable.logo_claim_kipon_h),
-                contentDescription = "Logo Kipon",
+                contentDescription = stringResource(R.string.cd_logo_kipon),
                 modifier = Modifier
                     .clipToBounds()
                     .size(200.dp)
@@ -124,7 +125,7 @@ fun LoginScreen(
                     FormTextField(
                         value = username,
                         error = usernameError,
-                        label = "Username"
+                        label = stringResource(R.string.username_label)
                     ) { authViewModel.onUserNameChanged(it) }
 
                     Spacer(Modifier.size(12.dp))
@@ -162,16 +163,16 @@ fun LoginScreen(
                             containerColor = MaterialTheme.colorScheme.tertiary
                         )
                     ) {
-                        Text(text = "Login")
+                        Text(text = stringResource(R.string.login_button))
                     }
 
                     Spacer(Modifier.size(12.dp))
 
                     Row {
-                        Text(text = "Don't have an account?")
+                        Text(text = stringResource(R.string.don_t_have_an_account_text))
                         Spacer(Modifier.size(6.dp))
                         Text(
-                            text = "Register",
+                            text = stringResource(R.string.register_text),
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Black,
                             modifier = Modifier.clickable {

@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -32,7 +33,7 @@ fun LoginPasswordTextField(
         modifier = modifier,
         value = password,
         onValueChange = { onPasswordChange(it) },
-        label = { Text(text = "Password") },
+        label = { Text(text = stringResource(R.string.password_label)) },
         enabled = enabled,
         singleLine = true,
         isError = error != null,
@@ -44,7 +45,7 @@ fun LoginPasswordTextField(
                 IconButton({ passwordHidden = !passwordHidden }) {
                     Icon(
                         painter = painterResource(if (passwordHidden) R.drawable.visibility_on else R.drawable.visibility_off),
-                        contentDescription = "Visibility icon"
+                        contentDescription = stringResource(R.string.cd_visibility_icon)
                     )
                 }
             }

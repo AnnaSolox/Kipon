@@ -38,9 +38,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.annasolox.kipon.R
 import com.annasolox.kipon.ui.composables.AccountSearchBar
 import com.annasolox.kipon.ui.composables.accounts.UserContribuition
 import com.annasolox.kipon.ui.composables.textFields.FormTextField
@@ -107,9 +109,9 @@ fun TransactionsScreen(
                         .border(1.dp, Color.Black, shape = CircleShape)
                 ) {
                     if (appliedMinAmount != null || appliedMaxAmount != null) {
-                        Icon(Icons.Default.Close, "Clear filter")
+                        Icon(Icons.Default.Close, stringResource(R.string.cd_clear_filter))
                     } else {
-                        Icon(Icons.Default.FilterAlt, "Filter icon")
+                        Icon(Icons.Default.FilterAlt, stringResource(R.string.cd_filter_icon))
                     }
                 }
             }
@@ -148,7 +150,7 @@ fun TransactionsScreen(
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
-                    "Create new contribution".uppercase(),
+                    stringResource(R.string.filter_amount_of_contribution_text).uppercase(),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Black,
                 )
@@ -157,7 +159,7 @@ fun TransactionsScreen(
                     Box(Modifier.weight(1f)){
                         FormTextField(
                             value = minAmountText,
-                            label = "Min. amount",
+                            label = stringResource(R.string.min_amount_label),
                             error = null,
                             keyboardType = KeyboardType.Number,
                         ) {
@@ -170,7 +172,7 @@ fun TransactionsScreen(
                     Box(Modifier.weight(1f)){
                         FormTextField(
                             value = maxAmountText,
-                            label = "Max. amount",
+                            label = stringResource(R.string.max_amount_label),
                             error = null,
                             keyboardType = KeyboardType.Number,
                         ) {
@@ -189,7 +191,7 @@ fun TransactionsScreen(
                         containerColor = MaterialTheme.colorScheme.tertiary
                     )
                 ) {
-                    Text("Apply filter")
+                    Text(stringResource(R.string.apply_filter_text))
                 }
             }
         }

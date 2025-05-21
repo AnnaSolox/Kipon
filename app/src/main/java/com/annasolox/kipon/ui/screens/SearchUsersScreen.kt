@@ -27,8 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.annasolox.kipon.R
 import com.annasolox.kipon.core.navigation.DetailsAccountScreen
 import com.annasolox.kipon.core.navigation.SearchUsersScreen
 import com.annasolox.kipon.ui.composables.UserSearchComposable
@@ -66,7 +68,7 @@ fun SearchUsersScreen(
                 onValueChange = {
                     query = it
                 },
-                label = { Text("Search") },
+                label = { Text(stringResource(R.string.search_label)) },
                 modifier = Modifier
                     .fillMaxWidth(),
                 singleLine = true,
@@ -85,7 +87,7 @@ fun SearchUsersScreen(
                     ) {
                         Icon(
                             Icons.Outlined.Search,
-                            contentDescription = "Trailing icon"
+                            contentDescription = stringResource(R.string.cd_trailing_icon)
                         )
                     }
                 },

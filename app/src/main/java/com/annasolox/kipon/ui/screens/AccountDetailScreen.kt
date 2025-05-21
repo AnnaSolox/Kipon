@@ -60,6 +60,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -256,7 +257,7 @@ fun AccountDetailScreen(
                             AsyncImage(
                                 model = "${currentAccount!!.photo}",
                                 error = painterResource(R.drawable.account_photo),
-                                contentDescription = "User image thumbnail",
+                                contentDescription = stringResource(R.string.cd_user_image_thumbnail),
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -326,7 +327,7 @@ fun AccountDetailScreen(
         IconButton({ navController.navigate(HomeScreen) }) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back button",
+                contentDescription = stringResource(R.string.cd_back_button),
                 modifier = Modifier.size(30.dp),
                 tint = Color.White
             )
@@ -344,7 +345,7 @@ fun AccountDetailScreen(
         {
             Icon(
                 imageVector = Icons.Filled.Add,
-                contentDescription = "Add new contribution icon"
+                contentDescription = stringResource(R.string.cd_add_new_contribution_icon)
             )
         }
 
@@ -382,7 +383,7 @@ fun AccountDetailScreen(
                     FormTextField(
                         modifier = Modifier.width(300.dp),
                         value = editAccountName ?: "",
-                        label = "AccountName",
+                        label = stringResource(R.string.account_name_label),
                         placeholder = currentAccount!!.name,
                         error = editAccountNameError,
                     ) {
@@ -392,7 +393,7 @@ fun AccountDetailScreen(
                     FormTextField(
                         modifier = Modifier.width(300.dp),
                         value = editMoneyGoal.toString(),
-                        label = "Money goal",
+                        label = stringResource(R.string.money_goal_label),
                         error = editMoneyGoalError,
                         placeholder = currentAccount!!.moneyGoal.toString(),
                         keyboardType = KeyboardType.Number,
@@ -404,7 +405,7 @@ fun AccountDetailScreen(
                         modifier = Modifier.width(300.dp),
                         editDateGoal,
                         onDateSelected = {accountViewModel.onEditAccountDateGoalChange(it)},
-                        label = "Date goal",
+                        label = stringResource(R.string.date_goal_label),
                         error = editDateGoalError
                     )
 
@@ -413,7 +414,7 @@ fun AccountDetailScreen(
                         enabled = true,
                         value = editPhoto ?: "",
                         onValueChange = { accountViewModel.onEditAccountPhotoChange(it) },
-                        label = "Photo URL",
+                        label = stringResource(R.string.photo_url_label),
                         error = null,
                     ) {
                         if (requiresPermission) {
@@ -434,7 +435,7 @@ fun AccountDetailScreen(
                             containerColor = MaterialTheme.colorScheme.tertiary
                         )
                     ) {
-                        Text("Save")
+                        Text(stringResource(R.string.save_btn_text))
                     }
                 }
             }
@@ -459,14 +460,14 @@ fun AccountDetailScreen(
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
-                        "Create new contribution".uppercase(),
+                        stringResource(R.string.create_new_contribution_title).uppercase(),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Black,
                     )
 
                     FormTextField(
                         value = contribAmount?.toString() ?: "",
-                        label = "Amount",
+                        label = stringResource(R.string.amount_label),
                         error = contributionAmountError,
                         keyboardType = KeyboardType.Number,
                     ) {
@@ -488,7 +489,7 @@ fun AccountDetailScreen(
                             containerColor = MaterialTheme.colorScheme.tertiary
                         )
                     ) {
-                        Text("Create contribution")
+                        Text(stringResource(R.string.create_contribution_title))
                     }
                 }
             }

@@ -231,7 +231,7 @@ class AccountViewModel(
                         Log.d("AccountViewModel", "New contribution: $newContribution")
                     }
                 }
-
+                _isValidContributionCreate.postValue(true)
                 clearContributionError()
                 clearContributionForm()
 
@@ -332,7 +332,7 @@ class AccountViewModel(
         }
 
         // TODO: Validación de foto
-        _isValidAccountCreate.postValue(isValid)
+        _isValidAccountCreate.postValue(false)
         return isValid
     }
 
@@ -343,12 +343,14 @@ class AccountViewModel(
         _editAccountName.value?.let {
             if(_editAccountName.value!!.length > 100){
                 _editAccountNameError.postValue("Debe tener menos de 100 caracteres")
+                isValid = false
             }
         }
 
         _editAccountMoneyGoal.value?.let {
             if(_editAccountMoneyGoal.value!! < 0){
                 _moneyGoalError.postValue("La cantidad debe ser mayor a 0")
+                isValid = false
             }
         }
 
@@ -423,5 +425,9 @@ class AccountViewModel(
         _editAccountMoneyGoalError.postValue(null)
         _editAccountMoneyGoalError.postValue(null)
         _editAccountPhotoError.postValue(null)
+    }
+
+    fun resetEditAccountValidation(){
+        _isValidEditAccount.postValue(false)
     }
 }

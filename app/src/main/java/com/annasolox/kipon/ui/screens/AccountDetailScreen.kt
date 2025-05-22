@@ -113,7 +113,7 @@ fun AccountDetailScreen(
     val coroutineScope = rememberCoroutineScope()
     val addSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var isAddSheetOpen by remember { mutableStateOf(false) }
-    val ediSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val editSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var isEditSheetOpen by remember { mutableStateOf(false) }
 
     val listState = rememberLazyListState()
@@ -126,7 +126,20 @@ fun AccountDetailScreen(
 
     LaunchedEffect(editAccountValidation) {
         if (editAccountValidation == true) {
-            isEditSheetOpen = false
+            coroutineScope.launch {
+                editSheetState.hide()
+                isEditSheetOpen = false
+                accountViewModel.resetEditAccountValidation()
+            }
+        }
+    }
+
+    LaunchedEffect(contributionValidation) {
+        if (contributionValidation == true){
+            coroutineScope.launch {
+                addSheetState.hide()
+                isAddSheetOpen = false
+            }
         }
     }
 
@@ -185,12 +198,6 @@ fun AccountDetailScreen(
             popUpTo(HomeScreen) {
                 inclusive = true
             }
-        }
-    }
-
-    LaunchedEffect(contributionValidation) {
-        if(contributionValidation == true) {
-            isAddSheetOpen = false
         }
     }
 
@@ -298,7 +305,7 @@ fun AccountDetailScreen(
                                     Spacer(Modifier.size(8.dp))
                                     OptionsButton(Icons.Filled.Edit){
                                         isEditSheetOpen = true
-                                        coroutineScope.launch { ediSheetState.show() }
+                                        coroutineScope.launch { editSheetState.show() }
                                     }
                                 }
                             }
@@ -364,7 +371,7 @@ fun AccountDetailScreen(
                     accountViewModel.clearEditAccountError()
                     accountViewModel.populateEditAccountForm()
                 },
-                sheetState = ediSheetState,
+                sheetState = editSheetState,
                 containerColor = Color.White
             ) {
                 Column(
@@ -446,8 +453,6 @@ fun AccountDetailScreen(
             ModalBottomSheet(
                 onDismissRequest = {
                     isAddSheetOpen = false
-                    accountViewModel.clearContributionForm()
-                    accountViewModel.clearContributionError()
                 },
                 sheetState = addSheetState,
                 containerColor = Color.White
@@ -491,5 +496,4 @@ fun AccountDetailScreen(
             }
         }
     }
-
 }

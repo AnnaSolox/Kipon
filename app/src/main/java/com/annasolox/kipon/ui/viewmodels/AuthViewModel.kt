@@ -15,6 +15,8 @@ import com.annasolox.kipon.ui.models.LoginUiState
 import com.annasolox.kipon.ui.screens.LoginScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class AuthViewModel(
     private val authRepository: AuthRepository,
@@ -80,6 +82,8 @@ class AuthViewModel(
         _address.postValue(address)
     }
 
+    private val mutex = Mutex()
+
     fun login() {
         viewModelScope.launch(Dispatchers.IO) {
             _loginState.postValue(LoginUiState.Loading)
@@ -118,25 +122,27 @@ class AuthViewModel(
                     return@launch
                 }
 
-                val result = authRepository.register(
-                    UserMapper.toUserCreate(
-                        _userName.value!!,
-                        _password.value!!,
-                        _email.value!!,
-                        _completeName.value!!,
-                        _phone.value!!,
-                        _address.value!!,
-                        _photo.value
+                mutex.withLock {
+                    val result = authRepository.register(
+                        UserMapper.toUserCreate(
+                            _userName.value!!,
+                            _password.value!!,
+                            _email.value!!,
+                            _completeName.value!!,
+                            _phone.value!!,
+                            _address.value!!,
+                            _photo.value
+                        )
                     )
-                )
 
-                if (result.isSuccess) {
-                    _loginState.postValue(LoginUiState.Success("User registered successfully"))
-                    clearErrors()
-                } else {
-                    val errorMessage = result.exceptionOrNull()?.message ?: "Error desconocido"
-                    _loginState.postValue(LoginUiState.Error(errorMessage))
-                    Log.d("AuthViewModel", "Error on registering user: $errorMessage")
+                    if (result.isSuccess) {
+                        _loginState.postValue(LoginUiState.Success("User registered successfully"))
+                        clearErrors()
+                    } else {
+                        val errorMessage = result.exceptionOrNull()?.message ?: "Error desconocido"
+                        _loginState.postValue(LoginUiState.Error(errorMessage))
+                        Log.d("AuthViewModel", "Error on registering user: $errorMessage")
+                    }
                 }
 
             } catch (e: Exception) {

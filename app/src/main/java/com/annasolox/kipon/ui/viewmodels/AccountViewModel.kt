@@ -22,6 +22,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
@@ -151,20 +153,24 @@ class AccountViewModel(
     private val _onUserAdded = MutableSharedFlow<Unit>()
     val onUserAdded = _onUserAdded.asSharedFlow()
 
+    private val mutex = Mutex()
+
     fun loadCurrentAccount(id: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             _loadingState.postValue(LoginUiState.Loading)
             try {
-                val accountResponse = accountRepository.getAccountById(id)
-                Log.d("AccountViewModel", "Account response: $accountResponse")
-                _loadingState.postValue(LoginUiState.Success("Account loaded successfully"))
-                val mappedAccount = AccountMapper.toDetailAccount(accountResponse)
-                withContext(Dispatchers.Main) {
-                    _currentAccount.value = mappedAccount
-                    _currentAccountAmount.value = _currentAccount.value?.currentAmount
-                    populateEditAccountForm()
+                mutex.withLock {
+                    val accountResponse = accountRepository.getAccountById(id)
+                    Log.d("AccountViewModel", "Account response: $accountResponse")
+                    _loadingState.postValue(LoginUiState.Success("Account loaded successfully"))
+                    val mappedAccount = AccountMapper.toDetailAccount(accountResponse)
+                    withContext(Dispatchers.Main) {
+                        _currentAccount.value = mappedAccount
+                        _currentAccountAmount.value = _currentAccount.value?.currentAmount
+                        populateEditAccountForm()
+                    }
+                    Log.d("AccountViewModel", "Current account: ${_currentAccount.value}")
                 }
-                Log.d("AccountViewModel", "Current account: ${_currentAccount.value}")
 
             } catch (e: Exception) {
                 _loadingState.postValue(LoginUiState.Error("Error loading account"))
@@ -178,17 +184,20 @@ class AccountViewModel(
             _loadingState.postValue(LoginUiState.Loading)
             try {
                 if(!attemptAccountCreation())return@launch
-                val accountToCreate = AccountCreate(
-                    name = _name.value.toString(),
-                    moneyGoal = _moneyGoal.value!!.toDouble(),
-                    dateGoal = _dateGoal.value,
-                    photo = _photo.value.toString()
-                )
-                val createdAccount = accountRepository.accountCreate(accountToCreate)
-                loadCurrentAccount(createdAccount.id)
-                _navigationEvent.postValue(AccountNavigationEvent.NavigateToAccountDetail)
 
-                _loadingState.postValue(LoginUiState.Success("Account created successfully"))
+                mutex.withLock {
+                    val accountToCreate = AccountCreate(
+                        name = _name.value.toString(),
+                        moneyGoal = _moneyGoal.value!!.toDouble(),
+                        dateGoal = _dateGoal.value,
+                        photo = _photo.value.toString()
+                    )
+                    val createdAccount = accountRepository.accountCreate(accountToCreate)
+                    loadCurrentAccount(createdAccount.id)
+                    _navigationEvent.postValue(AccountNavigationEvent.NavigateToAccountDetail)
+
+                    _loadingState.postValue(LoginUiState.Success("Account created successfully"))
+                }
             } catch (e: Exception) {
                 _loadingState.postValue(LoginUiState.Error("Error creating account"))
                 Log.e("AccountViewModel", "Error creating account: ${e.message}")
@@ -198,26 +207,31 @@ class AccountViewModel(
 
     fun createNewContribution() {
         viewModelScope.launch(Dispatchers.IO) {
+            _isValidContributionCreate.postValue(false)
             _loadingState.postValue(LoginUiState.Loading)
             try {
                 if(!attemptContributionCreation())return@launch
-                _contributionAmount.value?.let {
-                    val newSaving = SavingCreate(
-                        userRepository.getCurrentUserId(),
-                        _contributionAmount.value!!.toDouble()
-                    )
-                    val newContribution = accountRepository.createNewContribution(
-                        _currentAccount.value!!.id,
-                        newSaving
-                    )
-                    _currentAccountAmount.postValue(newContribution.currentMoney)
-                    val updatedList = listOf(newContribution) + _savingsList.value.orEmpty()
-                    val savingList = updatedList.map { it }
-                    _savingsList.postValue(savingList)
 
-                    _loadingState.postValue(LoginUiState.Success("Contribution created successfully"))
-                    Log.d("AccountViewModel", "New contribution: $newContribution")
+                mutex.withLock {
+                    _contributionAmount.value?.let {
+                        val newSaving = SavingCreate(
+                            userRepository.getCurrentUserId(),
+                            _contributionAmount.value!!.toDouble()
+                        )
+                        val newContribution = accountRepository.createNewContribution(
+                            _currentAccount.value!!.id,
+                            newSaving
+                        )
+                        _currentAccountAmount.postValue(newContribution.currentMoney)
+                        val updatedList = listOf(newContribution) + _savingsList.value.orEmpty()
+                        val savingList = updatedList.map { it }
+                        _savingsList.postValue(savingList)
+
+                        _loadingState.postValue(LoginUiState.Success("Contribution created successfully"))
+                        Log.d("AccountViewModel", "New contribution: $newContribution")
+                    }
                 }
+
             } catch (e: Exception) {
                 _loadingState.postValue(LoginUiState.Error("Error creating contribution"))
                 Log.d("AccountViewModel", "Error creating contribution: ${e.message}")

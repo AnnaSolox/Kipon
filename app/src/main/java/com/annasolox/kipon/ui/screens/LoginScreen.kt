@@ -77,6 +77,7 @@ fun LoginScreen(
         if (user != null) {
             navController.navigate(HomeScreen) {
                 launchSingleTop = true
+                popUpTo(LoginScreen) {inclusive = true}
             }
         }
     }

@@ -87,16 +87,16 @@ class UserViewModel(
 
     fun addAccountToUserAccountsList(accountOverview: AccountOverview){
         val currentUser = _userHome.value
-        Log.d("UserViewModel", "Current User: $currentUser")
+        Log.d("UserViewModel", "Usuario actual: $currentUser")
         if (currentUser != null) {
             val updatedAccounts = currentUser.accounts.toMutableList().apply {
                 add(accountOverview)
             }
-            Log.d("UserViewModel", "Updated Accounts: $updatedAccounts")
+            Log.d("UserViewModel", "Cuentas actualizadas: $updatedAccounts")
             val updatedUser = currentUser.copy(accounts = updatedAccounts)
             _userHome.postValue(updatedUser)
         } else {
-            Log.d("UserViewModel", "User is null")
+            Log.d("UserViewModel", "Es usuario es nulo")
         }
     }
 
@@ -136,7 +136,7 @@ class UserViewModel(
                     }
 
                 } catch (e: Exception) {
-                    Log.e("UserViewModel", "Error loading user: ${e.message}")
+                    Log.e("UserViewModel", "Error cargando usuario: ${e.message}")
                 }
             }
         }
@@ -145,7 +145,7 @@ class UserViewModel(
     fun getSavingsFromUser(){
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("UserViewModel", "Userhome: ${_userHome.value}")
-            Log.d("UserViewModel", "Getting savings from user")
+            Log.d("UserViewModel", "Obteniendo contribuciones del usuario")
             _userHome.value?.savings?.let {
                 val savings = _userHome.value?.savings
                 savings?.let { _allUserSavings.postValue(savings) }
@@ -160,9 +160,7 @@ class UserViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val patch = UserPatch(
-                    //name = _username.value,
                     email = _email.value,
-                    //password = _password.value,
                     profile = ProfilePatch(
                         telephone = _phone.value,
                         address = _address.value,
@@ -188,7 +186,7 @@ class UserViewModel(
 
     fun attemptUpdateUserInfo(): Boolean{
         var isValid = true
-        Log.d("UserViewModel", "Attempting to update user info: isValid: $isValid")
+        Log.d("UserViewModel", "Intentando actualizar la información de usuario: isValid: $isValid")
 
         _email.value?.let {
             if (!_email.value!!.contains("@") || !_email.value!!.contains(".")) {

@@ -30,7 +30,7 @@ import java.time.LocalDate
 class AccountViewModel(
     private val accountRepository: AccountRepository,
     private val userRepository: UserRepository,
-    private val imageUploadRepository: ImageUploadRepository
+    private val imageUploadRepository: ImageUploadRepository,
 ) : ViewModel() {
     //Form create account info fields
     private var _name = MutableLiveData<String>()
@@ -162,7 +162,7 @@ class AccountViewModel(
                 mutex.withLock {
                     val accountResponse = accountRepository.getAccountById(id)
                     Log.d("AccountViewModel", "Account response: $accountResponse")
-                    _loadingState.postValue(LoginUiState.Success("Account loaded successfully"))
+                    _loadingState.postValue(LoginUiState.Success("Cuenta cargada con éxito"))
                     val mappedAccount = AccountMapper.toDetailAccount(accountResponse)
                     withContext(Dispatchers.Main) {
                         _currentAccount.value = mappedAccount
@@ -173,7 +173,7 @@ class AccountViewModel(
                 }
 
             } catch (e: Exception) {
-                _loadingState.postValue(LoginUiState.Error("Error loading account"))
+                _loadingState.postValue(LoginUiState.Error("Error cargando la cuenta"))
                 Log.e("AccountViewModel", "Error loading account: ${e.message}")
             }
         }
@@ -196,10 +196,10 @@ class AccountViewModel(
                     loadCurrentAccount(createdAccount.id)
                     _navigationEvent.postValue(AccountNavigationEvent.NavigateToAccountDetail)
 
-                    _loadingState.postValue(LoginUiState.Success("Account created successfully"))
+                    _loadingState.postValue(LoginUiState.Success("Cuenta creada con éxito"))
                 }
             } catch (e: Exception) {
-                _loadingState.postValue(LoginUiState.Error("Error creating account"))
+                _loadingState.postValue(LoginUiState.Error("Error creando la cuenta"))
                 Log.e("AccountViewModel", "Error creating account: ${e.message}")
             }
         }
@@ -227,7 +227,7 @@ class AccountViewModel(
                         val savingList = updatedList.map { it }
                         _savingsList.postValue(savingList)
 
-                        _loadingState.postValue(LoginUiState.Success("Contribution created successfully"))
+                        _loadingState.postValue(LoginUiState.Success("Contribuión creada con éxito"))
                         Log.d("AccountViewModel", "New contribution: $newContribution")
                     }
                 }
@@ -236,7 +236,7 @@ class AccountViewModel(
                 clearContributionForm()
 
             } catch (e: Exception) {
-                _loadingState.postValue(LoginUiState.Error("Error creating contribution"))
+                _loadingState.postValue(LoginUiState.Error("Error al crear la contribuición"))
                 Log.d("AccountViewModel", "Error creating contribution: ${e.message}")
             }
         }
@@ -406,7 +406,7 @@ class AccountViewModel(
                     _editAccountPhoto.value = imageUrl
                 }
             } catch (e: Exception) {
-                Log.e("AuthViewModel", "Error uploading image: ${e.message}")
+                Log.e("AuthViewModel", "Error al subir la imagen: ${e.message}")
             }
         }
     }

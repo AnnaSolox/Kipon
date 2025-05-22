@@ -12,7 +12,6 @@ import com.annasolox.kipon.core.utils.mappers.UserMapper
 import com.annasolox.kipon.data.api.models.request.create.LoginRequest
 import com.annasolox.kipon.data.repository.AuthRepository
 import com.annasolox.kipon.ui.models.LoginUiState
-import com.annasolox.kipon.ui.screens.LoginScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -136,12 +135,12 @@ class AuthViewModel(
                     )
 
                     if (result.isSuccess) {
-                        _loginState.postValue(LoginUiState.Success("User registered successfully"))
+                        _loginState.postValue(LoginUiState.Success("Usuario registrado con éxito"))
                         clearErrors()
                     } else {
                         val errorMessage = result.exceptionOrNull()?.message ?: "Error desconocido"
                         _loginState.postValue(LoginUiState.Error(errorMessage))
-                        Log.d("AuthViewModel", "Error on registering user: $errorMessage")
+                        Log.d("AuthViewModel", "Error en el registro de usuario: $errorMessage")
                     }
                 }
 

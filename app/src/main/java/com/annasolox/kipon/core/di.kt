@@ -16,6 +16,7 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val appModule = module {

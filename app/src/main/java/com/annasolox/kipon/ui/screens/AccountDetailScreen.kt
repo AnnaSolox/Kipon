@@ -480,10 +480,6 @@ fun AccountDetailScreen(
                     Button(
                         onClick = {
                             accountViewModel.createNewContribution()
-                            if(contributionValidation == true){
-                                accountViewModel.clearContributionForm()
-                                accountViewModel.clearContributionError()
-                            }
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.tertiary

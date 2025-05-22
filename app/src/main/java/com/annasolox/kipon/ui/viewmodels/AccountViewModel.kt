@@ -232,6 +232,9 @@ class AccountViewModel(
                     }
                 }
 
+                clearContributionError()
+                clearContributionForm()
+
             } catch (e: Exception) {
                 _loadingState.postValue(LoginUiState.Error("Error creating contribution"))
                 Log.d("AccountViewModel", "Error creating contribution: ${e.message}")
@@ -279,6 +282,10 @@ class AccountViewModel(
 
     suspend fun attemptContributionCreation(): Boolean {
         clearContributionError()
+
+        withContext(Dispatchers.Main) {
+            _isValidContributionCreate.value = false
+        }
 
         var isValid = true
 

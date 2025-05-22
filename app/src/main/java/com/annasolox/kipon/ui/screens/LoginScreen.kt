@@ -1,5 +1,8 @@
 package com.annasolox.kipon.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,6 +50,7 @@ import com.annasolox.kipon.ui.composables.textFields.LoginPasswordTextField
 import com.annasolox.kipon.ui.models.LoginUiState
 import com.annasolox.kipon.ui.viewmodels.AuthViewModel
 import com.annasolox.kipon.ui.viewmodels.UserViewModel
+import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -77,10 +81,11 @@ fun LoginScreen(
         if (user != null) {
             navController.navigate(HomeScreen) {
                 launchSingleTop = true
-                popUpTo(LoginScreen) {inclusive = true}
+                popUpTo(LoginScreen) { inclusive = true }
             }
         }
     }
+
 
     AuthBackground {
         ConstraintLayout(Modifier.fillMaxSize()) {

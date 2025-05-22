@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="username_label">Nombre de usuario</string>
+    <string name="password_label">Contraseña</string>
+    <string name="cd_visibility_icon">Icono de visbilidad</string>
+    <string name="login_button">Iniciar sesión</string>
+    <string name="don_t_have_an_account_text">¿No tienes cuenta?</string>
+    <string name="register_text">Regístrate</string>
+    <string name="welcome_back_text">¡Bienvenid@ de nuevo</string>
+    <string name="cd_add_icon">Icono de añadir</string>
+    <string name="create_new_account_title">Crear nueva cuenta</string>
+    <string name="account_name_label">Nombre de la cuenta</string>
+    <string name="money_goal_label">Ahorro objetivo</string>
+    <string name="date_goal_label">Fecha objetivo</string>
+    <string name="photo_url_label">Foto URL</string>
+    <string name="create_account_btn_text">Crear cuenta</string>
+    <string name="cd_user_image_thumbnail">Miniatura imagen de usuario</string>
+    <string name="cd_back_button">Botón de atrás</string>
+    <string name="cd_add_new_contribution_icon">Icono añadir nueva contribución</string>
+    <string name="save_btn_text">Guardar</string>
+    <string name="create_new_contribution_title">Crear nueva contribución</string>
+    <string name="amount_label">Cantidad</string>
+    <string name="create_contribution_title">Crear contribución</string>
+    <string name="complete_name_label">Nombre completo</string>
+    <string name="phone_number_label">Teléfono</string>
+    <string name="address_label">Dirección</string>
+    <string name="discard_btn_text">Descartar</string>
+    <string name="cd_user_profile_image_header">Imagen de cabecera de perfil de usuario</string>
+    <string name="register_date_text">Fecha de registro</string>
+    <string name="password_confirmation_label">Confirmación de la contraseña</string>
+    <string name="register_btn_text">Registro</string>
+    <string name="are_you_already_registered_text">¿Ya estás registrado?</string>
+    <string name="cd_trailing_icon">Inoco final</string>
+    <string name="search_label">Buscar</string>
+    <string name="apply_filter_text">Aplicar filtro</string>
+    <string name="max_amount_label">Max. cantidad</string>
+    <string name="min_amount_label">Min. cantidad</string>
+    <string name="filter_amount_of_contribution_text">Filtrar contribuciones</string>
+    <string name="cd_filter_icon">Icono filtro</string>
+    <string name="cd_clear_filter">Limpiar filtro</string>
+    <string name="greeting_home_text">¡Hola</string>
+    <string name="no_accounts_yet">Todavía no hay cuentas. Crea una haciendo clic en el botón de añadir.</string>
+    <string name="no_saving_text">Todavía no hay contribuciones</string>
+</resources>

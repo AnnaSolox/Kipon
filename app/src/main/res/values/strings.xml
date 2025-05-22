@@ -1,12 +1,12 @@
 <resources>
-    <string name="app_name">Kipon</string>
+    <string name="app_name" translatable="false">Kipon</string>
     <string name="username_label">Username</string>
     <string name="password_label">Password</string>
     <string name="cd_visibility_icon">Visibility icon</string>
     <string name="login_button">Login</string>
     <string name="don_t_have_an_account_text">Don\'t have an account?</string>
     <string name="register_text">Register</string>
-    <string name="cd_logo_kipon">Logo Kipon</string>
+    <string name="cd_logo_kipon" translatable="false">Logo Kipon</string>
     <string name="welcome_back_text">Welcome back</string>
     <string name="cd_add_icon">Add icon</string>
     <string name="create_new_account_title">Create new account</string>
@@ -22,8 +22,8 @@
     <string name="create_new_contribution_title">Create new contribution</string>
     <string name="amount_label">Amount</string>
     <string name="create_contribution_title">Create contribution</string>
-    <string name="email_label">Email</string>
-    <string name="fakepassword_placeholder">fakePassword</string>
+    <string name="email_label" translatable="false">Email</string>
+    <string name="fakepassword_placeholder" translatable="false">fakePassword</string>
     <string name="complete_name_label">Complete name</string>
     <string name="phone_number_label">Phone number</string>
     <string name="address_label">Adress</string>

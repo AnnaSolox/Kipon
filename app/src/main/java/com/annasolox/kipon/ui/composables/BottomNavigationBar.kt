@@ -37,19 +37,19 @@ data class BottomNavigationItem(
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
         BottomNavigationItem(
-            route = HomeScreen::class.qualifiedName ?: "home",
+            route = HomeScreen::class.qualifiedName ?: "Inicio",
             title = "Home",
             selectedIcon = Icons.Filled.Home,
             unselectedIcon = Icons.Outlined.Home
         ),
         BottomNavigationItem(
-            route = TransactionsScreen::class.qualifiedName ?: "transactions",
+            route = TransactionsScreen::class.qualifiedName ?: "Contribuciones",
             title = "Savings",
             selectedIcon = Icons.Filled.Timeline,
             unselectedIcon = Icons.Outlined.Timeline
         ),
         BottomNavigationItem(
-            route = ProfileScreen::class.qualifiedName ?: "profile",
+            route = ProfileScreen::class.qualifiedName ?: "Perfil",
             title = "Profile",
             selectedIcon = Icons.Filled.Person,
             unselectedIcon = Icons.Outlined.Person

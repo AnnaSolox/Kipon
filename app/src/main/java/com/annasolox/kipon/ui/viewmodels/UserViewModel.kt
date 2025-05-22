@@ -232,6 +232,10 @@ class UserViewModel(
         }
     }
 
+    fun clearFetchedUsers(){
+        _fetchedUsers.postValue(emptyList())
+    }
+
     fun populateProfileFields() {
         _username.postValue(_userProfile.value?.name)
         _email.postValue(_userProfile.value?.email)

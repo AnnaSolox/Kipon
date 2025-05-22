@@ -44,4 +44,6 @@
     <string name="greeting_home_text">Hi</string>
     <string name="no_accounts_yet">There are no accounts yet. Create an account by clicking the add button.</string>
     <string name="no_saving_text">There are no savings yet.</string>
+    <string name="search_user_instruction">Write a name and press the search button to start searching</string>
+    <string name="search_user_error">No matches found. Please try a different search.</string>
 </resources>

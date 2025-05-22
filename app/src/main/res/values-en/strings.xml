@@ -41,4 +41,6 @@
     <string name="greeting_home_text">¡Hola</string>
     <string name="no_accounts_yet">Todavía no hay cuentas. Crea una haciendo clic en el botón de añadir.</string>
     <string name="no_saving_text">Todavía no hay contribuciones</string>
+    <string name="search_user_instruction">Escribe un nombre y haz clic en la lupa para buscar.</string>
+    <string name="search_user_error">No se han encontrado coincidencias. Por favor, prueba con otra búsqueda.</string>
 </resources>

@@ -90,16 +90,24 @@ fun SearchUsersScreen(
                 ),
                 keyboardActions = KeyboardActions(
                     onSearch = {
-                        coroutineScope.launch {
-                            userViewModel.searchUsers(query)
+                        if(query.isNotBlank()){
+                            coroutineScope.launch {
+                                userViewModel.searchUsers(query)
+                            }
+                        } else {
+                            userViewModel.clearFetchedUsers()
                         }
                     }
                 ),
                 trailingIcon = {
                     IconButton(
                         onClick = {
-                            coroutineScope.launch {
-                                userViewModel.searchUsers(query)
+                            if(query.isNotBlank()){
+                                coroutineScope.launch {
+                                    userViewModel.searchUsers(query)
+                                }
+                            } else {
+                                userViewModel.clearFetchedUsers()
                             }
                         }
                     ) {
@@ -129,10 +137,14 @@ fun SearchUsersScreen(
                         HorizontalDivider(Modifier.fillMaxWidth(), 1.dp, Color.Gray)
                     }
                 }
-            } ?: Text("Write a name and press the search button to start searching")
+
+                if (fetchedUsers!!.isEmpty()){
+                    Text(stringResource(R.string.search_user_instruction))
+                }
+            } ?: Text(stringResource(R.string.search_user_instruction))
 
             if(fetchedUsersError != null){
-                Text("No matches found. Please try a different search.")
+                Text(stringResource(R.string.search_user_error))
             }
 
             if(loading == true){

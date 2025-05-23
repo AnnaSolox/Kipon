@@ -69,8 +69,11 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-test
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
-
+    implementation(libs.kotlinx.coroutines.test)
+    // https://mvnrepository.com/artifact/androidx.arch.core/core-testing
+    testImplementation(libs.androidx.core.testing)
+    // https://mvnrepository.com/artifact/io.mockk/mockk
+    testImplementation(libs.mockk)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.ui.text.google.fonts)

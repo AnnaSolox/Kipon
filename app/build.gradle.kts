@@ -25,7 +25,8 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("String", "HOST_URL",  "\"10.0.2.2\"")
+            buildConfigField("String", "HOST_URL",  "\"kipon-api.us-east-1.elasticbeanstalk.com\"")
+            //buildConfigField("String", "HOST_URL",  "\"10.0.2.2\"")
             //buildConfigField("String", "HOST_URL", "\"192.168.1.244\"")
             buildConfigField("int", "HOST_PORT", "8080")
         }
@@ -35,7 +36,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("String", "HOST_URL",  "\"10.0.2.2\"")
+            buildConfigField("String", "HOST_URL",  "\"kipon-api.us-east-1.elasticbeanstalk.com\"")
+            //buildConfigField("String", "HOST_URL",  "\"10.0.2.2\"")
             buildConfigField("int", "HOST_PORT", "8080")
         }
     }
@@ -66,6 +68,9 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-test
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.ui.text.google.fonts)

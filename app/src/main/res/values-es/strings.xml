@@ -43,4 +43,6 @@
     <string name="no_saving_text">Todavía no hay contribuciones</string>
     <string name="search_user_instruction">Escribe un nombre y haz clic en la lupa para buscar.</string>
     <string name="search_user_error">No se han encontrado coincidencias. Por favor, prueba con otra búsqueda.</string>
+    <string name="personal_information_title">Información personal</string>
+    <string name="user_information_title">Información de usuario</string>
 </resources>

@@ -46,4 +46,6 @@
     <string name="no_saving_text">There are no savings yet.</string>
     <string name="search_user_instruction">Write a name and press the search button to start searching</string>
     <string name="search_user_error">No matches found. Please try a different search.</string>
+    <string name="personal_information_title">Personal information</string>
+    <string name="user_information_title">User information</string>
 </resources>

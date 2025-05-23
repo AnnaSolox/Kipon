@@ -96,7 +96,7 @@ fun HomeScreen(
     val accountName by accountViewModel.name.observeAsState("")
     val moneyGoal by accountViewModel.moneyGoal.observeAsState(null)
     val dateGoal by accountViewModel.dateGoal.observeAsState(null)
-    val photo by accountViewModel.photo.observeAsState("")
+    val photo by accountViewModel.photo.observeAsState()
 
     //Creation account form errors
     val accountNameError by accountViewModel.nameError.observeAsState()
@@ -298,7 +298,7 @@ fun HomeScreen(
                         PhotoTextField(
                             modifier = Modifier.width(300.dp),
                             enabled = true,
-                            value = photo,
+                            value = photo ?: "",
                             onValueChange = { accountViewModel.onAccountPhotoChange(it) },
                             label = stringResource(R.string.photo_url_label),
                             error = null,

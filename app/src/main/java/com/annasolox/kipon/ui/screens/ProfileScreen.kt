@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.annasolox.kipon.R
+import com.annasolox.kipon.core.utils.formatters.Formatters
 import com.annasolox.kipon.ui.composables.buttons.OptionsButton
 import com.annasolox.kipon.ui.composables.textFields.FormTextField
 import com.annasolox.kipon.ui.composables.textFields.LoginPasswordTextField
@@ -159,7 +160,7 @@ fun ProfileScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    "User information".uppercase(),
+                    stringResource(R.string.user_information_title).uppercase(),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Black,
                 )
@@ -189,7 +190,7 @@ fun ProfileScreen(
                 ) { userViewModel.onPasswordChanged(it) }
 
                 Text(
-                    "Personal information".uppercase(),
+                    stringResource(R.string.personal_information_title).uppercase(),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Black,
                 )
@@ -326,7 +327,7 @@ fun ProfileScreen(
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Black,
                             color = Color.White,
-                            text = currentUser?.registrationDate.toString()
+                            text = Formatters.formatDateToUi(currentUser!!.registrationDate)
                         )
                     }
                     OptionsButton(Icons.Filled.Edit) {

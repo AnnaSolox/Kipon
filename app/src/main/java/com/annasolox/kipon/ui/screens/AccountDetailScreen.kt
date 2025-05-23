@@ -139,6 +139,7 @@ fun AccountDetailScreen(
             coroutineScope.launch {
                 addSheetState.hide()
                 isAddSheetOpen = false
+                accountViewModel.resetAddContibutionValidation()
             }
         }
     }

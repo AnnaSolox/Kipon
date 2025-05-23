@@ -64,8 +64,8 @@ class AccountViewModel(
     private var _dateGoalError = MutableLiveData<String?>(null)
     val dateGoalError: LiveData<String?> get() = _dateGoalError
 
-    private var _photo = MutableLiveData<String>()
-    val photo: LiveData<String> get() = _photo
+    private var _photo = MutableLiveData<String?>(null)
+    val photo: LiveData<String?> get() = _photo
     fun onAccountPhotoChange(accountPhoto: String) {
         _photo.postValue(accountPhoto)
     }
@@ -406,9 +406,11 @@ class AccountViewModel(
                 val imageUrl = imageUploadRepository.uploadImage(image, "account")
                 withContext(Dispatchers.Main) {
                     _editAccountPhoto.value = imageUrl
+                    _photo.value = imageUrl
+                    Log.d("AccountViewModel", "Image url: ${_editAccountPhoto.value}")
                 }
             } catch (e: Exception) {
-                Log.e("AuthViewModel", "Error al subir la imagen: ${e.message}")
+                Log.e("AccountViewModel", "Error al subir la imagen: ${e.message}")
             }
         }
     }
@@ -429,5 +431,9 @@ class AccountViewModel(
 
     fun resetEditAccountValidation(){
         _isValidEditAccount.postValue(false)
+    }
+
+    fun resetAddContibutionValidation(){
+        _isValidContributionCreate.postValue(false)
     }
 }

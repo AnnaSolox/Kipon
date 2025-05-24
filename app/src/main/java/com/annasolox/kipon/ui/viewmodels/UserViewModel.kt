@@ -48,6 +48,7 @@ class UserViewModel(
     fun onEmailChanged(email: String) {
         _email.value = email
     }
+
     private val _emailError = MutableLiveData<String?>()
     val emailError: LiveData<String?> get() = _emailError
 
@@ -56,6 +57,7 @@ class UserViewModel(
     fun onPhoneChanged(phone: String) {
         _phone.value = phone
     }
+
     private val _phoneError = MutableLiveData<String?>()
     val phoneError: LiveData<String?> get() = _phoneError
     private val _address = MutableLiveData<String>(_userProfile.value?.profile?.address ?: "")
@@ -63,6 +65,7 @@ class UserViewModel(
     fun onAddressChanged(address: String) {
         _address.value = address
     }
+
     private val _addressError = MutableLiveData<String?>()
     val addressError: LiveData<String?> get() = _addressError
 
@@ -71,6 +74,7 @@ class UserViewModel(
     fun onPhotoChanged(photo: String) {
         _photo.value = photo
     }
+
     private val _password = MutableLiveData<String>()
     val password: LiveData<String?> get() = _password
     fun onPasswordChanged(password: String) {
@@ -85,7 +89,7 @@ class UserViewModel(
     val _loading = MutableLiveData<Boolean>(false)
     val loading: LiveData<Boolean> get() = _loading
 
-    fun addAccountToUserAccountsList(accountOverview: AccountOverview){
+    fun addAccountToUserAccountsList(accountOverview: AccountOverview) {
         val currentUser = _userHome.value
         Log.d("UserViewModel", "Usuario actual: $currentUser")
         if (currentUser != null) {
@@ -100,18 +104,18 @@ class UserViewModel(
         }
     }
 
-    fun searchUsers(partialName: String){
+    fun searchUsers(partialName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _fetchedUsersError.postValue(null)
                 _loading.postValue(true)
                 _fetchedUsers.postValue(emptyList())
                 val users = userRepository.fetchUsersByPartialName(partialName)
-                withContext(Dispatchers.Main) {
-                    _fetchedUsers.value = users
-                }
+
+                _fetchedUsers.postValue(users)
+
                 _loading.postValue((false))
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     _loading.postValue((false))
                     _fetchedUsersError.value = "No se han encontrado usuarios."
@@ -128,12 +132,12 @@ class UserViewModel(
             username?.let {
                 try {
                     val response = userRepository.getUserByUsername(it)
-                    withContext(Dispatchers.Main) {
-                        _userHome.value = toUserHomeScreen(response)
-                        _userProfile.value = toUserProfileScreenFromUserResponse(response)
-                        Log.d("UserViewModel", "User: ${_userProfile.value}")
-                        populateProfileFields()
-                    }
+                    val userToHome = toUserHomeScreen(response)
+                    _userHome.postValue(userToHome)
+                    val userToProfile = toUserProfileScreenFromUserResponse(response)
+                    _userProfile.postValue(userToProfile)
+                    Log.d("UserViewModel", "User: ${_userProfile.value}")
+                    populateProfileFields()
 
                 } catch (e: Exception) {
                     Log.e("UserViewModel", "Error cargando usuario: ${e.message}")
@@ -142,7 +146,7 @@ class UserViewModel(
         }
     }
 
-    fun getSavingsFromUser(){
+    fun getSavingsFromUser() {
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("UserViewModel", "Userhome: ${_userHome.value}")
             Log.d("UserViewModel", "Obteniendo contribuciones del usuario")
@@ -154,8 +158,8 @@ class UserViewModel(
         }
     }
 
-    fun updateUserInfo(){
-        if(!attemptUpdateUserInfo()) return
+    fun updateUserInfo() {
+        if (!attemptUpdateUserInfo()) return
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -184,7 +188,7 @@ class UserViewModel(
         }
     }
 
-    fun attemptUpdateUserInfo(): Boolean{
+    fun attemptUpdateUserInfo(): Boolean {
         var isValid = true
         Log.d("UserViewModel", "Intentando actualizar la información de usuario: isValid: $isValid")
 
@@ -206,7 +210,7 @@ class UserViewModel(
         }
 
         address.value?.let {
-            if(_address.value!!.length > 50){
+            if (_address.value!!.length > 50) {
                 _addressError.postValue("La dirección no puede superar los 50 caracteres")
                 isValid = false
             }
@@ -232,7 +236,7 @@ class UserViewModel(
         }
     }
 
-    fun clearFetchedUsers(){
+    fun clearFetchedUsers() {
         _fetchedUsers.postValue(emptyList())
     }
 

@@ -91,9 +91,9 @@ class AccountViewModel(
     fun onContributionAmountChange(contributionAmount: Double) {
         _contributionAmount.postValue(contributionAmount)
     }
+
     private var _contributionAmountError = MutableLiveData<String?>(null)
     val contributionAmountError: LiveData<String?> get() = _contributionAmountError
-
 
 
     //current account
@@ -119,6 +119,7 @@ class AccountViewModel(
     fun onEditAccountMoneyGoalChange(accountMoneyGoal: Double) {
         _editAccountMoneyGoal.postValue(accountMoneyGoal)
     }
+
     private var _editAccountMoneyGoalError = MutableLiveData<String?>(null)
     val editAccountMoneyGoalError: LiveData<String?> get() = _editAccountMoneyGoalError
 
@@ -131,6 +132,7 @@ class AccountViewModel(
             _editAccountDateGoal.postValue(null)
         }
     }
+
     private var _editAccountDateGoalError = MutableLiveData<String?>(null)
     val editAccountDateGoalError: LiveData<String?> get() = _editAccountDateGoalError
 
@@ -139,6 +141,7 @@ class AccountViewModel(
     fun onEditAccountPhotoChange(accountPhoto: String) {
         _editAccountPhoto.postValue(accountPhoto)
     }
+
     private var _editAccountPhotoError = MutableLiveData<String?>(null)
 
 
@@ -164,11 +167,9 @@ class AccountViewModel(
                     Log.d("AccountViewModel", "Account response: $accountResponse")
                     _loadingState.postValue(LoginUiState.Success("Cuenta cargada con éxito"))
                     val mappedAccount = AccountMapper.toDetailAccount(accountResponse)
-                    withContext(Dispatchers.Main) {
-                        _currentAccount.value = mappedAccount
-                        _currentAccountAmount.value = _currentAccount.value?.currentAmount
-                        populateEditAccountForm()
-                    }
+                    _currentAccount.postValue(mappedAccount)
+                    _currentAccountAmount.postValue(_currentAccount.value?.currentAmount)
+                    populateEditAccountForm()
                     Log.d("AccountViewModel", "Current account: ${_currentAccount.value}")
                 }
 
@@ -183,7 +184,7 @@ class AccountViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             _loadingState.postValue(LoginUiState.Loading)
             try {
-                if(!attemptAccountCreation())return@launch
+                if (!attemptAccountCreation()) return@launch
 
                 mutex.withLock {
                     val accountToCreate = AccountCreate(
@@ -210,7 +211,7 @@ class AccountViewModel(
             _isValidContributionCreate.postValue(false)
             _loadingState.postValue(LoginUiState.Loading)
             try {
-                if(!attemptContributionCreation())return@launch
+                if (!attemptContributionCreation()) return@launch
 
                 mutex.withLock {
                     _contributionAmount.value?.let {
@@ -270,10 +271,10 @@ class AccountViewModel(
     }
 
     fun clearContributionError() {
-            _contributionAmountError.postValue(null)
+        _contributionAmountError.postValue(null)
     }
 
-    fun clearErrors(){
+    fun clearErrors() {
         _nameError.postValue(null)
         _moneyGoalError.postValue(null)
         _dateGoalError.postValue(null)
@@ -341,14 +342,14 @@ class AccountViewModel(
         var isValid = true
 
         _editAccountName.value?.let {
-            if(_editAccountName.value!!.length > 100){
+            if (_editAccountName.value!!.length > 100) {
                 _editAccountNameError.postValue("Debe tener menos de 100 caracteres")
                 isValid = false
             }
         }
 
         _editAccountMoneyGoal.value?.let {
-            if(_editAccountMoneyGoal.value!! < 0){
+            if (_editAccountMoneyGoal.value!! < 0) {
                 _moneyGoalError.postValue("La cantidad debe ser mayor a 0")
                 isValid = false
             }
@@ -359,10 +360,10 @@ class AccountViewModel(
         return isValid
     }
 
-    fun updateAccountInformation(){
+    fun updateAccountInformation() {
         viewModelScope.launch(Dispatchers.IO) {
             if (!attempAcountEdit()) return@launch
-            try{
+            try {
                 val patch = AccountPatch(
                     name = _editAccountName.value,
                     moneyGoal = _editAccountMoneyGoal.value?.toDouble(),
@@ -375,13 +376,13 @@ class AccountViewModel(
                 loadCurrentAccount(_currentAccount.value!!.id)
                 populateEditAccountForm()
                 clearEditAccountError()
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 Log.e("AccountViewModel", "error actualizando cuenta: ${e.message}")
             }
         }
     }
 
-    fun addUserToAccount(userId: Long){
+    fun addUserToAccount(userId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _currentAccount.value?.let {
@@ -394,7 +395,7 @@ class AccountViewModel(
                     loadCurrentAccount(_currentAccount.value!!.id)
                     _onUserAdded.emit(Unit)
                 }
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 Log.d("AccountViewModel", "Error al añadir usuario a la cuenta: ${e.message}")
             }
         }
@@ -415,25 +416,25 @@ class AccountViewModel(
         }
     }
 
-    fun populateEditAccountForm(){
+    fun populateEditAccountForm() {
         _editAccountName.postValue(_currentAccount.value?.name)
         _editAccountMoneyGoal.postValue(_currentAccount.value?.moneyGoal)
         _editAccountDateGoal.postValue(Formatters.parseDate(_currentAccount.value!!.dateGoal))
         _editAccountPhoto.postValue(_currentAccount.value?.photo.toString())
     }
 
-    fun clearEditAccountError(){
+    fun clearEditAccountError() {
         _editAccountNameError.postValue(null)
         _editAccountMoneyGoalError.postValue(null)
         _editAccountMoneyGoalError.postValue(null)
         _editAccountPhotoError.postValue(null)
     }
 
-    fun resetEditAccountValidation(){
+    fun resetEditAccountValidation() {
         _isValidEditAccount.postValue(false)
     }
 
-    fun resetAddContibutionValidation(){
+    fun resetAddContibutionValidation() {
         _isValidContributionCreate.postValue(false)
     }
 }

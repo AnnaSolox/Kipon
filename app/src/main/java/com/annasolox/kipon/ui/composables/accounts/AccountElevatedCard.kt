@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -53,18 +54,30 @@ fun AccountElevatedCard(accountOverview: AccountOverview, imageUrl: String, modi
                     .weight(.75f)
                     .padding(start = 16.dp, end = 16.dp),
             ) {
-                Column(Modifier.weight(.7f).padding(top = 16.dp)) {
+                Column(
+                    Modifier
+                        .weight(.7f)
+                        .padding(top = 16.dp)
+                ) {
                     Text(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Black,
-                        text = accountOverview.name
+                        text = accountOverview.name,
+                        modifier = Modifier.testTag("accountName")
                     )
                     Spacer(Modifier.size(6.dp))
-                    Text(style = MaterialTheme.typography.bodyMedium, text = accountOverview.dateGoal.toString())
+                    Text(
+                        style = MaterialTheme.typography.bodyMedium,
+                        text = accountOverview.dateGoal.toString(),
+                        modifier = Modifier.testTag("accountDateGoal")
+                    )
                 }
 
                 Column(Modifier.weight(.3f)) {
-                    AccountProgressBar(accountOverview.currentMoney, accountOverview.moneyGoal)
+                    AccountProgressBar(
+                        accountOverview.currentMoney,
+                        accountOverview.moneyGoal,
+                    )
                 }
             }
         }

@@ -19,12 +19,19 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    packaging {
+        resources {
+            excludes += "/META-INF/*.*"
+        }
+    }
+
     buildFeatures{
         buildConfig = true
     }
 
     buildTypes {
         debug {
+            enableAndroidTestCoverage = true
             buildConfigField("String", "HOST_URL",  "\"kipon-api.us-east-1.elasticbeanstalk.com\"")
             //buildConfigField("String", "HOST_URL",  "\"10.0.2.2\"")
             //buildConfigField("String", "HOST_URL", "\"192.168.1.244\"")
@@ -74,6 +81,9 @@ dependencies {
     testImplementation(libs.androidx.core.testing)
     // https://mvnrepository.com/artifact/io.mockk/mockk
     testImplementation(libs.mockk)
+    // https://mvnrepository.com/artifact/androidx.navigation/navigation-testing
+    androidTestImplementation(libs.androidx.navigation.testing)
+    androidTestImplementation(libs.mockk.instrumented)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.ui.text.google.fonts)
@@ -95,6 +105,7 @@ dependencies {
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.logging)
     implementation(libs.kotlin.ktor.serialization)
+    testImplementation(libs.ktor.client.mock)
 
     //koin
     implementation(platform(libs.koin.bom))
@@ -105,10 +116,9 @@ dependencies {
     implementation(libs.koin.compose.viewmodel)
     implementation(libs.koin.ktor)
     implementation(libs.koin.ktor.logger)
+    implementation(libs.koin.test)
 
     //coil
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
-
-
 }

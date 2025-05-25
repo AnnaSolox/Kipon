@@ -11,6 +11,7 @@ import com.annasolox.kipon.core.utils.mappers.UserMapper.toUserHomeScreen
 import com.annasolox.kipon.core.utils.mappers.UserMapper.toUserProfileScreenFromUserResponse
 import com.annasolox.kipon.data.api.models.request.patch.ProfilePatch
 import com.annasolox.kipon.data.api.models.request.patch.UserPatch
+import com.annasolox.kipon.data.api.models.response.UserResponse
 import com.annasolox.kipon.data.repository.ImageUploadRepository
 import com.annasolox.kipon.data.repository.UserRepository
 import com.annasolox.kipon.ui.models.AccountOverview
@@ -132,10 +133,8 @@ class UserViewModel(
             username?.let {
                 try {
                     val response = userRepository.getUserByUsername(it)
-                    val userToHome = toUserHomeScreen(response)
-                    _userHome.postValue(userToHome)
-                    val userToProfile = toUserProfileScreenFromUserResponse(response)
-                    _userProfile.postValue(userToProfile)
+                    setUserHome(response)
+                    setUserProfile(response)
                     Log.d("UserViewModel", "User: ${_userProfile.value}")
                     populateProfileFields()
 
@@ -238,6 +237,16 @@ class UserViewModel(
 
     fun clearFetchedUsers() {
         _fetchedUsers.postValue(emptyList())
+    }
+
+    fun setUserProfile(userResponse: UserResponse){
+        val userToProfile = toUserProfileScreenFromUserResponse(userResponse)
+        _userProfile.postValue(userToProfile)
+    }
+
+    fun setUserHome(userResponse: UserResponse){
+        val userToHome = toUserHomeScreen(userResponse)
+        _userHome.postValue(userToHome)
     }
 
     fun populateProfileFields() {

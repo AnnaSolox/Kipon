@@ -43,7 +43,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class UserDataLoadingTest {
+class UserDataUnitTest {
     @get:Rule
     val rule: TestRule = InstantTaskExecutorRule()
 

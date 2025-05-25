@@ -11,12 +11,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun AccountProgressBar(currentMoney: Double, moneyGoal: Double) {
-    val progress = if (moneyGoal > 0) (currentMoney / moneyGoal).coerceIn(0.0, 1.0).toFloat() else 0f
+    val progress =
+        if (moneyGoal > 0) (currentMoney / moneyGoal).coerceIn(0.0, 1.0).toFloat() else 0f
 
     LinearProgressIndicator(
         modifier = Modifier
@@ -31,11 +33,16 @@ fun AccountProgressBar(currentMoney: Double, moneyGoal: Double) {
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(style = MaterialTheme.typography.bodySmall, text = "$currentMoney €")
+        Text(
+            style = MaterialTheme.typography.bodySmall,
+            text = "$currentMoney €",
+            modifier = Modifier.testTag("currentMoney")
+        )
         Text(
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Black,
-            text = "$moneyGoal €"
+            text = "$moneyGoal €",
+            modifier = Modifier.testTag("moneyGoal")
         )
     }
 }

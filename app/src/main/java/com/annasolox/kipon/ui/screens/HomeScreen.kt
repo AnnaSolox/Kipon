@@ -51,9 +51,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -192,7 +192,8 @@ fun HomeScreen(
                         Text(
                             stringResource(R.string.greeting_home_text) + " ${user?.userName}!",
                             style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Black
+                            fontWeight = FontWeight.Black,
+                            modifier = Modifier.testTag("usernameText")
                         )
                         Text(stringResource(R.string.welcome_back_text), style = MaterialTheme.typography.bodySmall)
                     }
@@ -233,7 +234,7 @@ fun HomeScreen(
                         AccountElevatedCard(
                             account,
                             account.photo ?: "",
-                            Modifier.clickable(onClick = {
+                            Modifier.testTag("accountItem").clickable(onClick = {
                                 accountViewModel.loadCurrentAccount(account.id)
                                 navController.navigate(DetailsAccountScreen) {
                                     popUpTo(HomeScreen) { inclusive = true }

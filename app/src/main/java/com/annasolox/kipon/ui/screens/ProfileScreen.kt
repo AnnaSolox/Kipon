@@ -2,6 +2,7 @@ package com.annasolox.kipon.ui.screens
 
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -25,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -65,6 +67,7 @@ fun ProfileScreen(
     navController: NavController,
     userViewModel: UserViewModel,
     modifier: Modifier = Modifier,
+    enableNestedScroll: Boolean = true
 ) {
     val currentUser by userViewModel.userProfile.observeAsState()
 
@@ -84,6 +87,10 @@ fun ProfileScreen(
     val addressError by userViewModel.addressError.observeAsState()
     val password by userViewModel.password.observeAsState()
     val photo by userViewModel.photo.observeAsState()
+
+    val isImageUploaded by userViewModel.isImageUploaded.observeAsState(true)
+
+    Log.d("ProfileScreen", "isImageUploaded: $isImageUploaded")
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
@@ -138,7 +145,13 @@ fun ProfileScreen(
     var editEnable by remember { mutableStateOf(false) }
     var isProfileScreen = true
 
-    Box(Modifier.nestedScroll(nestedScrollConnection)) {
+    Box(
+        modifier = if (enableNestedScroll) {
+            Modifier.nestedScroll(nestedScrollConnection)
+        } else {
+            Modifier
+        }
+    ) {
 
         AnimatedVisibility(
             visible = currentUser != null,
@@ -146,6 +159,12 @@ fun ProfileScreen(
                 animationSpec = tween(durationMillis = 500)
             )
         ) {
+
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                if(!isImageUploaded){
+                    CircularProgressIndicator()
+                }
+            }
 
             Column(
                 modifier
@@ -171,7 +190,9 @@ fun ProfileScreen(
                     value = username ?: "",
                     label = stringResource(R.string.username_label),
                     error = null,
-                    modifier = Modifier.fillMaxWidth().testTag("usernameField")
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("usernameField")
                 ) { userViewModel.onUsernameChanged(it) }
 
                 FormTextField(
@@ -179,7 +200,9 @@ fun ProfileScreen(
                     value = email ?: "",
                     label = stringResource(R.string.email_label),
                     error = emailError,
-                    modifier = Modifier.fillMaxWidth().testTag("emailField")
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("emailField")
                 ) { userViewModel.onEmailChanged(it) }
 
                 LoginPasswordTextField(
@@ -201,7 +224,9 @@ fun ProfileScreen(
                     value = currentUser!!.profile.completeName,
                     label = stringResource(R.string.complete_name_label),
                     error = null,
-                    modifier = Modifier.fillMaxWidth().testTag("completeNameField")
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("completeNameField")
                 ) { }
 
                 FormTextField(
@@ -209,7 +234,9 @@ fun ProfileScreen(
                     value = phone ?: "",
                     label = stringResource(R.string.phone_number_label),
                     error = phoneError,
-                    modifier = Modifier.fillMaxWidth().testTag("phoneField")
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("phoneField")
                 ) { userViewModel.onPhoneChanged(it) }
 
                 FormTextField(
@@ -217,7 +244,9 @@ fun ProfileScreen(
                     value = address ?: "",
                     label = stringResource(R.string.address_label),
                     error = addressError,
-                    modifier = Modifier.fillMaxWidth().testTag("addressField")
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("addressField")
                 ) { userViewModel.onAddressChanged(it) }
 
                 PhotoTextField(

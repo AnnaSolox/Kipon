@@ -117,6 +117,8 @@ fun AccountDetailScreen(
     val editSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var isEditSheetOpen by remember { mutableStateOf(false) }
 
+    val isImageUploaded by accountViewModel.isImageUploaded.observeAsState(true)
+
     val listState = rememberLazyListState()
 
     LaunchedEffect(savings) {
@@ -431,6 +433,10 @@ fun AccountDetailScreen(
                         } else {
                             imagePickerLauncher.launch("image/*")
                         }
+                    }
+
+                    if (!isImageUploaded) {
+                        CircularProgressIndicator()
                     }
 
 

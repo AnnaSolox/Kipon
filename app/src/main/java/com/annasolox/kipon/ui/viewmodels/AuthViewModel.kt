@@ -134,14 +134,17 @@ class AuthViewModel(
                         )
                     )
 
-                    if (result.isSuccess) {
-                        _loginState.postValue(LoginUiState.Success("Usuario registrado con éxito"))
-                        clearErrors()
-                    } else {
-                        val errorMessage = result.exceptionOrNull()?.message ?: "Error desconocido"
-                        _loginState.postValue(LoginUiState.Error(errorMessage))
-                        Log.d("AuthViewModel", "Error en el registro de usuario: $errorMessage")
-                    }
+                    result.fold(
+                        onSuccess = {
+                            clearErrors()
+                            _loginState.postValue(LoginUiState.Success("Usuario registrado con éxito"))
+                        },
+                        onFailure = { error ->
+                            val message = error.message ?: "Unknown error"
+                            _loginState.postValue(LoginUiState.Error(message))
+                            Log.e("AuthViewModel", "Error en el registro: $message", error)
+                        }
+                    )
                 }
 
             } catch (e: Exception) {

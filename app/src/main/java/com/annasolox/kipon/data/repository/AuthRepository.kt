@@ -4,7 +4,6 @@ import android.util.Log
 import com.annasolox.kipon.data.api.models.request.create.LoginRequest
 import com.annasolox.kipon.data.api.models.request.create.UserCreate
 import com.annasolox.kipon.data.api.service.AuthService
-import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.statement.bodyAsText
@@ -35,7 +34,6 @@ class AuthRepository(private val authService: AuthService) {
         return withContext(Dispatchers.IO) {
             try {
                 authService.register(user)
-                Result.success(Unit)
             } catch (e: ResponseException) {
                 val errorMessage = runCatching {
                     e.response.bodyAsText()

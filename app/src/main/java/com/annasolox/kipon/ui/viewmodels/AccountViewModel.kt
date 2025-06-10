@@ -53,6 +53,10 @@ class AccountViewModel(
 
     private var _dateGoal = MutableLiveData<LocalDate?>()
     val dateGoal: LiveData<LocalDate?> get() = _dateGoal
+
+    private val _isImageUploaded = MutableLiveData<Boolean>(true)
+    val isImageUploaded: LiveData<Boolean> get() = _isImageUploaded
+
     fun onAccountDateGoalChange(accountDateGoal: LocalDate?) {
         accountDateGoal?.let {
             _dateGoal.postValue(it)
@@ -403,11 +407,13 @@ class AccountViewModel(
 
     fun uploadImage(image: ByteArray) {
         viewModelScope.launch(Dispatchers.IO) {
+            _isImageUploaded.postValue(false)
             try {
                 val imageUrl = imageUploadRepository.uploadImage(image, "account")
                 withContext(Dispatchers.Main) {
                     _editAccountPhoto.value = imageUrl
                     _photo.value = imageUrl
+                    _isImageUploaded.postValue(true)
                     Log.d("AccountViewModel", "Image url: ${_editAccountPhoto.value}")
                 }
             } catch (e: Exception) {

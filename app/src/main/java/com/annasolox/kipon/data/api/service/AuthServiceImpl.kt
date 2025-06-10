@@ -1,18 +1,16 @@
 package com.annasolox.kipon.data.api.service
 
-import androidx.compose.material3.ExposedDropdownMenuBox
 import com.annasolox.kipon.core.TokenProvider
 import com.annasolox.kipon.data.api.models.request.create.LoginRequest
 import com.annasolox.kipon.data.api.models.request.create.UserCreate
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.expectSuccess
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
-import io.ktor.utils.io.errors.IOException
+import kotlinx.io.IOException
 
 class AuthServiceImpl(
     private val client: HttpClient,

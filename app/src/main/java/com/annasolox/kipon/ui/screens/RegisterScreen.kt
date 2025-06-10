@@ -149,19 +149,22 @@ fun RegisterScreen(
                 Box(
                     Modifier
                         .height(60.dp)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (isLogin is LoginUiState.Loading) {
-                        CircularProgressIndicator()
-                    }
-
-                    if (isLogin is LoginUiState.Error) {
-                        Text(
-                            text = (isLogin as LoginUiState.Error).message.toString(),
-                            color = MaterialTheme.colorScheme.error,
-                            fontWeight = FontWeight.Bold
-                        )
+                    when (isLogin) {
+                        is LoginUiState.Loading -> {
+                            CircularProgressIndicator()
+                        }
+                        is LoginUiState.Error -> {
+                            Text(
+                                text = stringResource(R.string.register_error_message),
+                                color = MaterialTheme.colorScheme.error,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                        else -> {}
                     }
                 }
 

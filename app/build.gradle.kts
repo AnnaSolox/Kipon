@@ -32,8 +32,8 @@ android {
     buildTypes {
         debug {
             enableAndroidTestCoverage = true
-            buildConfigField("String", "HOST_URL",  "\"kipon-api.us-east-1.elasticbeanstalk.com\"")
-            //buildConfigField("String", "HOST_URL",  "\"10.0.2.2\"")
+            //buildConfigField("String", "HOST_URL",  "\"kipon-api.us-east-1.elasticbeanstalk.com\"")
+            buildConfigField("String", "HOST_URL",  "\"10.0.2.2\"")
             //buildConfigField("String", "HOST_URL", "\"192.168.1.244\"")
             buildConfigField("int", "HOST_PORT", "8080")
         }
@@ -43,8 +43,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("String", "HOST_URL",  "\"kipon-api.us-east-1.elasticbeanstalk.com\"")
-            //buildConfigField("String", "HOST_URL",  "\"10.0.2.2\"")
+            //buildConfigField("String", "HOST_URL",  "\"kipon-api.us-east-1.elasticbeanstalk.com\"")
+            buildConfigField("String", "HOST_URL",  "\"10.0.2.2\"")
             buildConfigField("int", "HOST_PORT", "8080")
         }
     }

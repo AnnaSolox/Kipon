@@ -45,4 +45,5 @@
     <string name="search_user_error">No se han encontrado coincidencias. Por favor, prueba con otra búsqueda.</string>
     <string name="personal_information_title">Información personal</string>
     <string name="user_information_title">Información de usuario</string>
+    <string name="register_error_message">Usuario no disponible o email ya registrado</string>
 </resources>

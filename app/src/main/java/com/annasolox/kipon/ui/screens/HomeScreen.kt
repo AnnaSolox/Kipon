@@ -219,8 +219,8 @@ fun HomeScreen(
             )
 
             if(user?.accounts?.isEmpty() == true){
-                Box(Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center){
+                Box(Modifier.fillMaxSize().padding(16.dp),
+                    contentAlignment = Alignment.TopStart){
                     Text(stringResource(R.string.no_accounts_yet))
                 }
             } else {

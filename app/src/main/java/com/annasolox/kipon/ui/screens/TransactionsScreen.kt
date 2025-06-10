@@ -1,6 +1,5 @@
 package com.annasolox.kipon.ui.screens
 
-import android.graphics.Paint
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -118,8 +117,8 @@ fun TransactionsScreen(
             }
 
             if(allUserSavings.isEmpty()){
-                Box(Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center){
+                Box(Modifier.fillMaxSize().padding(16.dp),
+                    contentAlignment = Alignment.TopStart){
                     Text(stringResource(R.string.no_saving_text))
                 }
             }

@@ -90,6 +90,9 @@ class UserViewModel(
     val _loading = MutableLiveData<Boolean>(false)
     val loading: LiveData<Boolean> get() = _loading
 
+    private val _isImageUploaded = MutableLiveData<Boolean>(true)
+    val isImageUploaded: LiveData<Boolean> get() = _isImageUploaded
+
     fun addAccountToUserAccountsList(accountOverview: AccountOverview) {
         val currentUser = _userHome.value
         Log.d("UserViewModel", "Usuario actual: $currentUser")
@@ -223,11 +226,13 @@ class UserViewModel(
 
     fun uploadImage(image: ByteArray) {
         viewModelScope.launch(Dispatchers.IO) {
+            _isImageUploaded.postValue(false)
             try {
                 val imageUrl = imageUploadRepository.uploadImage(image, "profile")
 
                 withContext(Dispatchers.Main) {
                     _photo.value = imageUrl
+                    _isImageUploaded.postValue(true)
                 }
             } catch (e: Exception) {
                 Log.e("UserViewModel", "Error uploading image: ${e.message}")

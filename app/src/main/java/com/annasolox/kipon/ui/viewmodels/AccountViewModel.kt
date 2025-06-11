@@ -417,6 +417,7 @@ class AccountViewModel(
                     Log.d("AccountViewModel", "Image url: ${_editAccountPhoto.value}")
                 }
             } catch (e: Exception) {
+                _isImageUploaded.postValue(true)
                 Log.e("AccountViewModel", "Error al subir la imagen: ${e.message}")
             }
         }

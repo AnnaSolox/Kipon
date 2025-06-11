@@ -235,6 +235,7 @@ class UserViewModel(
                     _isImageUploaded.postValue(true)
                 }
             } catch (e: Exception) {
+                _isImageUploaded.postValue(true)
                 Log.e("UserViewModel", "Error uploading image: ${e.message}")
             }
         }

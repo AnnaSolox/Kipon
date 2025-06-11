@@ -19,3 +19,41 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Ktor rules
+-keep class io.ktor.** { *; }
+-dontwarn io.ktor.**
+
+## ktor http client
+-keep class io.ktor.client.engine.cio.**
+
+## ktor plugins
+-keep class io.ktor.client.plugins.contentnegotiation.** { *; }
+-keep class io.ktor.client.plugins.logging.** { *; }
+
+# Serialization rules
+-keepattributes *Annotation*
+-keep,includedescriptorclasses class **$$serializer { *; }
+-keepclassmembers class ** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
+# BuildConfig
+-keep class **.BuildConfig { *; }
+
+# Koin
+-keep class org.koin.** { *; }
+
+# Eliminar logs
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+    public static *** i(...);
+    public static *** w(...);
+    public static *** e(...);
+}
+
+-assumenosideeffects class java.io.PrintStream {
+    public *** println(...);
+    public *** print(...);
+}

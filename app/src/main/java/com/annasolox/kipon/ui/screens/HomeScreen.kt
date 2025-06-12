@@ -319,6 +319,7 @@ fun HomeScreen(
                                 if(creationAccountValidation == true){
                                     isSheetOpen = false
                                     accountViewModel.clearCreateForm()
+                                    accountViewModel.clearErrors()
                                 }
                             },
                             colors = ButtonDefaults.buttonColors(

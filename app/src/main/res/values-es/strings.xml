@@ -27,7 +27,7 @@
     <string name="discard_btn_text">Descartar</string>
     <string name="cd_user_profile_image_header">Imagen de cabecera de perfil de usuario</string>
     <string name="register_date_text">Fecha de registro</string>
-    <string name="password_confirmation_label">Confirmación de la contraseña</string>
+    <string name="password_confirmation_label">Confirmar contraseña</string>
     <string name="register_btn_text">Registro</string>
     <string name="are_you_already_registered_text">¿Ya estás registrado?</string>
     <string name="cd_trailing_icon">Inoco final</string>

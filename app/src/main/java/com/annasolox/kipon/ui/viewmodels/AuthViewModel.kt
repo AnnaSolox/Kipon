@@ -1,25 +1,26 @@
 package com.annasolox.kipon.ui.viewmodels
 
-import android.content.SharedPreferences
 import android.util.Log
-import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.annasolox.kipon.core.navigation.LoginNavigationEvent
-import com.annasolox.kipon.core.utils.mappers.UserMapper
-import com.annasolox.kipon.data.api.models.request.create.LoginRequest
-import com.annasolox.kipon.data.repository.AuthRepository
+import com.annasolox.kipon.domain.auth.ClearTokenUseCase
+import com.annasolox.kipon.domain.auth.LoginUseCase
+import com.annasolox.kipon.domain.auth.RegisterUseCase
+import com.annasolox.kipon.domain.auth.SaveTokenUseCase
+import com.annasolox.kipon.domain.auth.SaveUserNameUSeCase
 import com.annasolox.kipon.ui.models.LoginUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 
 class AuthViewModel(
-    private val authRepository: AuthRepository,
-    private val sharedPreferences: SharedPreferences
+    private val loginUseCase: LoginUseCase,
+    private val registerUseCase: RegisterUseCase,
+    private val saveTokenUseCase: SaveTokenUseCase,
+    private val saveUserNameUSeCase: SaveUserNameUSeCase,
+    private val clearTokenUseCase: ClearTokenUseCase
 ) : ViewModel() {
 
     private var _userName = MutableLiveData<String>()
@@ -57,207 +58,111 @@ class AuthViewModel(
 
     //Navigation events
     private val _navigationEvent = MutableLiveData<LoginNavigationEvent?>()
-    val navigationEvent: LiveData<LoginNavigationEvent?> get() = _navigationEvent
 
     fun onUserNameChanged(userName: String) {
         _userName.postValue(userName)
     }
+
     fun onPasswordChanged(password: String) {
         _password.postValue(password)
     }
+
     fun onPasswordConfirmationChanged(passwordConfirmation: String) {
         _passwordConfirmation.postValue(passwordConfirmation)
     }
+
     fun onEmailChanged(email: String) {
         _email.postValue(email)
     }
+
     fun onCompleteNameChanged(completeName: String) {
         _completeName.postValue(completeName)
     }
+
     fun onPhoneChanged(phone: String) {
         _phone.postValue(phone)
     }
+
     fun onAddressChanged(address: String) {
         _address.postValue(address)
     }
 
-    private val mutex = Mutex()
-
     fun login() {
         viewModelScope.launch(Dispatchers.IO) {
             _loginState.postValue(LoginUiState.Loading)
-            try {
-                if(!attemptLogin())return@launch
 
-                val result = authRepository.login(LoginRequest(_userName.value!!, _password.value!!))
-                val token = result.getOrThrow()
+            val result = loginUseCase(_userName.value ?: "", _password.value ?: "")
 
-                Log.d("AuthViewModel", "Token: $token")
+            if (!result.success) {
+                _userNameError.postValue(result.usernameError)
+                _passwordError.postValue(result.passwordError)
 
-                if(token != "Nombre de usuario o contraseña incorrectos" && token.isNotEmpty()){
-                    _loginState.postValue(LoginUiState.Success(token))
-                    saveToken(token)
-                    saveUserName(_userName.value!!)
-                    _navigationEvent.postValue(LoginNavigationEvent.NavigateToHome)
-                    Log.d("AuthViewModel", "Login successfull!")
-                } else {
-                    clearToken()
+                if (result.usernameError == null && result.passwordError == null) {
                     _loginState.postValue(LoginUiState.Error("Error al iniciar sesión"))
-                    Log.d("AuthViewModel", "Error al iniciar sesión")
                 }
-            } catch (e: Exception) {
-                _loginState.postValue(LoginUiState.Error("Error inesperado"))
-                Log.e("AuthViewModel", "Error al iniciar sesión: ${e.message}")
+
+                return@launch
+            }
+
+            val token = result.token
+            if (token != null && token.isNotEmpty()) {
+                _loginState.postValue(LoginUiState.Success(token))
+                saveToken(token)
+                saveUserName(_userName.value!!)
+                _navigationEvent.postValue(LoginNavigationEvent.NavigateToHome)
+                Log.d("AuthViewModel", "Login successful!")
+            } else {
+                clearToken()
+                _loginState.postValue(LoginUiState.Error("Error al iniciar sesión"))
+                Log.d("AuthViewModel", "Error al iniciar sesión")
             }
         }
     }
 
     fun register() {
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                _loginState.postValue(LoginUiState.Loading)
-                if (!attemptRegister()) {
+            _loginState.postValue(LoginUiState.Loading)
+
+            val result = registerUseCase(
+                _userName.value,
+                _password.value,
+                _passwordConfirmation.value,
+                _email.value,
+                _completeName.value,
+                _phone.value,
+                _address.value,
+                _photo.value
+            )
+
+            if (!result.success) {
+                _userNameError.postValue(result.usernameError)
+                _passwordError.postValue(result.passwordError)
+                _passwordConfirmationError.postValue(result.passwordConfirmationError)
+                _emailError.postValue(result.emailError)
+                _completeNameError.postValue(result.completeNameError)
+                _phoneError.postValue(result.phoneError)
+                _addressError.postValue(result.addressError)
+
+                if (result.message != null) {
+                    _loginState.postValue(LoginUiState.Error(result.message))
+                } else {
                     _loginState.postValue(LoginUiState.Idle)
-                    return@launch
                 }
 
-                mutex.withLock {
-                    val result = authRepository.register(
-                        UserMapper.toUserCreate(
-                            _userName.value!!,
-                            _password.value!!,
-                            _email.value!!,
-                            _completeName.value!!,
-                            _phone.value!!,
-                            _address.value!!,
-                            _photo.value
-                        )
-                    )
-
-                    result.fold(
-                        onSuccess = {
-                            clearErrors()
-                            _loginState.postValue(LoginUiState.Success("Usuario registrado con éxito"))
-                        },
-                        onFailure = { error ->
-                            val message = error.message ?: "Unknown error"
-                            _loginState.postValue(LoginUiState.Error(message))
-                            Log.e("AuthViewModel", "Error en el registro: $message", error)
-                        }
-                    )
-                }
-
-            } catch (e: Exception) {
-                _loginState.postValue(LoginUiState.Error("Error inesperado: ${e.message}"))
-                Log.e("AuthViewModel", "Error en registro", e)
+                return@launch
             }
+
+            clearErrors()
+            _loginState.postValue(LoginUiState.Success("Usuario registrado con éxito"))
         }
     }
 
     private fun saveToken(token: String) {
-        sharedPreferences.edit {
-            putString("auth_token", token)
-        }
+        saveTokenUseCase(token)
     }
 
-    private fun saveUserName(userName: String){
-        sharedPreferences.edit {
-            putString("username", userName)
-        }
-    }
-
-    fun resetState() {
-        _loginState.value = LoginUiState.Idle
-    }
-
-    fun attemptLogin(): Boolean {
-        clearErrors()
-        var isValid = true
-
-        if (_userName.value.isNullOrBlank()) {
-            _userNameError.value = "Nombre de usuario obligatorio"
-            isValid = false
-        } else if (_userName.value!!.length > 50) {
-            _userNameError.value = "Debe tener menos de 50 caracteres"
-            isValid = false
-        }
-
-        if (_password.value.isNullOrBlank()) {
-            _passwordError.value = "Contraseña obligatoria"
-            isValid = false
-        } else if (_password.value!!.length < 8) {
-            _passwordError.value = "Debe tener al menos 8 caracteres"
-            isValid = false
-        } else if (_password.value!!.length > 50) {
-            _passwordError.value = "Debe tener menos de 50 caracteres"
-            isValid = false
-        }
-
-        return isValid
-    }
-
-    fun attemptRegister(): Boolean{
-        clearErrors()
-        var isValid = true
-
-        if (_userName.value.isNullOrBlank()) {
-            _userNameError.postValue("Nombre de usuario obligatorio")
-            isValid = false
-        } else if (_userName.value!!.length > 50) {
-            _userNameError.postValue("Debe tener menos de 50 caracteres")
-            isValid = false
-        }
-
-        if (_password.value.isNullOrBlank()) {
-            _passwordError.postValue("Contraseña obligatoria")
-            isValid = false
-        } else if (_password.value!!.length < 8) {
-            _passwordError.postValue("Debe tener al menos 8 caracteres")
-            isValid = false
-        } else if (_password.value!!.length > 50) {
-            _passwordError.postValue("Debe tener menos de 50 caracteres")
-            isValid = false
-        }
-
-        if(_passwordConfirmation.value.isNullOrBlank() || _passwordConfirmation.value!! != _password.value) {
-            _passwordConfirmationError.postValue("Las contraseñas no coinciden")
-            isValid = false
-        }
-
-        if (_email.value.isNullOrBlank()) {
-            _emailError.postValue("Correo electrónico obligatorio")
-            isValid = false
-        } else if (!_email.value!!.contains("@")) {
-            _emailError.postValue("Correo electrónico no válido")
-            isValid = false
-        }
-
-        if (_completeName.value.isNullOrBlank()) {
-            _completeNameError.postValue("Nombre completo obligatorio")
-            isValid = false
-        } else if (_completeName.value!!.length > 100) {
-            _completeNameError.postValue( "Debe tener menos de 100 caracteres")
-            isValid = false
-        }
-
-        if (_phone.value.isNullOrBlank()) {
-            _phoneError.postValue("Teléfono obligatorio")
-            isValid = false
-
-        } else if (!_phone.value!!.matches(Regex("[0-9]+")) || _phone.value!!.length != 9) {
-            _phoneError.postValue("Teléfono no válido")
-            isValid = false
-        }
-
-        if (_address.value.isNullOrBlank()) {
-            _addressError.postValue("Dirección obligatoria")
-            isValid = false
-        } else if (_address.value!!.length > 50) {
-            _addressError.postValue("Debe tener menos de 50 caracteres")
-            isValid = false
-        }
-
-        return isValid
+    private fun saveUserName(userName: String) {
+        saveUserNameUSeCase(userName)
     }
 
     fun clearErrors() {
@@ -271,6 +176,6 @@ class AuthViewModel(
     }
 
     fun clearToken() {
-        sharedPreferences.edit { remove("auth_token") }
+        clearTokenUseCase()
     }
 }

@@ -33,6 +33,8 @@
 
 # Serialization rules
 -keepattributes *Annotation*
+-keep class androidx.annotation.Keep
+-keep @androidx.annotation.Keep class * { *; }
 -keep,includedescriptorclasses class **$$serializer { *; }
 -keepclassmembers class ** {
     kotlinx.serialization.KSerializer serializer(...);
@@ -57,3 +59,29 @@
     public *** println(...);
     public *** print(...);
 }
+
+# Jetpack Navigation
+-keep class androidx.navigation.NavHostController { *; }
+-keep class androidx.navigation.compose.** { *; }
+-keepclassmembers class * {
+    @androidx.navigation.* <methods>;
+}
+-keep class * extends androidx.lifecycle.ViewModel
+
+-keepclassmembers class * {
+    @androidx.navigation.* <methods>;
+}
+
+# Compose runtime (mantiene funciones composables necesarias)
+-keep class androidx.compose.runtime.** { *; }
+
+# Mantener NavBackStackEntry internamente
+-keep class androidx.navigation.NavBackStackEntry { *; }
+
+# Mantener composables por anotaciones
+-keep @androidx.compose.runtime.Composable class * { *; }
+-keepclassmembers class * {
+    @androidx.compose.runtime.Composable <methods>;
+}
+
+-keepnames class com.annasolox.kipon.core.navigation.**

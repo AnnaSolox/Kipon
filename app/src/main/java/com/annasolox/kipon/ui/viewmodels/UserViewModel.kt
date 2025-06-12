@@ -9,12 +9,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.annasolox.kipon.core.utils.mappers.UserMapper.toUserHomeScreen
 import com.annasolox.kipon.core.utils.mappers.UserMapper.toUserProfileScreenFromUserResponse
-import com.annasolox.kipon.data.api.models.request.patch.ProfilePatch
-import com.annasolox.kipon.data.api.models.request.patch.UserPatch
 import com.annasolox.kipon.data.api.models.response.UserResponse
-import com.annasolox.kipon.data.repository.ImageUploadRepository
-import com.annasolox.kipon.data.repository.UserRepository
-import com.annasolox.kipon.ui.models.AccountOverview
+import com.annasolox.kipon.domain.image.UploadImageUseCase
+import com.annasolox.kipon.domain.user.GetUserUseCase
+import com.annasolox.kipon.domain.user.SearchUserUseCase
+import com.annasolox.kipon.domain.user.UpdateUserUseCase
 import com.annasolox.kipon.ui.models.Saving
 import com.annasolox.kipon.ui.models.SearchedUser
 import com.annasolox.kipon.ui.models.UserHomeScreen
@@ -24,9 +23,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class UserViewModel(
-    private val userRepository: UserRepository,
-    private val imageUploadRepository: ImageUploadRepository,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val getUserUseCase: GetUserUseCase,
+    private val updateUserUseCase: UpdateUserUseCase,
+    private val uploadImageUseCase: UploadImageUseCase,
+    private val searchUserUseCase: SearchUserUseCase
 ) : ViewModel() {
     private val _userHome = MutableLiveData<UserHomeScreen>()
     val userHome: LiveData<UserHomeScreen> get() = _userHome
@@ -87,26 +88,11 @@ class UserViewModel(
     private val _fetchedUsersError = MutableLiveData<String?>(null)
     val fetchedUsersError: LiveData<String?> get() = _fetchedUsersError
 
-    val _loading = MutableLiveData<Boolean>(false)
+    private val _loading = MutableLiveData<Boolean>(false)
     val loading: LiveData<Boolean> get() = _loading
 
     private val _isImageUploaded = MutableLiveData<Boolean>(true)
     val isImageUploaded: LiveData<Boolean> get() = _isImageUploaded
-
-    fun addAccountToUserAccountsList(accountOverview: AccountOverview) {
-        val currentUser = _userHome.value
-        Log.d("UserViewModel", "Usuario actual: $currentUser")
-        if (currentUser != null) {
-            val updatedAccounts = currentUser.accounts.toMutableList().apply {
-                add(accountOverview)
-            }
-            Log.d("UserViewModel", "Cuentas actualizadas: $updatedAccounts")
-            val updatedUser = currentUser.copy(accounts = updatedAccounts)
-            _userHome.postValue(updatedUser)
-        } else {
-            Log.d("UserViewModel", "Es usuario es nulo")
-        }
-    }
 
     fun searchUsers(partialName: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -114,7 +100,7 @@ class UserViewModel(
                 _fetchedUsersError.postValue(null)
                 _loading.postValue(true)
                 _fetchedUsers.postValue(emptyList())
-                val users = userRepository.fetchUsersByPartialName(partialName)
+                val users = searchUserUseCase(partialName)
 
                 _fetchedUsers.postValue(users)
 
@@ -131,19 +117,20 @@ class UserViewModel(
     }
 
     fun loadUser() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val username = sharedPreferences.getString("username", null)
-            username?.let {
-                try {
-                    val response = userRepository.getUserByUsername(it)
-                    setUserHome(response)
-                    setUserProfile(response)
-                    Log.d("UserViewModel", "User: ${_userProfile.value}")
-                    populateProfileFields()
-
-                } catch (e: Exception) {
+        viewModelScope.launch {
+            try {
+                val result = getUserUseCase()
+                result.onSuccess { data ->
+                    withContext(Dispatchers.Main) {
+                        _userHome.value = data.userHome
+                        _userProfile.value = data.userProfile
+                        populateProfileFields()
+                    }
+                }.onFailure { e ->
                     Log.e("UserViewModel", "Error cargando usuario: ${e.message}")
                 }
+            } catch (e: Exception) {
+                Log.e("UserViewModel", "Error inesperado: ${e.message}")
             }
         }
     }
@@ -161,82 +148,39 @@ class UserViewModel(
     }
 
     fun updateUserInfo() {
-        if (!attemptUpdateUserInfo()) return
+        viewModelScope.launch {
+            val result = updateUserUseCase(
+                email = _email.value,
+                phone = _phone.value,
+                address = _address.value,
+                photo = _photo.value
+            )
 
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val patch = UserPatch(
-                    email = _email.value,
-                    profile = ProfilePatch(
-                        telephone = _phone.value,
-                        address = _address.value,
-                        photo = _photo.value
-                    )
-                )
+            _emailError.value = result.emailError
+            _phoneError.value = result.phoneError
+            _addressError.value = result.addressError
 
-                userRepository.updateCurrentUser(patch)
+            if (!result.success) return@launch
 
-                withContext(Dispatchers.Main) {
-
-                    _username.value?.let { newUsername ->
-                        sharedPreferences.edit { putString("username", newUsername) }
-                        loadUser()
-                    }
-                }
-
-            } catch (e: Exception) {
-                Log.e("UserViewModel", "Error actualizando usuario: ${e.message}")
-            }
-        }
-    }
-
-    fun attemptUpdateUserInfo(): Boolean {
-        var isValid = true
-        Log.d("UserViewModel", "Intentando actualizar la información de usuario: isValid: $isValid")
-
-        _email.value?.let {
-            if (!_email.value!!.contains("@") || !_email.value!!.contains(".")) {
-                _emailError.postValue("El formato del email es inválido")
-                isValid = false
-                Log.d("UserViewModel", "Email error: ${_emailError.value}, isValid: $isValid")
+            _username.value?.let { newUsername ->
+                sharedPreferences.edit { putString("username", newUsername) }
+                loadUser()
             }
         }
 
-        _phone.value?.let {
-            val phonePattern = Regex("^[0-9]*$")
-            if (!phonePattern.matches(_phone.value.toString())) {
-                _phoneError.postValue("El teléfono solo puede contener números (sin espacios ni otros carácteres)")
-                isValid = false
-            }
-            Log.d("UserViewModel", "Phone error: ${_phoneError.value}, isValid: $isValid")
-        }
-
-        address.value?.let {
-            if (_address.value!!.length > 50) {
-                _addressError.postValue("La dirección no puede superar los 50 caracteres")
-                isValid = false
-            }
-            Log.d("UserViewModel", "Address error: ${_addressError.value}, isValid: $isValid")
-        }
-
-        Log.d("UserViewModel", "isValid: $isValid")
-
-        return isValid
     }
 
     fun uploadImage(image: ByteArray) {
         viewModelScope.launch(Dispatchers.IO) {
             _isImageUploaded.postValue(false)
-            try {
-                val imageUrl = imageUploadRepository.uploadImage(image, "profile")
-
-                withContext(Dispatchers.Main) {
-                    _photo.value = imageUrl
-                    _isImageUploaded.postValue(true)
+            val result = uploadImageUseCase(image, "profile")
+            withContext(Dispatchers.Main) {
+                result.onSuccess { url ->
+                    _photo.value = url
+                }.onFailure { e ->
+                    Log.e("UserViewModel", "Error uploading image: ${e.message}")
                 }
-            } catch (e: Exception) {
                 _isImageUploaded.postValue(true)
-                Log.e("UserViewModel", "Error uploading image: ${e.message}")
             }
         }
     }
@@ -245,12 +189,12 @@ class UserViewModel(
         _fetchedUsers.postValue(emptyList())
     }
 
-    fun setUserProfile(userResponse: UserResponse){
+    fun setUserProfile(userResponse: UserResponse) {
         val userToProfile = toUserProfileScreenFromUserResponse(userResponse)
         _userProfile.postValue(userToProfile)
     }
 
-    fun setUserHome(userResponse: UserResponse){
+    fun setUserHome(userResponse: UserResponse) {
         val userToHome = toUserHomeScreen(userResponse)
         _userHome.postValue(userToHome)
     }

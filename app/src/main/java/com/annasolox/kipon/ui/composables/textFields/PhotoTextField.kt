@@ -1,7 +1,6 @@
 package com.annasolox.kipon.ui.composables.textFields
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -41,7 +40,7 @@ fun PhotoTextField(
                     enabled = enabled
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Image, // o un ícono de imagen
+                        imageVector = Icons.Default.Image,
                         contentDescription = "Seleccionar imagen"
                     )
                 }

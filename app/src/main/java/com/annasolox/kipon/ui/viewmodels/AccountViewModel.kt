@@ -7,14 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.annasolox.kipon.core.navigation.AccountNavigationEvent
 import com.annasolox.kipon.core.utils.formatters.Formatters
-import com.annasolox.kipon.core.utils.mappers.AccountMapper
 import com.annasolox.kipon.data.api.models.request.create.AccountCreate
-import com.annasolox.kipon.data.api.models.request.create.SavingCreate
-import com.annasolox.kipon.data.api.models.request.create.UserAccountCreate
-import com.annasolox.kipon.data.api.models.request.patch.AccountPatch
-import com.annasolox.kipon.data.repository.AccountRepository
-import com.annasolox.kipon.data.repository.ImageUploadRepository
-import com.annasolox.kipon.data.repository.UserRepository
+import com.annasolox.kipon.domain.account.AddUserToAccountUseCase
+import com.annasolox.kipon.domain.account.CreateAccountUseCase
+import com.annasolox.kipon.domain.account.CreateContributionUseCase
+import com.annasolox.kipon.domain.account.GetAccountUseCase
+import com.annasolox.kipon.domain.account.UpdateAccountUseCase
+import com.annasolox.kipon.domain.image.UploadImageUseCase
 import com.annasolox.kipon.ui.models.AccountDetails
 import com.annasolox.kipon.ui.models.LoginUiState
 import com.annasolox.kipon.ui.models.Saving
@@ -22,15 +21,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 class AccountViewModel(
-    private val accountRepository: AccountRepository,
-    private val userRepository: UserRepository,
-    private val imageUploadRepository: ImageUploadRepository,
+    private val uploadImageUseCase: UploadImageUseCase,
+    private val getAccountUseCase: GetAccountUseCase,
+    private val createAccountUseCase: CreateAccountUseCase,
+    private val createContributionUseCase: CreateContributionUseCase,
+    private val updateAccountUseCase: UpdateAccountUseCase,
+    private val addUserToAccountUseCase: AddUserToAccountUseCase
 ) : ViewModel() {
     //Form create account info fields
     private var _name = MutableLiveData<String>()
@@ -75,7 +75,6 @@ class AccountViewModel(
     }
 
     private var _photoError = MutableLiveData<String?>(null)
-    val photoError: LiveData<String?> get() = _photoError
 
     //Flag to check if the creation of an account is valid
     private val _isValidAccountCreate = MutableLiveData<Boolean>(false)
@@ -155,26 +154,20 @@ class AccountViewModel(
 
     //Loading state
     private var _loadingState = MutableLiveData<LoginUiState>(LoginUiState.Idle)
-    val loadingState: LiveData<LoginUiState> get() = _loadingState
 
     private val _onUserAdded = MutableSharedFlow<Unit>()
     val onUserAdded = _onUserAdded.asSharedFlow()
-
-    private val mutex = Mutex()
 
     fun loadCurrentAccount(id: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             _loadingState.postValue(LoginUiState.Loading)
             try {
-                mutex.withLock {
-                    val accountResponse = accountRepository.getAccountById(id)
-                    Log.d("AccountViewModel", "Account response: $accountResponse")
-                    _loadingState.postValue(LoginUiState.Success("Cuenta cargada con éxito"))
-                    val mappedAccount = AccountMapper.toDetailAccount(accountResponse)
-                    _currentAccount.postValue(mappedAccount)
-                    _currentAccountAmount.postValue(_currentAccount.value?.currentAmount)
+                val mappedAccount = getAccountUseCase(id)
+                withContext(Dispatchers.Main) {
+                    _currentAccount.value = mappedAccount
+                    _currentAccountAmount.value = _currentAccount.value?.currentAmount
                     populateEditAccountForm()
-                    Log.d("AccountViewModel", "Current account: ${_currentAccount.value}")
+                    _loadingState.value = LoginUiState.Success("Cuenta cargada con éxito")
                 }
 
             } catch (e: Exception) {
@@ -186,65 +179,152 @@ class AccountViewModel(
 
     fun createNewAccount() {
         viewModelScope.launch(Dispatchers.IO) {
+            _isValidAccountCreate.postValue(false)
             _loadingState.postValue(LoginUiState.Loading)
-            try {
-                if (!attemptAccountCreation()) return@launch
 
-                mutex.withLock {
-                    val accountToCreate = AccountCreate(
-                        name = _name.value.toString(),
-                        moneyGoal = _moneyGoal.value!!.toDouble(),
-                        dateGoal = _dateGoal.value,
-                        photo = _photo.value.toString()
-                    )
-                    val createdAccount = accountRepository.accountCreate(accountToCreate)
-                    loadCurrentAccount(createdAccount.id)
-                    _navigationEvent.postValue(AccountNavigationEvent.NavigateToAccountDetail)
+            val accountCreate = AccountCreate(
+                name = _name.value ?: "",
+                moneyGoal = _moneyGoal.value?.toDouble() ?: 0.0,
+                dateGoal = _dateGoal.value,
+                photo = _photo.value
+            )
 
-                    _loadingState.postValue(LoginUiState.Success("Cuenta creada con éxito"))
+            val result = createAccountUseCase(accountCreate)
+
+
+            if (result.success && result.accountId != null) {
+                loadCurrentAccount(result.accountId)
+                withContext(Dispatchers.Main) {
+                    _loadingState.value = LoginUiState.Success("Cuenta creada con éxito")
+                    _isValidAccountCreate.value = true
+                    _navigationEvent.value = AccountNavigationEvent.NavigateToAccountDetail
                 }
-            } catch (e: Exception) {
-                _loadingState.postValue(LoginUiState.Error("Error creando la cuenta"))
-                Log.e("AccountViewModel", "Error creating account: ${e.message}")
+            } else {
+                withContext(Dispatchers.Main) {
+                    _nameError.value = result.nameError
+                    _moneyGoalError.value = result.moneyGoalError
+                    _dateGoalError.value = result.dateGoalError
+                    _loadingState.value =
+                        LoginUiState.Error(
+                            result.generalError ?: "Error validando la cuenta"
+                        )
+                }
             }
         }
     }
 
     fun createNewContribution() {
         viewModelScope.launch(Dispatchers.IO) {
-            _isValidContributionCreate.postValue(false)
             _loadingState.postValue(LoginUiState.Loading)
-            try {
-                if (!attemptContributionCreation()) return@launch
+            val amount = _contributionAmount.value
+            val result = createContributionUseCase(_currentAccount.value!!.id, amount)
 
-                mutex.withLock {
-                    _contributionAmount.value?.let {
-                        val newSaving = SavingCreate(
-                            userRepository.getCurrentUserId(),
-                            _contributionAmount.value!!.toDouble()
-                        )
-                        val newContribution = accountRepository.createNewContribution(
-                            _currentAccount.value!!.id,
-                            newSaving
-                        )
-                        _currentAccountAmount.postValue(newContribution.currentMoney)
-                        val updatedList = listOf(newContribution) + _savingsList.value.orEmpty()
-                        val savingList = updatedList.map { it }
-                        _savingsList.postValue(savingList)
+            if (result.success) {
+                val newContribution = result.newContribution!!
+                _currentAccountAmount.postValue(newContribution.currentMoney)
 
-                        _loadingState.postValue(LoginUiState.Success("Contribuión creada con éxito"))
-                        Log.d("AccountViewModel", "New contribution: $newContribution")
-                    }
-                }
-                _isValidContributionCreate.postValue(true)
+                val updatedList = listOf(newContribution) + _savingsList.value.orEmpty()
+                _savingsList.postValue(updatedList)
+
+                _loadingState.postValue(LoginUiState.Success("Transacción creada con éxito"))
                 clearContributionError()
                 clearContributionForm()
-
-            } catch (e: Exception) {
-                _loadingState.postValue(LoginUiState.Error("Error al crear la contribuición"))
-                Log.d("AccountViewModel", "Error creating contribution: ${e.message}")
+                _isValidContributionCreate.postValue(true)
+            } else {
+                _contributionAmountError.postValue(result.amountError)
+                _loadingState.postValue(
+                    LoginUiState.Error(
+                        result.generalError ?: "Error validando la creación de la transacción"
+                    )
+                )
+                _isValidContributionCreate.postValue(false)
             }
         }
+    }
+
+    fun updateAccountInformation() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = updateAccountUseCase(
+                accountId = _currentAccount.value!!.id,
+                name = _editAccountName.value,
+                moneyGoal = _editAccountMoneyGoal.value?.toDouble(),
+                dateGoal = _editAccountDateGoal.value,
+                photo = _editAccountPhoto.value
+            )
+
+            if (result.success) {
+                loadCurrentAccount(_currentAccount.value!!.id)
+                withContext(Dispatchers.Main) {
+                    populateEditAccountForm()
+                    clearEditAccountError()
+                    _isValidEditAccount.value = true
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    _editAccountNameError.value = result.nameError
+                    _moneyGoalError.value = result.moneyGoalError
+                    Log.e(
+                        "AccountViewModel",
+                        "Error validando actualización: ${result.generalError}"
+                    )
+                    _isValidEditAccount.value = false
+                }
+
+            }
+        }
+    }
+
+    fun addUserToAccount(userId: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val accountId = _currentAccount.value?.id ?: return@launch
+
+            val result = addUserToAccountUseCase(userId, accountId)
+            if (result.success) {
+                loadCurrentAccount(accountId)
+                _onUserAdded.emit(Unit)
+            } else {
+                Log.d("AccountViewModel", "Error al añadir usuario: ${result.errorMessage}")
+            }
+        }
+    }
+
+    fun uploadImage(image: ByteArray) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isImageUploaded.postValue(false)
+            val result = uploadImageUseCase(image, "account")
+            withContext(Dispatchers.Main) {
+                result.onSuccess { url ->
+                    _editAccountPhoto.value = url
+                    _photo.value = url
+                }.onFailure { e ->
+                    Log.e("UserViewModel", "Error uploading image: ${e.message}")
+                }
+                _isImageUploaded.postValue(true)
+            }
+        }
+    }
+
+
+    fun populateEditAccountForm() {
+        _editAccountName.value = _currentAccount.value?.name
+        _editAccountMoneyGoal.value = _currentAccount.value?.moneyGoal
+        _editAccountDateGoal.value = Formatters.parseDate(_currentAccount.value!!.dateGoal)
+        _editAccountPhoto.value = _currentAccount.value?.photo.toString()
+    }
+
+    fun clearEditAccountError() {
+        _editAccountNameError.postValue(null)
+        _editAccountMoneyGoalError.postValue(null)
+        _editAccountMoneyGoalError.postValue(null)
+        _editAccountPhotoError.postValue(null)
+    }
+
+    fun resetEditAccountValidation() {
+        _isValidEditAccount.postValue(false)
+    }
+
+    fun resetAddContibutionValidation() {
+        _isValidContributionCreate.postValue(false)
     }
 
     fun loadingSavingsList() {
@@ -264,10 +344,10 @@ class AccountViewModel(
     }
 
     fun clearCreateForm() {
-        _name.postValue("")
-        _moneyGoal.postValue(null)
-        _dateGoal.postValue(null)
-        _photo.postValue("")
+        _name.value = ""
+        _moneyGoal.value = null
+        _dateGoal.value = null
+        _photo.value = ""
     }
 
     fun clearContributionForm() {
@@ -283,165 +363,5 @@ class AccountViewModel(
         _moneyGoalError.postValue(null)
         _dateGoalError.postValue(null)
         _photoError.postValue(null)
-    }
-
-    suspend fun attemptContributionCreation(): Boolean {
-        clearContributionError()
-
-        withContext(Dispatchers.Main) {
-            _isValidContributionCreate.value = false
-        }
-
-        var isValid = true
-
-        if (_contributionAmount.value == null) {
-            _contributionAmountError.postValue("Campo obligatorio")
-            isValid = false
-        } else if (_contributionAmount.value!! < 0) {
-            _contributionAmountError.postValue("La cantidad debe ser mayor a 0")
-            isValid = false
-        }
-
-        withContext(Dispatchers.Main) { _isValidContributionCreate.value = isValid }
-
-        return isValid
-    }
-
-    fun attemptAccountCreation(): Boolean {
-        clearErrors()
-
-        var isValid = true
-
-        if (_name.value.isNullOrBlank()) {
-            _nameError.postValue("Nombre de cuenta obligatorio")
-            isValid = false
-        } else if (_name.value!!.length > 100) {
-            _nameError.postValue("Debe tener menos de 100 caracteres")
-            isValid = false
-        }
-
-        if (_moneyGoal.value == null) {
-            _moneyGoalError.postValue("Campo obligatorio")
-            isValid = false
-        } else if (_moneyGoal.value!! <= 0) {
-            _moneyGoalError.postValue("La cantidad debe ser mayor a 0")
-            isValid = false
-        }
-
-        if (_dateGoal.value == null) {
-            _dateGoalError.postValue("Campo obligatorio")
-            isValid = false
-        } else if (!_dateGoal.value!!.isAfter(LocalDate.now())) {
-            _dateGoalError.postValue("La fecha ha de ser posterior a hoy")
-            isValid = false
-        }
-
-        // TODO: Validación de foto
-        _isValidAccountCreate.postValue(false)
-        return isValid
-    }
-
-    suspend fun attempAcountEdit(): Boolean {
-        withContext(Dispatchers.Main) { _isValidEditAccount.value = false }
-        var isValid = true
-
-        _editAccountName.value?.let {
-            if (_editAccountName.value!!.length > 100) {
-                _editAccountNameError.postValue("Debe tener menos de 100 caracteres")
-                isValid = false
-            }
-        }
-
-        _editAccountMoneyGoal.value?.let {
-            if (_editAccountMoneyGoal.value!! < 0) {
-                _moneyGoalError.postValue("La cantidad debe ser mayor a 0")
-                isValid = false
-            }
-        }
-
-        withContext(Dispatchers.Main) { _isValidEditAccount.value = isValid }
-
-        return isValid
-    }
-
-    fun updateAccountInformation() {
-        viewModelScope.launch(Dispatchers.IO) {
-            if (!attempAcountEdit()) return@launch
-            try {
-                val patch = AccountPatch(
-                    name = _editAccountName.value,
-                    moneyGoal = _editAccountMoneyGoal.value?.toDouble(),
-                    dateGoal = _editAccountDateGoal.value,
-                    photo = _editAccountPhoto.value,
-                    adminId = null,
-                )
-
-                accountRepository.updateCurrentAccount(_currentAccount.value!!.id, patch)
-                loadCurrentAccount(_currentAccount.value!!.id)
-                populateEditAccountForm()
-                clearEditAccountError()
-            } catch (e: Exception) {
-                Log.e("AccountViewModel", "error actualizando cuenta: ${e.message}")
-            }
-        }
-    }
-
-    fun addUserToAccount(userId: Long) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                _currentAccount.value?.let {
-                    val userAccountCreate = UserAccountCreate(
-                        userId = userId,
-                        accountId = _currentAccount.value!!.id,
-                        role = "Miembro"
-                    )
-                    accountRepository.addUserToAccount(userAccountCreate)
-                    loadCurrentAccount(_currentAccount.value!!.id)
-                    _onUserAdded.emit(Unit)
-                }
-            } catch (e: Exception) {
-                Log.d("AccountViewModel", "Error al añadir usuario a la cuenta: ${e.message}")
-            }
-        }
-    }
-
-    fun uploadImage(image: ByteArray) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _isImageUploaded.postValue(false)
-            try {
-                val imageUrl = imageUploadRepository.uploadImage(image, "account")
-                withContext(Dispatchers.Main) {
-                    _editAccountPhoto.value = imageUrl
-                    _photo.value = imageUrl
-                    _isImageUploaded.postValue(true)
-                    Log.d("AccountViewModel", "Image url: ${_editAccountPhoto.value}")
-                }
-            } catch (e: Exception) {
-                _isImageUploaded.postValue(true)
-                Log.e("AccountViewModel", "Error al subir la imagen: ${e.message}")
-            }
-        }
-    }
-
-    fun populateEditAccountForm() {
-        _editAccountName.postValue(_currentAccount.value?.name)
-        _editAccountMoneyGoal.postValue(_currentAccount.value?.moneyGoal)
-        _editAccountDateGoal.postValue(Formatters.parseDate(_currentAccount.value!!.dateGoal))
-        _editAccountPhoto.postValue(_currentAccount.value?.photo.toString())
-    }
-
-    fun clearEditAccountError() {
-        _editAccountNameError.postValue(null)
-        _editAccountMoneyGoalError.postValue(null)
-        _editAccountMoneyGoalError.postValue(null)
-        _editAccountPhotoError.postValue(null)
-    }
-
-    fun resetEditAccountValidation() {
-        _isValidEditAccount.postValue(false)
-    }
-
-    fun resetAddContibutionValidation() {
-        _isValidContributionCreate.postValue(false)
     }
 }

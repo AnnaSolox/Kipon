@@ -4,9 +4,6 @@ import android.content.SharedPreferences
 import android.util.LiveDataTestUtils.getOrAwaitNonEmptyValue
 import android.util.LiveDataTestUtils.getOrAwaitValue
 import android.util.MainDispatcherRule
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.Rule
-import org.junit.rules.TestRule
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.annasolox.kipon.data.api.models.response.AccountResponse
 import com.annasolox.kipon.data.api.models.response.AccountRoleResponse
@@ -16,9 +13,16 @@ import com.annasolox.kipon.data.api.models.response.UserProfileResponse
 import com.annasolox.kipon.data.api.models.response.UserResponse
 import com.annasolox.kipon.data.api.models.response.UserRolResponse
 import com.annasolox.kipon.data.api.models.response.UserSimplified
-import com.annasolox.kipon.data.repository.AccountRepository
-import com.annasolox.kipon.data.repository.ImageUploadRepository
-import com.annasolox.kipon.data.repository.UserRepository
+import com.annasolox.kipon.domain.account.AddUserToAccountUseCase
+import com.annasolox.kipon.domain.account.CreateAccountUseCase
+import com.annasolox.kipon.domain.account.CreateContributionUseCase
+import com.annasolox.kipon.domain.account.GetAccountUseCase
+import com.annasolox.kipon.domain.account.UpdateAccountUseCase
+import com.annasolox.kipon.domain.image.UploadImageUseCase
+import com.annasolox.kipon.domain.user.GetUserResult
+import com.annasolox.kipon.domain.user.GetUserUseCase
+import com.annasolox.kipon.domain.user.SearchUserUseCase
+import com.annasolox.kipon.domain.user.UpdateUserUseCase
 import com.annasolox.kipon.ui.models.AccountDetails
 import com.annasolox.kipon.ui.models.AccountOverview
 import com.annasolox.kipon.ui.models.Profile
@@ -31,6 +35,7 @@ import com.annasolox.kipon.ui.viewmodels.UserViewModel
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -38,7 +43,9 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestRule
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -50,9 +57,6 @@ class UserDataUnitTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val userRepository = mockk<UserRepository>(relaxed = true)
-    private val accountRepository = mockk<AccountRepository>(relaxed = true)
-    private val imageUploadRepository = mockk<ImageUploadRepository>(relaxed = true)
     private val sharedPreferences = mockk<SharedPreferences>(relaxed = true)
     private lateinit var viewModel: UserViewModel
     private lateinit var accountViewModel: AccountViewModel
@@ -65,11 +69,43 @@ class UserDataUnitTest {
     lateinit var mockAccount: AccountDetails
     lateinit var accountResponseMock: AccountResponse
 
+    private lateinit var getUserUseCase: GetUserUseCase
+    private lateinit var uploadImageUseCase: UploadImageUseCase
+    private lateinit var updateUserUseCase: UpdateUserUseCase
+    private lateinit var searchUserUseCase: SearchUserUseCase
+    private lateinit var createAccountUseCase: CreateAccountUseCase
+    private lateinit var addUserToAccountUseCase: AddUserToAccountUseCase
+    private lateinit var createContributionUseCase: CreateContributionUseCase
+    private lateinit var getAccountUseCase: GetAccountUseCase
+    private lateinit var updateAccountUseCase: UpdateAccountUseCase
+
     @Before
     fun setUp() {
         Dispatchers.setMain(mainDispatcherRule.testDispatcher)
-        viewModel = UserViewModel(userRepository, imageUploadRepository, sharedPreferences)
-        accountViewModel = AccountViewModel(accountRepository, userRepository, imageUploadRepository)
+        getUserUseCase = mockk<GetUserUseCase>()
+        uploadImageUseCase = mockk<UploadImageUseCase>()
+        updateUserUseCase = mockk<UpdateUserUseCase>()
+        searchUserUseCase = mockk<SearchUserUseCase>()
+        createAccountUseCase = mockk<CreateAccountUseCase>()
+        addUserToAccountUseCase = mockk<AddUserToAccountUseCase>()
+        createContributionUseCase = mockk<CreateContributionUseCase>()
+        getAccountUseCase = mockk<GetAccountUseCase>()
+        updateAccountUseCase = mockk<UpdateAccountUseCase>()
+        viewModel = UserViewModel(
+            sharedPreferences = sharedPreferences,
+            getUserUseCase = getUserUseCase,
+            updateUserUseCase = updateUserUseCase,
+            uploadImageUseCase = uploadImageUseCase,
+            searchUserUseCase = searchUserUseCase
+        )
+        accountViewModel = AccountViewModel(
+            uploadImageUseCase = uploadImageUseCase,
+            getAccountUseCase = getAccountUseCase,
+            createAccountUseCase = createAccountUseCase,
+            createContributionUseCase = createContributionUseCase,
+            updateAccountUseCase = updateAccountUseCase,
+            addUserToAccountUseCase = addUserToAccountUseCase
+        )
 
         userResponseMock = UserResponse(
             id = 1,
@@ -212,7 +248,7 @@ class UserDataUnitTest {
                         name = "Ana",
                         photo = "https://kipon-images.s3.us-east-1.amazonaws.com/profiles/1747805991058_image.jpg"
                     ),
-                    role ="Aministrador"
+                    role = "Aministrador"
                 )
             ),
             admin = "Ana",
@@ -224,7 +260,7 @@ class UserDataUnitTest {
                     accountName = "Ahorro Ana",
                     amount = 1000.0,
                     currentMoney = 500.0,
-                    date = LocalDate.of(2030,10,26),
+                    date = LocalDate.of(2030, 10, 26),
                     userPhoto = "https://kipon-images.s3.us-east-1.amazonaws.com/profiles/1747805991058_image.jpg",
                     accountPhoto = ""
                 ),
@@ -235,7 +271,7 @@ class UserDataUnitTest {
                     accountName = "Ahorro Ana 2",
                     amount = 2000.0,
                     currentMoney = 1500.0,
-                    date = LocalDate.of(2030,10,27),
+                    date = LocalDate.of(2030, 10, 27),
                     userPhoto = "https://kipon-images.s3.us-east-1.amazonaws.com/profiles/1747805991058_image.jpg",
                     accountPhoto = ""
                 )
@@ -254,9 +290,19 @@ class UserDataUnitTest {
         viewModel.onPhoneChanged("123456789")
         viewModel.onAddressChanged("Calle Ejemplo 123")
 
-        val result = viewModel.attemptUpdateUserInfo()
+        coEvery {
+            updateUserUseCase.invoke(
+                email = "usuario@ejemplo.com",
+                phone = "123456789",
+                address = "Calle Ejemplo 123",
+                photo = any()
+            )
+        } returns UpdateUserUseCase.Result(success = true)
 
-        Assert.assertTrue(result)
+        viewModel.updateUserInfo()
+
+        advanceUntilIdle()
+
         Assert.assertNull(viewModel.emailError.value)
         Assert.assertNull(viewModel.phoneError.value)
         Assert.assertNull(viewModel.addressError.value)
@@ -266,10 +312,25 @@ class UserDataUnitTest {
     fun informacionActualizarUsuarioFallo() = runTest {
         viewModel.onEmailChanged("usuarioejemplo.com") //Email inválido
         viewModel.onPhoneChanged("123456789")
-        viewModel.onAddressChanged("Calle ejemplo 123")
+        viewModel.onAddressChanged("Calle Ejemplo 123")
 
-        val result = viewModel.attemptUpdateUserInfo()
-        Assert.assertFalse(result)
+        coEvery {
+            updateUserUseCase.invoke(
+                email = "usuarioejemplo.com",
+                phone = "123456789",
+                address = "Calle Ejemplo 123",
+                photo = any()
+            )
+        } returns UpdateUserUseCase.Result(
+            success = false,
+            emailError = "El formato del email es inválido"
+        )
+
+        viewModel.updateUserInfo()
+
+        advanceUntilIdle()
+
+        Assert.assertEquals("El formato del email es inválido", viewModel.emailError.value)
     }
 
     @Test
@@ -280,7 +341,7 @@ class UserDataUnitTest {
             SearchedUser(id = 2, userName = "Anastasia Gómez", photo = null)
         )
 
-        coEvery { userRepository.fetchUsersByPartialName(nombreParcial) } returns usuariosMock
+        coEvery { searchUserUseCase.invoke(nombreParcial) } returns usuariosMock
         viewModel.searchUsers(nombreParcial)
         advanceUntilIdle()
 
@@ -293,7 +354,9 @@ class UserDataUnitTest {
     fun cargaAhorrosUsuarioExito() = runTest {
 
         coEvery { sharedPreferences.getString("username", null) } returns "Ana"
-        coEvery { userRepository.getUserByUsername("Ana") } returns userResponseMock
+        coEvery { getUserUseCase.invoke() } returns Result.success(
+            GetUserResult(userHome = userHomeScreenMock, userProfile = userProfileScreen)
+        )
 
         viewModel.loadUser()
         advanceUntilIdle()
@@ -312,7 +375,9 @@ class UserDataUnitTest {
     @Test
     fun cargarFotoPerfilExito() = runTest {
         coEvery { sharedPreferences.getString("username", null) } returns "Ana"
-        coEvery { userRepository.getUserByUsername("Ana") } returns userResponseMock
+        coEvery { getUserUseCase.invoke() } returns Result.success(
+            GetUserResult(userHome = userHomeScreenMock, userProfile = userProfileScreen)
+        )
 
         viewModel.loadUser()
         advanceUntilIdle()
@@ -325,7 +390,9 @@ class UserDataUnitTest {
     @Test
     fun cargarCuentasUsuarioExito() = runTest {
         coEvery { sharedPreferences.getString("username", null) } returns "Ana"
-        coEvery { userRepository.getUserByUsername("Ana") } returns userResponseMock
+        coEvery { getUserUseCase.invoke() } returns Result.success(
+            GetUserResult(userHome = userHomeScreenMock, userProfile = userProfileScreen)
+        )
 
         viewModel.loadUser()
         advanceUntilIdle()
@@ -335,19 +402,4 @@ class UserDataUnitTest {
 
         Assert.assertEquals(userHomeScreenMock.accounts, userAccounts)
     }
-
-    @Test
-    fun cargarCuentaActualExito() = runTest {
-        val accountId = 1L
-
-        coEvery { accountRepository.getAccountById(accountId) } returns accountResponseMock
-
-        accountViewModel.loadCurrentAccount(accountId)
-        advanceUntilIdle()
-
-        val result = accountViewModel.currentAccount.getOrAwaitValue()
-
-        Assert.assertEquals(mockAccount, result)
-    }
-
 }

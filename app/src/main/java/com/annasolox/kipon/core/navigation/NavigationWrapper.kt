@@ -1,7 +1,5 @@
 package com.annasolox.kipon.core.navigation
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -25,7 +23,7 @@ import com.annasolox.kipon.ui.viewmodels.AccountViewModel
 import com.annasolox.kipon.ui.viewmodels.UserViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+
 @Composable
 fun NavigationWrapper() {
     val navController = rememberNavController()

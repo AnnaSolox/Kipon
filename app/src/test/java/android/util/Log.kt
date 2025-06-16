@@ -1,10 +1,15 @@
-package android.util;
+package android.util
 
-public class Log {
-    public static int d(String tag, String msg) {
-        return 0;
-    }
-    public static int e(String tag, String msg) {
-        return 0;
+class Log {
+    companion object {
+        @JvmStatic
+        fun d(tag: String, msg: String): Int {
+            return 0
+        }
+
+        @JvmStatic
+        fun e(tag: String, msg: String): Int {
+            return 0
+        }
     }
 }

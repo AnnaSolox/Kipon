@@ -9,6 +9,10 @@ android {
     namespace = "com.annasolox.kipon"
     compileSdk = 35
 
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
+
     defaultConfig {
         applicationId = "com.annasolox.kipon"
         minSdk = 28

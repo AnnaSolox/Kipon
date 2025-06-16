@@ -2,8 +2,9 @@
 
 ![Kipon cover](./app/assets/images/Kipon_github_cover.jpg)
 
-**Kipon** es una aplicación Android desarrollada como proyecto final del ciclo superior de DAM.
-La idea nace como respuesta a la necesidad de ahorrar en conjunto para proyectos personales o profesionales con más de dos personas.
+**Kipon** es una aplicación Android desarrollada como proyecto final del Ciclo Formativo de Grado Superior en Desarrollo de Aplicaciones Multiplataforma (DAM). La idea surge como respuesta a una necesidad personal: ahorrar dinero de forma colaborativa entre más de dos personas, ya sea para alcanzar objetivos personales (como viajes, regalos o eventos) o profesionales (como financiar un emprendimiento o un proyecto conjunto).
+
+Aunque existen soluciones para el ahorro individual o la gestión compartida de gastos, Kipon se centra en crear "huchas" compartidas, simplificando la organización financiera en grupo y promoviendo la transparencia.
 
 La aplicación está desarrollanda en `Kotlin` con `Jetpack Compose`, `Material Design`, arquitectura `Clean Arquitecture`con un modelo de presentación `MVVM` y librerías compatibles con `KMP`.
 

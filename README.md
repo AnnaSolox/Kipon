@@ -20,6 +20,11 @@ La aplicación está desarrollanda en `Kotlin` con `Jetpack Compose`, `Material 
 
 ---
 
+## Descarga
+Descarga la app desde el siguiente enlace: [KIPON APP](./app/release)
+
+---
+
 ## Tecnologías y librerías
 
 - **Jetpack Compose**: Toolkit moderno de Android para desarrollar interfaces declarativas de forma rápida y eficiente.

@@ -6,7 +6,7 @@
 
 Aunque existen soluciones para el ahorro individual o la gestión compartida de gastos, Kipon se centra en crear "huchas" compartidas, simplificando la organización financiera en grupo y promoviendo la transparencia.
 
-Este repositorio corresponde a un primer prototipo funcional de la aplicación, desarrollado con el objetivo de validar la idea, probar la viabilidad técnica y sentar las bases para futuras versiones más completas.
+Este repositorio corresponde a un **primer prototipo funcional** de la aplicación, desarrollado con el objetivo de validar la idea, probar la viabilidad técnica y sentar las bases para futuras versiones más completas.
 
 La aplicación está desarrollanda en `Kotlin` con `Jetpack Compose`, `Material Design`, arquitectura `Clean Arquitecture`con un modelo de presentación `MVVM` y librerías compatibles con `KMP`.
 

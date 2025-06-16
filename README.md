@@ -3,7 +3,7 @@
 ![Kipon cover](./app/assets/images/Kipon_github_cover.jpg)
 
 **Kipon** es una aplicación Android desarrollada como proyecto final del ciclo superior de DAM.
-La idea nace como respuesta a la necesidad de ahorrar en conjunto, con más de dos personas.
+La idea nace como respuesta a la necesidad de ahorrar en conjunto para proyectos personales o profesionales con más de dos personas.
 
 La aplicación está desarrollanda en `Kotlin` con `Jetpack Compose`, `Material Design`, arquitectura `Clean Arquitecture`con un modelo de presentación `MVVM` y librerías compatibles con `KMP`.
 
@@ -55,4 +55,15 @@ Puedes acceder al código desde el siguiente repositorio: [Kipon API](https://gi
 
 ---
 
+## LICENSE
+Diseñado y desarrollado por AnnaSolox en 2025.
+
+Este proyecto está bajo la licencia [Apache 2.0](./LICENSE).
+No puedes usar este archivo salvo en cumplimiento con la Licencia.
+Puedes obtener una copia de la Licencia en:
+
+https://opensource.org/license/apache-2-0
+
+A menos que lo exija la ley aplicable o se acuerde por escrito, el software distribuido bajo la Licencia se distribuye "TAL CUAL", SIN GARANTÍAS NI CONDICIONES DE NINGÚN TIPO, ya sean expresas o implícitas.
+Consulta la Licencia para conocer el lenguaje específico que regula los permisos y limitaciones bajo la Licencia.
 

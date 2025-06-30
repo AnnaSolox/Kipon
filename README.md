@@ -2,7 +2,7 @@
 
 ![Kipon cover](./app/assets/images/Kipon_github_cover.jpg)
 
-> 📘 [Versión en Español / Spanish version](README_ES.md)
+> [Versión en Español / Spanish version](README_ES.md)
 
 **Kipon** is an Android application developed as the final project for the DAM superior grade.  
 The idea emerged from a personal need: to save money collaboratively between more than two people — whether for personal goals (such as trips, gifts, or events) or professional ones (like funding a startup or a joint project)..
